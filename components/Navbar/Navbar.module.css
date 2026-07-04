@@ -341,7 +341,8 @@
 }
 
 .mobileMenuOpen {
-  max-height: 500px;
+  max-height: 100dvh;
+  overflow-y: auto;
 }
 
 .mobileLink {
