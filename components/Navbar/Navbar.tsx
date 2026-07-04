@@ -22,7 +22,7 @@ function BereichDropdown({
 }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
-  const closeTimer = useRef<ReturnType<typeof setTimeout>>()
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const openMenu  = () => { clearTimeout(closeTimer.current); setOpen(true) }
   const closeMenu = () => { closeTimer.current = setTimeout(() => setOpen(false), 220) }
@@ -127,7 +127,7 @@ function BereichDropdown({
 function UnternehmenDropdown({ isActive }: { isActive: boolean }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
-  const closeTimer = useRef<ReturnType<typeof setTimeout>>()
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const openMenu  = () => { clearTimeout(closeTimer.current); setOpen(true) }
   const closeMenu = () => { closeTimer.current = setTimeout(() => setOpen(false), 220) }
@@ -180,7 +180,7 @@ function ExtrasDropdown({
 }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
-  const closeTimer = useRef<ReturnType<typeof setTimeout>>()
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const openMenu  = () => { clearTimeout(closeTimer.current); setOpen(true) }
   const closeMenu = () => { closeTimer.current = setTimeout(() => setOpen(false), 220) }
