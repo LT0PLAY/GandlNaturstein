@@ -26,7 +26,7 @@ export default function ProductDetail({ product, backHref, backLabel }: {
       productId:    product.id,
       productName:  product.name,
       productSlug:  product.slug,
-      categoryType: (product.category?.type ?? 'aussen'),
+      categoryType: (product.category?.type ?? 'massivproduktion'),
       thumbnail:    product.thumbnail,
       price:        product.show_price ? (product.price ?? null) : null,
       show_price:   product.show_price ?? false,
