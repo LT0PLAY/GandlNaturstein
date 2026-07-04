@@ -1,0 +1,186 @@
+.footer {
+  background: #060504;
+  border-top: 0.5px solid rgba(196, 146, 58, 0.08);
+  margin-top: auto;
+}
+
+.inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 64px 40px 28px;
+}
+
+/* ── Top ── */
+.top {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr 1.2fr;
+  gap: 40px;
+  padding-bottom: 48px;
+}
+
+/* ── Brand ── */
+.logo {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  text-decoration: none;
+  font-family: var(--font-bebas), sans-serif;
+  font-size: 24px;
+  letter-spacing: .16em;
+  color: #F0EBE3;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.logoAccent { color: var(--color-sage); }
+
+.logoSub {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: .12em;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+.tagline {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 15px;
+  color: #C8C0B8;
+  line-height: 1.8;
+  margin-bottom: 8px;
+}
+
+.taglineSub {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+/* ── Cols ── */
+.colTitle {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--color-sage);
+  margin-bottom: 16px;
+}
+
+.colLink {
+  display: block;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #D4CCC4;
+  text-decoration: none;
+  margin-bottom: 12px;
+  transition: color 0.2s;
+}
+
+.colLink:hover { color: var(--color-sage); }
+
+.colText {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 14px;
+  color: var(--color-text-muted);
+  line-height: 1.9;
+  margin-top: 14px;
+}
+
+/* ── CTA Block ── */
+.ctaBlock {
+  border-left: 0.5px solid rgba(196, 146, 58, 0.1);
+  padding-left: 40px;
+}
+
+.ctaLabel {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--color-sage-muted);
+  margin-bottom: 10px;
+}
+
+.ctaHeadline {
+  font-family: var(--font-bebas), sans-serif;
+  font-size: 36px;
+  color: #F0EBE3;
+  line-height: .9;
+  letter-spacing: .04em;
+  margin-bottom: 20px;
+}
+
+.ctaBtn {
+  display: inline-block;
+  background: var(--color-sage);
+  color: var(--color-bg);
+  font-family: var(--font-bebas), sans-serif;
+  font-size: 13px;
+  letter-spacing: .14em;
+  padding: 10px 22px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.ctaBtn:hover { opacity: 0.85; }
+
+/* ── Divider + Bottom ── */
+.divider {
+  height: 0.5px;
+  background: rgba(196, 146, 58, 0.06);
+}
+
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+}
+
+.copy {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 12px;
+  color: #A09890;
+  letter-spacing: .03em;
+}
+
+.legal {
+  display: flex;
+  gap: 20px;
+}
+
+.legalLink {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 12px;
+  color: #A09890;
+  text-decoration: none;
+  letter-spacing: .03em;
+  transition: color 0.2s;
+}
+
+.legalLink:hover { color: var(--color-sage); }
+
+/* ── Responsive ── */
+@media (max-width: 1200px) {
+  .top { grid-template-columns: 1fr 1fr 1fr; gap: 32px; }
+  .ctaBlock { border-left: none; padding-left: 0; grid-column: 1 / -1; border-top: 0.5px solid rgba(196,146,58,0.1); padding-top: 28px; }
+}
+
+@media (max-width: 768px) {
+  .top { grid-template-columns: 1fr 1fr; gap: 28px; }
+}
+
+@media (max-width: 600px) {
+  .top        { grid-template-columns: 1fr; gap: 28px; text-align: center; }
+  .inner      { padding: 40px 20px 20px; }
+  .logo       { justify-content: center; }
+  .ctaBlock   { border-left: none; padding-left: 0; border-top: 0.5px solid rgba(196,146,58,0.1); padding-top: 28px; display: flex; flex-direction: column; align-items: center; }
+  .bottom     { flex-direction: column; gap: 14px; align-items: center; text-align: center; }
+  .legal      { justify-content: center; flex-wrap: wrap; gap: 12px 20px; }
+  .colLink    { display: inline-block; }
+}

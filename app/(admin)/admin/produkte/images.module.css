@@ -1,0 +1,116 @@
+.section {
+  margin-bottom: 32px;
+  border: 0.5px solid rgba(196,146,58,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.sectionHeader {
+  padding: 14px 20px;
+  background: rgba(196,146,58,0.04);
+  border-bottom: 0.5px solid rgba(196,146,58,0.08);
+}
+
+.sectionTitle {
+  font-family: var(--font-bebas), sans-serif;
+  font-size: 16px;
+  letter-spacing: .1em;
+  color: #F0EBE3;
+  margin: 0 0 2px;
+}
+
+.sectionDesc {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* ── Aktuelles Titelbild ── */
+.currentThumb {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 0.5px solid rgba(196,146,58,0.08);
+}
+
+.thumbPreview {
+  width: 120px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.thumbInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.thumbLabel {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-sage);
+  margin: 0;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.thumbAlt {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin: 0 0 8px;
+  font-style: italic;
+}
+
+/* ── Galerie ── */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  padding: 16px 20px;
+  border-bottom: 0.5px solid rgba(196,146,58,0.08);
+}
+
+.galleryItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.galleryImg {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.galleryAlt {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 10px;
+  color: var(--color-text-dim);
+  margin: 0;
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Entfernen-Button ── */
+.removeBtn {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 10px;
+  color: #E06060;
+  background: rgba(224,96,96,0.06);
+  border: 0.5px solid rgba(224,96,96,0.15);
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: background .15s;
+  width: fit-content;
+}
+
+.removeBtn:hover { background: rgba(224,96,96,0.12); }

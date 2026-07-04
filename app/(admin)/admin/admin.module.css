@@ -1,0 +1,194 @@
+/* ── Shell ── */
+.shell {
+  display: flex;
+  min-height: 100vh;
+  background: #141414;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 220px;
+  min-height: 100vh;
+  background: #111111;
+  border-right: 0.5px solid rgba(196,146,58,0.08);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 50;
+}
+
+.sidebarTop {
+  padding: 24px 20px 20px;
+  border-bottom: 0.5px solid rgba(196,146,58,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebarLogo {
+  font-family: var(--font-bebas), sans-serif;
+  font-size: 20px;
+  letter-spacing: .14em;
+  color: #F0EBE3;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.logoAccent { color: var(--color-sage); }
+
+.sidebarBadge {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 8px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--color-sage);
+  background: rgba(196,146,58,0.1);
+  border: 0.5px solid rgba(196,146,58,0.2);
+  padding: 3px 7px;
+}
+
+.sidebarNav {
+  flex: 1;
+  padding: 16px 0;
+}
+
+.sidebarLink {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 20px;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 12px;
+  letter-spacing: .04em;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.15s, background 0.15s;
+  border-left: 2px solid transparent;
+}
+
+.sidebarLink:hover {
+  color: #F0EBE3;
+  background: rgba(196,146,58,0.04);
+  border-left-color: rgba(196,146,58,0.2);
+}
+
+.sidebarIcon {
+  font-size: 14px;
+  width: 18px;
+  text-align: center;
+  color: var(--color-sage-muted);
+}
+
+.sidebarBottom {
+  padding: 16px 20px;
+  border-top: 0.5px solid rgba(196,146,58,0.06);
+}
+
+.sidebarFooterLink {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 11px;
+  color: var(--color-text-dim);
+  text-decoration: none;
+  letter-spacing: .04em;
+  transition: color 0.15s;
+}
+
+.sidebarFooterLink:hover { color: var(--color-sage); }
+
+/* ── Content ── */
+.content {
+  margin-left: 220px;
+  flex: 1;
+  padding: 40px 48px;
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .sidebar  { display: none; }
+  .content  { margin-left: 0; padding: 72px 20px 32px; }
+}
+
+/* ── User Section ── */
+.sidebarUser {
+  padding: 16px 20px;
+  border-top: 0.5px solid rgba(196,146,58,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.userAvatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(196,146,58,0.15);
+  border: 0.5px solid rgba(196,146,58,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-bebas), sans-serif;
+  font-size: 14px;
+  color: var(--color-sage);
+  flex-shrink: 0;
+}
+
+.userName {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 12px;
+  color: #F0EBE3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+}
+
+.userRole {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 9px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--color-sage-muted);
+}
+
+.logoutBtn {
+  width: 100%;
+  background: rgba(224,96,96,0.06);
+  border: 0.5px solid rgba(224,96,96,0.15);
+  color: #E06060;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 11px;
+  letter-spacing: .06em;
+  padding: 8px;
+  cursor: pointer;
+  transition: background .15s;
+  text-align: center;
+}
+.logoutBtn:hover { background: rgba(224,96,96,0.12); }
+
+.sidebarFooterLink {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 10px;
+  color: var(--color-text-dim);
+  text-decoration: none;
+  transition: color 0.15s;
+  text-align: center;
+}
+.sidebarFooterLink:hover { color: var(--color-sage); }
+
+.devBadge {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 10px;
+  color: #C8B89A;
+  background: rgba(200,184,154,0.08);
+  border: 0.5px solid rgba(200,184,154,0.2);
+  padding: 6px 10px;
+  letter-spacing: .06em;
+  text-align: center;
+}

@@ -1,0 +1,42 @@
+.wrapper { display: flex; flex-direction: column; gap: 8px; }
+
+.label { font-family: var(--font-inter), sans-serif; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-text-dim); margin: 0; }
+.hint  { font-family: var(--font-inter), sans-serif; font-size: 11px; color: var(--color-text-muted); margin: 0; }
+.error { font-family: var(--font-inter), sans-serif; font-size: 11px; color: #E06060; margin: 0; }
+
+.previews { display: flex; gap: 8px; flex-wrap: wrap; }
+.preview  { position: relative; }
+.previewImg { width: 100px; height: 75px; object-fit: cover; border-radius: 4px; display: block; }
+.removeBtn {
+  position: absolute; top: 4px; right: 4px;
+  background: rgba(0,0,0,0.7); color: #fff;
+  border: none; width: 20px; height: 20px;
+  font-size: 10px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 2px;
+}
+
+.dropzone {
+  border: 1px dashed rgba(196,146,58,0.2);
+  background: rgba(196,146,58,0.03);
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+}
+.dropzone:hover, .dragOver {
+  border-color: rgba(196,146,58,0.4);
+  background: rgba(196,146,58,0.06);
+}
+
+.dropText {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 12px; color: var(--color-text-muted);
+  line-height: 1.7;
+}
+.dropText small { font-size: 10px; color: var(--color-text-dim); }
+
+.uploadingText {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 12px; color: var(--color-sage);
+}

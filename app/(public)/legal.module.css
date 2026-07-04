@@ -1,0 +1,63 @@
+.page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 60px 40px 100px;
+}
+
+.title {
+  font-family: var(--font-bebas), sans-serif;
+  font-size: clamp(40px, 6vw, 64px);
+  color: #F0EBE3; letter-spacing: .02em; line-height: .9;
+  margin: 0 0 40px;
+  text-align: center;
+}
+
+.body h2 {
+  font-family: var(--font-bebas), sans-serif;
+  font-size: 22px; letter-spacing: .06em;
+  color: #F0EBE3; margin: 40px 0 12px;
+}
+
+.body h3 {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 13px; font-weight: 600; letter-spacing: .04em;
+  color: #C8BEAE; margin: 28px 0 8px;
+}
+
+.body p, .body li {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 13px; color: var(--color-text-muted);
+  line-height: 1.8; margin: 0 0 12px;
+}
+
+.body ul, .body ol {
+  padding-left: 20px; margin: 0 0 16px;
+}
+
+.body a {
+  color: var(--color-sage); text-decoration: none;
+}
+.body a:hover { text-decoration: underline; }
+
+.body strong { color: #C8BEAE; font-weight: 600; }
+
+.body hr {
+  border: none; border-top: 0.5px solid rgba(196,146,58,0.1);
+  margin: 36px 0;
+}
+
+.infoBox {
+  background: rgba(196,146,58,0.05);
+  border: 0.5px solid rgba(196,146,58,0.15);
+  padding: 20px 24px; margin-bottom: 40px;
+}
+.infoBox p {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 13px; color: var(--color-text-muted);
+  line-height: 1.7; margin: 0;
+}
+.infoBox strong { color: var(--color-sage); }
+
+@media (max-width: 600px) {
+  .page { padding: 40px 20px 80px; }
+}

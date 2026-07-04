@@ -1,0 +1,89 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.productLabel {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  letter-spacing: .04em;
+  padding-bottom: 12px;
+  border-bottom: 0.5px solid var(--color-border);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 9px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #3A2E1E;
+}
+
+.field input,
+.field textarea {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #1A160C;
+  padding: 8px 0;
+  font-size: 13px;
+  color: var(--color-text);
+  font-family: var(--font-inter), sans-serif;
+  outline: none;
+  transition: border-color 0.2s;
+  resize: none;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: #2A2018;
+}
+
+.field input:focus,
+.field textarea:focus {
+  border-bottom-color: var(--color-sage);
+}
+
+.submit {
+  background: var(--color-sage);
+  color: var(--color-bg);
+  border: none;
+  font-family: var(--font-bebas), sans-serif;
+  font-size: 14px;
+  letter-spacing: .14em;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.submit:hover    { opacity: 0.85; }
+.submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.successMsg {
+  font-size: 12px;
+  color: var(--color-sage);
+  letter-spacing: .04em;
+}
+
+.errorMsg {
+  font-size: 12px;
+  color: #E06060;
+  letter-spacing: .04em;
+}
+
+@media (max-width: 600px) {
+  .row { grid-template-columns: 1fr; }
+}

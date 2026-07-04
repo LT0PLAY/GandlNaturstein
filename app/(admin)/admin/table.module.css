@@ -1,0 +1,146 @@
+.pageHeader {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 32px;
+}
+.pageLabel {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 11px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--color-sage-muted); margin-bottom: 4px;
+}
+.pageTitle {
+  font-family: var(--font-bebas), sans-serif;
+  font-size: 44px; color: #F0EBE3; letter-spacing: .04em; line-height: 1;
+  display: flex; align-items: center; gap: 12px;
+}
+.count {
+  font-size: 18px; color: var(--color-text-muted); font-family: var(--font-inter), sans-serif;
+}
+.btnPrimary {
+  background: var(--color-sage); color: #0D0D0C;
+  font-family: var(--font-bebas), sans-serif; font-size: 13px;
+  letter-spacing: .1em; padding: 10px 20px; text-decoration: none;
+  border: none; cursor: pointer; white-space: nowrap;
+  transition: opacity .2s;
+}
+.btnPrimary:hover { opacity: .85; }
+
+.table {
+  width: 100%; border-collapse: collapse;
+  font-family: var(--font-inter), sans-serif;
+}
+.table th {
+  font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--color-text-dim); padding: 0 16px 12px;
+  border-bottom: 0.5px solid rgba(196,146,58,0.08);
+  text-align: left; font-weight: 400;
+}
+.table td {
+  padding: 14px 16px;
+  border-bottom: 0.5px solid rgba(196,146,58,0.05);
+  font-size: 13px; vertical-align: middle;
+}
+.table tr:hover td { background: rgba(196,146,58,0.02); }
+
+.tdName  { color: #F0EBE3; font-weight: 500; }
+.tdMuted { color: var(--color-text-muted); font-size: 13px; }
+
+.thumb      { width: 44px; height: 44px; object-fit: cover; border-radius: 2px; }
+.thumbEmpty { width: 44px; height: 44px; background: #1A1816;
+              display: flex; align-items: center; justify-content: center;
+              font-size: 10px; color: var(--color-text-dim); }
+
+.tdActions {
+  /* Wrapper-Div übernimmt das Layout */
+}
+/* Flex-Wrapper innerhalb von tdActions oder direkt */
+.btnGroup {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+}
+/* Gemeinsame Basis für alle Action-Buttons */
+.btnEdit,
+.btnDelete,
+.btnRestore,
+.btnApprove,
+.btnWarning {
+  box-sizing: border-box;
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 28px; padding: 0 12px;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 11px; white-space: nowrap;
+  cursor: pointer; border: 0.5px solid; text-decoration: none;
+  appearance: none; -webkit-appearance: none;
+  vertical-align: middle; line-height: 1;
+}
+.btnEdit {
+  color: var(--color-sage);
+  background: rgba(196,146,58,0.08);
+  border-color: rgba(196,146,58,0.15);
+  transition: background .15s;
+}
+.btnEdit:hover { background: rgba(196,146,58,0.16); }
+.btnDelete {
+  color: #E06060;
+  background: rgba(224,96,96,0.06);
+  border-color: rgba(224,96,96,0.15);
+  transition: background .15s;
+}
+.btnDelete:hover { background: rgba(224,96,96,0.12); }
+.btnWarning {
+  color: #E0A020;
+  background: rgba(224,160,32,0.08);
+  border-color: rgba(224,160,32,0.25);
+  transition: background .15s;
+}
+.btnWarning:hover { background: rgba(224,160,32,0.15); }
+.btnRestore {
+  color: var(--color-sage);
+  background: rgba(196,146,58,0.08);
+  border-color: rgba(196,146,58,0.15);
+  transition: background .15s;
+}
+.btnRestore:hover { background: rgba(196,146,58,0.16); }
+.btnApprove {
+  color: var(--color-sage);
+  background: rgba(196,146,58,0.12);
+  border-color: rgba(196,146,58,0.3);
+  transition: background .15s;
+}
+.btnApprove:hover { background: rgba(196,146,58,0.22); }
+
+/* ── Badges ── */
+.badge {
+  font-size: 10px; letter-spacing: .06em; padding: 3px 9px;
+  font-family: var(--font-inter), sans-serif; display: inline-block;
+}
+
+/* Typ-Badges — visuell unterscheidbar */
+.badge[data-type="aussen"]            { background: rgba(196,146,58,0.12); color: #D4A24A; }
+.badge[data-type="innen"]             { background: rgba(100,150,200,0.1);  color: #7AAACE; }
+.badge[data-type="sonderanfertigung"] { background: rgba(180,160,130,0.1);  color: #B8A888; }
+.badge[data-type="extras"]            { background: rgba(150,100,200,0.1);  color: #A878CC; }
+
+/* Aktiv-Status */
+.badge[data-active="true"]  { background: rgba(196,146,58,0.1);  color: var(--color-sage); }
+.badge[data-active="false"] { background: rgba(100,100,100,0.08); color: #888; }
+
+/* Team-Rollen */
+.badge[data-role="admin"]  { background: rgba(224,160,32,0.1);   color: #E0A020; }
+.badge[data-role="editor"] { background: rgba(196,146,58,0.1);   color: var(--color-sage); }
+.badge[data-role="viewer"] { background: rgba(100,100,100,0.08);  color: #888; }
+
+.empty {
+  text-align: center; padding: 80px 20px;
+  font-family: var(--font-inter), sans-serif; font-size: 14px;
+  color: var(--color-text-muted); display: flex;
+  flex-direction: column; align-items: center; gap: 20px;
+}
+
+.rolesGrid { display: flex; gap: 12px; margin-bottom: 32px; }
+.roleCard {
+  background: #141413; border: 0.5px solid rgba(196,146,58,0.06);
+  padding: 14px 18px; display: flex; flex-direction: column; gap: 6px;
+}
+.roleDesc { font-size: 12px; color: var(--color-text-muted); font-family: var(--font-inter), sans-serif; }
