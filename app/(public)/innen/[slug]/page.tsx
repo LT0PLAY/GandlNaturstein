@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { notFound } from 'next/navigation'
 import { getProductBySlug } from '@/lib/queries/products'
 import ProductDetail from '@/components/public/ProductDetail'

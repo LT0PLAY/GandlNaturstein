@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import InquiryForm from '@/components/InquiryForm/InquiryForm'
 
 export const metadata = { title: 'Kontakt & Anfrage – Gandl Natursteine' }
