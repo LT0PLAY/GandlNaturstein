@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { createReference } from '@/lib/actions/references'
 import ReferenzForm from '../ReferenzForm'

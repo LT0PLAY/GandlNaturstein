@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import NewProductForm from './NewProductForm'
 import type { Category } from '@/lib/types'

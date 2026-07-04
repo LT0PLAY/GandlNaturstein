@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { notFound } from 'next/navigation'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { updateReference, removeReferenceImage } from '@/lib/actions/references'

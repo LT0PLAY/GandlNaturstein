@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import Link from 'next/link'
 import { getInquiries } from '@/lib/actions/inquiries'
 import styles from '../table.module.css'

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import Link from 'next/link'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import styles from './dashboard.module.css'

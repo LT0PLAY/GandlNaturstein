@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { redirect, notFound } from 'next/navigation'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { updateCategory } from '@/lib/actions/categories'

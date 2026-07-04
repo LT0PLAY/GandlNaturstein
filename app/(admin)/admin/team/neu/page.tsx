@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { redirect } from 'next/navigation'
 import { createTeamMember } from '@/lib/actions/team'
 import styles from '../../form.module.css'

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import Link from 'next/link'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { toggleTeamMember } from '@/lib/actions/team'

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { redirect } from 'next/navigation'
 import { createCategory } from '@/lib/actions/categories'
 import KategorieForm from '@/components/admin/KategorieForm'

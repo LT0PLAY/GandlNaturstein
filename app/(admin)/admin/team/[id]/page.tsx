@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { notFound, redirect } from 'next/navigation'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { updateTeamMember } from '@/lib/actions/team'
