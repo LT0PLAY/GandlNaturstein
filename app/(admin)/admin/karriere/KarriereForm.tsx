@@ -114,7 +114,7 @@ export default function KarriereForm({ action, job }: Props) {
             {job.images.map((url) => (
               <div key={url} className={styles.imageWrapper}>
                 <img src={url} alt="" className={styles.imagePreview} />
-                <form action={removeJobImage.bind(null, job.id, url)}>
+                <form action={async () => { await removeJobImage(job.id, url) }}>
                   <button type="submit" className={styles.imageRemove}>✕</button>
                 </form>
               </div>
