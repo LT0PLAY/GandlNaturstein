@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg:        #3f3f3f;   /* neutral mittelgrau */
+  --color-bg-card:   #1C1C1C;   /* Karten leicht heller */
+  --color-sage:      #9bae9f;
+  --color-sage-muted:#9bae9f;
+  --color-gold:      #9bae9f;
+  --color-text:      #dcdcd6;
+  --color-text-muted:#B8AFA6;
+  --color-text-dim:  #9caea1;
+  --color-border:    rgba(155, 174, 159, 0.08);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-inter), sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar       { width: 4px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: #9bae9f; border-radius: 2px; }

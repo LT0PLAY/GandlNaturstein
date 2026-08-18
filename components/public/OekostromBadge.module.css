@@ -1,0 +1,53 @@
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  padding: 4px 10px 4px 4px;
+  border: 0.5px solid rgba(155, 174, 159, 0.12);
+  transition: border-color .2s, background .2s;
+}
+.badge:hover {
+  border-color: rgba(155, 174, 159, 0.4);
+  background: rgba(155, 174, 159, 0.04);
+}
+
+.seal {
+  flex-shrink: 0;
+}
+
+.sealPercent {
+  font-family: var(--font-bebas), sans-serif;
+  font-size: 15px;
+  fill: #dcdcd6;
+  letter-spacing: .02em;
+}
+
+.sealLabel {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  fill: var(--color-sage);
+}
+
+.badgeText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.badgeTitle {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #dcdcd6;
+  letter-spacing: .02em;
+}
+
+.badgeSub {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 11px;
+  color: #9caea1;
+  letter-spacing: .04em;
+}

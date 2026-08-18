@@ -1,0 +1,297 @@
+// ============================================================
+// Gandl Natursteine – TypeScript Types (aus Supabase Schema)
+// ============================================================
+
+/** Hauptbereich (früher CategoryType) */
+export type CategoryBereich  = 'massivproduktion' | 'sonderanfertigung' | 'gartengestaltung' | 'extras'
+/** Außen/Innen – nur bei Bereichen außer 'extras' */
+export type CategoryLocation = 'aussen' | 'innen'
+/** Alias – type-Feld in der DB entspricht jetzt dem Bereich */
+export type CategoryType     = CategoryBereich
+
+export type InquiryStatus = 'new' | 'in_progress' | 'completed' | 'archived'
+export type TeamRole     = 'admin' | 'editor' | 'viewer'
+export type ChangeAction = 'create' | 'update' | 'delete'
+
+// ============================================================
+// DATABASE TYPES
+// ============================================================
+
+export interface Category {
+  id:          string
+  name:        string
+  slug:        string
+  /** Hauptbereich: massivproduktion | sonderanfertigung | gartengestaltung | extras */
+  type:        CategoryBereich
+  /** Standort: aussen | innen | null (für extras/sonderanfertigung ohne Split) */
+  location:    CategoryLocation | null
+  description: string | null
+  sort_order:  number
+  created_at:  string
+}
+
+// Bereich-Labels für UI
+export const BEREICH_LABELS: Record<CategoryBereich, string> = {
+  massivproduktion:  'Massivproduktion',
+  sonderanfertigung: 'Sonderanfertigung',
+  gartengestaltung:  'Gartengestaltung',
+  extras:            'Extras',
+}
+
+export const LOCATION_LABELS: Record<CategoryLocation, string> = {
+  aussen: 'Außenbereich',
+  innen:  'Innenbereich',
+}
+
+export interface Product {
+  id:             string
+  name:           string
+  slug:           string
+  article_number: string | null
+  description:    string | null
+  category_id:    string | null
+  material:       string | null
+  surface:        string | null
+  format:         string | null
+  origin:         string | null
+  unit:           ProductUnit
+  price:          number | null
+  show_price:     boolean
+  images:         string[]
+  thumbnail:      string | null
+  image_alts:     Record<string, string>
+  is_active:      boolean
+  sort_order:     number
+  created_at:     string
+  updated_at:     string
+  // Join
+  category?:      Category
+}
+
+export interface Inquiry {
+  id:            string
+  name:          string
+  email:         string
+  phone:         string | null
+  area_sqm:      number | null
+  message:       string | null
+  product_id:    string | null
+  status:        InquiryStatus
+  internal_note: string | null
+  created_at:    string
+  updated_at:    string
+  // Join
+  product?:      Pick<Product, 'id' | 'name' | 'slug'>
+}
+
+export interface TeamMember {
+  id:         string
+  user_id:    string
+  name:       string
+  email:      string
+  role:       TeamRole
+  is_active:  boolean
+  created_at: string
+}
+
+export interface ChangeLog {
+  id:          string
+  action:      ChangeAction
+  entity_type: string
+  entity_id:   string | null
+  entity_name: string | null
+  changed_by:  string | null
+  old_value:   Record<string, unknown> | null
+  new_value:   Record<string, unknown> | null
+  created_at:  string
+  // Join
+  team_member?: Pick<TeamMember, 'name' | 'email'>
+}
+
+// ============================================================
+// BASKET (Anfragekorb)
+// ============================================================
+
+export type ProductUnit = 'stueck' | 'laufmeter' | 'qm' | 'gewicht'
+export type BasketUnit = ProductUnit
+
+export const UNIT_LABELS: Record<ProductUnit, { short: string; long: string }> = {
+  stueck:    { short: 'Stk.',  long: 'Stück'      },
+  laufmeter: { short: 'lfm',   long: 'Laufmeter'  },
+  qm:        { short: 'm²',    long: 'Quadratmeter (m²)' },
+  gewicht:   { short: 'kg',    long: 'Gewicht (kg)' },
+}
+
+/** Wandelt einen (evtl. veralteten, z.B. 'm2' aus altem localStorage-Korb) Wert
+ *  in eine gültige ProductUnit um – Fallback: 'qm'. */
+export function normalizeUnit(u: unknown): ProductUnit {
+  if (u === 'qm' || u === 'stueck' || u === 'laufmeter' || u === 'gewicht') return u
+  if (u === 'm2') return 'qm'
+  return 'qm'
+}
+
+export interface BasketItem {
+  productId:   string
+  productName: string
+  productSlug: string
+  categoryType: CategoryType
+  thumbnail:   string | null
+  price:       number | null
+  show_price:  boolean
+  quantity:    number
+  unit:        BasketUnit
+  /** Woher der Eintrag stammt – fehlt = normales Katalogprodukt (Rückwärtskompatibilität) */
+  sourceType?: 'product' | 'restposten' | 'guide'
+}
+
+// ============================================================
+// FORM TYPES
+// ============================================================
+
+export interface InquiryFormData {
+  name:       string
+  email:      string
+  phone?:     string
+  area_sqm?:  number
+  message?:   string
+  product_id?: string
+  consent:    boolean | string  // DSGVO-Zustimmung (Pflicht)
+  website?:   string            // Honeypot – muss leer bleiben (Bot-Falle)
+}
+
+export interface ProductFormData {
+  name:        string
+  slug:        string
+  description?: string
+  category_id?: string
+  material?:   string
+  surface?:    string
+  format?:     string
+  origin?:     string
+  is_active:   boolean
+}
+
+// ============================================================
+// REFERENCES (Portfolio-Projekte)
+// ============================================================
+
+export type RefProduct = {
+  id: string; name: string; slug: string
+  thumbnail?: string | null; material?: string | null
+  surface?: string | null; description?: string | null
+  category?: { type: string; location: string | null } | null
+}
+
+export interface Reference {
+  id:               string
+  slug:             string
+  title:            string
+  subtitle:         string | null
+  category_tags:    string[]
+  year:             number | null
+  description:      string | null
+  cover_image:      string | null
+  images:           string[]
+  product_id:       string | null
+  product_ids:      string[]
+  spec_material:    string | null
+  spec_surface:     string | null
+  spec_scope:       string | null
+  spec_location:    string | null
+  meta_title:       string | null
+  meta_description: string | null
+  is_published:     boolean
+  sort_order:       number
+  created_at:       string
+  updated_at:       string
+  // Joined (legacy single)
+  product?:         RefProduct | null
+  // Joined (multi)
+  linked_products?: RefProduct[]
+}
+
+// ============================================================
+// API RESPONSE TYPES
+// ============================================================
+
+export interface JobListing {
+  id:              string
+  title:           string
+  department:      string | null
+  location:        string | null
+  employment_type: string | null
+  description:     string | null
+  requirements:    string | null
+  benefits:        string | null
+  pdf_url:         string | null
+  linkedin_url:    string | null
+  images:          string[]
+  is_published:    boolean
+  sort_order:      number
+  deleted_at:      string | null
+  deleted_by:      string | null
+  created_at:      string
+  updated_at:      string
+}
+
+export interface PartnerPdf {
+  title: string
+  url:   string
+}
+
+export interface Partner {
+  id:          string
+  name:        string
+  logo_url:    string | null
+  website_url: string | null
+  pdfs:        PartnerPdf[]
+  is_active:   boolean
+  sort_order:  number
+  deleted_at:  string | null
+  created_at:  string
+  updated_at:  string
+}
+
+export interface Restposten {
+  id:            string
+  title:         string
+  description:   string | null
+  price:         number | null
+  images:        string[]
+  external_link: string | null
+  is_active:     boolean
+  sort_order:    number
+  deleted_at:    string | null
+  created_at:    string
+  updated_at:    string
+}
+
+export interface GuideEntry {
+  id:          string
+  number:      number
+  name:        string
+  description: string | null
+  images:      string[]
+  product_id:  string | null
+  is_active:   boolean
+  sort_order:  number
+  deleted_at:  string | null
+  created_at:  string
+  updated_at:  string
+  // Join
+  product?:    Product
+}
+
+export interface ApiResponse<T> {
+  data:    T | null
+  error:   string | null
+  success: boolean
+}
+
+export interface PaginatedResponse<T> {
+  data:       T[]
+  total:      number
+  page:       number
+  per_page:   number
+  has_more:   boolean
+}
