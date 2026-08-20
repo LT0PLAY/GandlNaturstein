@@ -97,7 +97,7 @@ export default function HomePage() {
             maxWidth: '380px',
           }}>
             Außen, Innen und Sonderanfertigungen <br />
-            professionell verarbeitet in Bayern.
+            professionell verarbeitet aus Bayern.
           </p>
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
             <Link href="/kontakt" style={{
