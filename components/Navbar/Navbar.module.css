@@ -372,6 +372,26 @@
   background: rgba(155, 174, 159, 0.02);
 }
 
+/* ── Mobile Actions Wrapper (Such-Icon + Burger) ── */
+.mobileActions {
+  display: none;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Mobile Such-Icon ── */
+.mobileSearchIconBtn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  color: #dcdcd6;
+  cursor: pointer;
+}
+
 /* ── Burger (mobile) ── */
 .burger {
   display: none;
@@ -476,8 +496,10 @@
 }
 
 @media (max-width: 768px) {
-  .nav, .actions { display: none; }
-  .burger        { display: flex; }
-  .mobileMenu    { display: flex; }
-  .inner         { padding: 14px 20px; }
+  .nav, .actions       { display: none; }
+  .mobileActions       { display: flex; }
+  .mobileSearchIconBtn { display: flex; }
+  .burger              { display: flex; }
+  .mobileMenu          { display: flex; }
+  .inner               { padding: 14px 20px; }
 }

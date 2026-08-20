@@ -393,15 +393,26 @@ export default function Navbar({ bereiche = [], extrasCategories = [] }: Props) 
             </Link>
           </div>
 
-          {/* Mobile Burger */}
-          <button
-            className={styles.burger}
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Menü öffnen"
-          >
-            <span className={clsx(styles.burgerLine, menuOpen && styles.burgerOpen)} />
-            <span className={clsx(styles.burgerLine, menuOpen && styles.burgerOpen)} />
-          </button>
+          {/* Mobile-Actions: Such-Icon + Burger */}
+          <div className={styles.mobileActions}>
+            <button
+              className={styles.mobileSearchIconBtn}
+              onClick={() => setSearchOpen(true)}
+              aria-label="Suche öffnen"
+            >
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+            </button>
+            <button
+              className={styles.burger}
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Menü öffnen"
+            >
+              <span className={clsx(styles.burgerLine, menuOpen && styles.burgerOpen)} />
+              <span className={clsx(styles.burgerLine, menuOpen && styles.burgerOpen)} />
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}

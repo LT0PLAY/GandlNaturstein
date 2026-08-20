@@ -192,12 +192,32 @@
 }
 
 @media (max-width: 600px) {
-  .top        { grid-template-columns: 1fr; gap: 28px; text-align: center; }
-  .inner      { padding: 40px 20px 20px; }
-  .logo       { justify-content: center; }
+  .top   { grid-template-columns: 1fr 1fr; gap: 32px 24px; text-align: left; }
+  .inner { padding: 40px 20px 20px; }
+
+  /* Brand: volle Breite, zentriert */
+  .top > div:nth-child(1) {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding-bottom: 24px;
+    border-bottom: 0.5px solid rgba(155, 174, 159, 0.08);
+  }
+  .logo { justify-content: center; }
+
+  /* Bereiche + Unternehmen: nebeneinander, kompakt */
+  .colTitle { font-size: 12px; margin-bottom: 12px; }
+  .colLink  { font-size: 15px; margin-bottom: 10px; }
+
+  /* Kontakt: volle Breite, zentriert, mit Trenner */
+  .top > div:nth-child(4) {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding-top: 24px;
+    border-top: 0.5px solid rgba(155, 174, 159, 0.08);
+  }
+
   .ctaBlock   { border-left: none; padding-left: 0; border-top: 0.5px solid rgba(155, 174, 159,0.1); padding-top: 28px; display: flex; flex-direction: column; align-items: center; }
   .bottom     { flex-direction: column; gap: 14px; align-items: center; text-align: center; }
   .bottomLeft { flex-direction: column; gap: 14px; }
   .legal      { justify-content: center; flex-wrap: wrap; gap: 12px 20px; }
-  .colLink    { display: inline-block; }
 }
