@@ -127,5 +127,13 @@
 }
 
 @media (max-width: 640px) {
-  .sidebar { display: none; }
+  .sidebar { right: 8px; gap: 8px; top: auto; bottom: 100px; transform: none; }
+  .icon    { width: 34px; height: 34px; }
+  .icon svg { width: 16px; height: 16px; }
+  .popover { right: 42px; min-width: 180px; max-width: calc(100vw - 60px); padding: 12px 14px; }
+}
+
+@media (max-width: 360px) {
+  .sidebar { gap: 6px; }
+  .icon    { width: 30px; height: 30px; }
 }
