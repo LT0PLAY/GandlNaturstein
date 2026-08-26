@@ -44,7 +44,8 @@ export default async function AdminPartnerPage() {
           </Link>
         </div>
       ) : (
-        <table className={styles.table}>
+        <div className={styles.tableScroll}>
+<table className={styles.table}>
           <thead>
             <tr>
               <th>Logo</th>
@@ -85,6 +86,7 @@ export default async function AdminPartnerPage() {
             ))}
           </tbody>
         </table>
+</div>
       )}
     </div>
   )

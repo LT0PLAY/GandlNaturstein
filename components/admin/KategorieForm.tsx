@@ -1,8 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import type { Category, CategoryBereich, CategoryLocation } from '@/lib/types'
-import { BEREICH_LABELS, LOCATION_LABELS } from '@/lib/types'
+import type { Category, CategoryBereich } from '@/lib/types'
+import { BEREICH_LABELS } from '@/lib/types'
+import { removeCategoryImage } from '@/lib/actions/categories'
+import ImageUploader from '@/components/admin/ImageUploader'
+import DeleteButton from '@/components/admin/DeleteButton'
 import styles from '@/app/(admin)/admin/form.module.css'
 
 function toSlug(s: string): string {
@@ -23,18 +26,10 @@ interface Props {
   isPending?: boolean
 }
 
-// Bereiche die Außen/Innen haben können
-const BEREICHE_WITH_LOCATION: CategoryBereich[] = [
-  'massivproduktion', 'sonderanfertigung', 'gartengestaltung',
-]
-
 export default function KategorieForm({ category, action, isPending }: Props) {
   const [bereich,      setBereich]      = useState<CategoryBereich | ''>(category?.type ?? '')
-  const [location,     setLocation]     = useState<CategoryLocation | ''>(category?.location ?? '')
   const [slug,         setSlug]         = useState<string>(category?.slug ?? '')
   const [slugTouched,  setSlugTouched]  = useState(false)
-
-  const needsLocation = bereich !== '' && bereich !== 'extras'
 
   return (
     <form action={action} className={styles.form}>
@@ -48,10 +43,7 @@ export default function KategorieForm({ category, action, isPending }: Props) {
             name="type"
             required
             value={bereich}
-            onChange={(e) => {
-              setBereich(e.target.value as CategoryBereich)
-              setLocation('')          // reset bei Bereich-Wechsel
-            }}
+            onChange={(e) => setBereich(e.target.value as CategoryBereich)}
           >
             <option value="">— Bitte wählen —</option>
             {(Object.keys(BEREICH_LABELS) as CategoryBereich[]).map((key) => (
@@ -60,44 +52,17 @@ export default function KategorieForm({ category, action, isPending }: Props) {
           </select>
           {bereich && (
             <p style={{ fontSize: '14px', color: 'var(--color-text-muted)', marginTop: '4px' }}>
-              {bereich === 'extras'
-                ? 'Extras haben keinen Außen/Innen-Split.'
-                : 'Wähle danach ob die Kategorie im Außen- oder Innenbereich liegt.'}
+              Kategorien können frei angelegt werden — Produkte lassen sich später dieser Kategorie
+              zuordnen (oder direkt dem Bereich, ohne Kategorie).
             </p>
           )}
         </div>
 
-        {/* ── Außen / Innen (nur wenn kein Extras) ── */}
-        {needsLocation && (
-          <div className={styles.field} style={{ gridColumn: '1 / -1' }}>
-            <label>Bereich (Außen / Innen) *</label>
-            <select
-              name="location"
-              required
-              value={location}
-              onChange={(e) => setLocation(e.target.value as CategoryLocation)}
-            >
-              <option value="">— Bitte wählen —</option>
-              {(Object.keys(LOCATION_LABELS) as CategoryLocation[]).map((key) => (
-                <option key={key} value={key}>{LOCATION_LABELS[key]}</option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {/* hidden location für Extras (null) */}
-        {bereich === 'extras' && (
-          <input type="hidden" name="location" value="" />
-        )}
-
         {/* ── Name ── */}
         <div className={styles.field}>
-          <label>Name der Unterkategorie *
-            {bereich && location && (
-              <span> — erscheint unter {BEREICH_LABELS[bereich as CategoryBereich]} › {LOCATION_LABELS[location as CategoryLocation]}</span>
-            )}
-            {bereich === 'extras' && (
-              <span> — erscheint unter Extras</span>
+          <label>Name der Kategorie *
+            {bereich && (
+              <span> — erscheint unter {BEREICH_LABELS[bereich as CategoryBereich]}</span>
             )}
           </label>
           <input
@@ -106,8 +71,10 @@ export default function KategorieForm({ category, action, isPending }: Props) {
             required
             defaultValue={category?.name}
             placeholder={
-              bereich === 'massivproduktion' && location === 'innen'
-                ? 'z.B. Küchenzeilen, Fliesen, Treppen'
+              bereich === 'massivproduktion'
+                ? 'z.B. Jura Kalkstein, Kirchheimer Muschelkalk'
+                : bereich === 'sonderanfertigung'
+                ? 'z.B. Infinity Keramik, Naturstein'
                 : bereich === 'gartengestaltung'
                 ? 'z.B. Terrassenplatten, Mauersteine'
                 : bereich === 'extras'
@@ -155,6 +122,29 @@ export default function KategorieForm({ category, action, isPending }: Props) {
 
       </div>
 
+      {/* ── Titelbild ── */}
+      <div className={styles.formGrid} style={{ marginTop: '4px' }}>
+        <div className={`${styles.field} ${styles.fullWidth}`}>
+          <label>Titelbild <span>— großes Bannerbild oben auf der Kategorie-Seite</span></label>
+          {category?.image_url && (
+            <div style={{ margin: '8px 0 16px', display: 'flex', gap: '14px', alignItems: 'center' }}>
+              <img
+                src={category.image_url}
+                alt={category.name}
+                style={{ width: '160px', height: '90px', objectFit: 'cover', border: '0.5px solid rgba(155,174,159,0.15)' }}
+              />
+              <DeleteButton
+                action={removeCategoryImage.bind(null, category.id)}
+                label="Titelbild entfernen"
+                confirmMsg="Titelbild wirklich entfernen?"
+                className={styles.btnCancel}
+              />
+            </div>
+          )}
+          <ImageUploader field="image" label={category?.image_url ? 'Titelbild ersetzen' : 'Titelbild hochladen'} hint="JPG, PNG, WebP · empfohlen 1600×500px" />
+        </div>
+      </div>
+
       {/* ── Vorschau der Hierarchie ── */}
       {bereich && (
         <div style={{
@@ -172,9 +162,8 @@ export default function KategorieForm({ category, action, isPending }: Props) {
           <br />
           <span style={{ color: 'var(--color-sage)', marginTop: '6px', display: 'block' }}>
             {BEREICH_LABELS[bereich as CategoryBereich]}
-            {location ? ` › ${LOCATION_LABELS[location as CategoryLocation]}` : ''}
             {' › '}
-            <span style={{ color: '#dcdcd6' }}>[ Name der Unterkategorie ]</span>
+            <span style={{ color: '#dcdcd6' }}>[ Name der Kategorie ]</span>
           </span>
         </div>
       )}

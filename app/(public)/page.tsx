@@ -111,7 +111,7 @@ export default function HomePage() {
             }}>
               ANFRAGEN
             </Link>
-            <Link href="/aussen" style={{
+            <Link href="/massivproduktion" style={{
               color: 'rgba(240,235,227,0.75)',
               fontFamily: 'var(--font-inter)',
               fontSize: '15px',

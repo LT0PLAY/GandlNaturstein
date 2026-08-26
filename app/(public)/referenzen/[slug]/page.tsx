@@ -27,7 +27,7 @@ async function getRef(slug: string): Promise<Reference | null> {
   if (ids.length > 0) {
     const { data: prods } = await supabase
       .from('products')
-      .select('id, name, slug, thumbnail, material, surface, description, category:categories(type, location)')
+      .select('id, name, slug, thumbnail, material, surface, description, bereich, category:categories!products_category_id_fkey(type)')
       .in('id', ids)
     linked_products = (prods ?? []) as any
   }
@@ -69,11 +69,8 @@ export default async function ReferenzDetailPage({
   const jsonLd = referenceJsonLd(ref!)
 
   function productHref(p: any): string {
-    const type     = p.category?.type     as string | undefined
-    const location = p.category?.location as string | undefined
-    if (type === 'sonderanfertigung') return `/sonderanfertigung/${p.slug}`
-    if (type === 'extras')            return `/extras/${p.slug}`
-    return `/${location ?? 'aussen'}/${p.slug}`
+    const bereich = p.bereich ?? p.category?.type ?? 'massivproduktion'
+    return `/${bereich}/${p.slug}`
   }
 
   const specs = [

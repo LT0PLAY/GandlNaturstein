@@ -29,7 +29,7 @@ export async function getProducts(type?: CategoryType) {
   const result = await withSoftDeleteFilter<Product[]>((withFilter) => {
     let q = supabase
       .from('products')
-      .select(`*, category:categories(*)`)
+      .select(`*, category:categories!products_category_id_fkey(*)`)
       .eq('is_active', true)
       .order('sort_order')
 
@@ -48,7 +48,7 @@ export async function getProductBySlug(slug: string) {
   // Zuerst mit deleted_at-Filter versuchen
   const { data, error } = await supabase
     .from('products')
-    .select(`*, category:categories(*)`)
+    .select(`*, category:categories!products_category_id_fkey(*)`)
     .eq('slug', slug)
     .eq('is_active', true)
     .is('deleted_at', null)
@@ -60,7 +60,7 @@ export async function getProductBySlug(slug: string) {
   if (error.code === '42703' || error.message?.includes('deleted_at')) {
     const { data: fallback, error: fallbackError } = await supabase
       .from('products')
-      .select(`*, category:categories(*)`)
+      .select(`*, category:categories!products_category_id_fkey(*)`)
       .eq('slug', slug)
       .eq('is_active', true)
       .maybeSingle()
@@ -71,6 +71,27 @@ export async function getProductBySlug(slug: string) {
   return null
 }
 
+// Alle Produkt-IDs, die einer Kategorie zugeordnet sind — sowohl über die
+// Hauptkategorie (products.category_id) als auch über Mehrfachzuordnung
+// (product_categories). Tolerant: falls product_categories noch nicht
+// existiert (Migration 024 fehlt), wird einfach nur die Hauptkategorie genutzt.
+export async function getProductIdsForCategory(categoryId: string): Promise<string[]> {
+  const supabase = createSupabaseAdminClient()
+  const ids = new Set<string>()
+
+  const { data: primaryMatches } = await supabase
+    .from('products').select('id').eq('category_id', categoryId)
+  for (const p of (primaryMatches ?? []) as { id: string }[]) ids.add(p.id)
+
+  try {
+    const { data: links } = await supabase
+      .from('product_categories').select('product_id').eq('category_id', categoryId)
+    for (const l of (links ?? []) as { product_id: string }[]) ids.add(l.product_id)
+  } catch {}
+
+  return [...ids]
+}
+
 // Produkte einer Kategorie
 export async function getProductsByCategory(categorySlug: string) {
   const supabase = createSupabaseAdminClient()
@@ -78,7 +99,7 @@ export async function getProductsByCategory(categorySlug: string) {
   const result = await withSoftDeleteFilter<Product[]>((withFilter) => {
     let q = supabase
       .from('products')
-      .select(`*, category:categories(*)`)
+      .select(`*, category:categories!products_category_id_fkey(*)`)
       .eq('is_active', true)
       .eq('categories.slug', categorySlug)
       .order('sort_order') as any

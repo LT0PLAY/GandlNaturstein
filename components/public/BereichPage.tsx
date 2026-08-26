@@ -1,0 +1,242 @@
+'use client'
+
+import { useMemo, useState } from 'react'
+import Link from 'next/link'
+import ProductCardImage from '@/components/public/ProductCardImage'
+import CategoryFilter from '@/components/public/CategoryFilter'
+import type { Product, Category } from '@/lib/types'
+import styles from '@/app/(public)/category.module.css'
+
+interface Props {
+  title:       string
+  label:       string
+  subtitle?:   string
+  heroImage?:  string | null   // Titelbild einer einzelnen Kategorie-Seite
+  basePath:    string          // z.B. '/massivproduktion'
+  categories:  Category[]      // für den Kategorie-Filter (Chips)
+  products:    Product[]
+}
+
+function uniqueValues(products: Product[], field: keyof Product): string[] {
+  const set = new Set<string>()
+  for (const p of products) {
+    const v = p[field] as unknown as string | null
+    if (v) set.add(v)
+  }
+  return [...set].sort()
+}
+
+// ── Kleine Trust-Icons für die Infoleiste im Titelbild ──
+function IconMountain() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="m3 20 6-11 4 6.5 2.5-4L20 20Z" />
+      <circle cx="8" cy="7" r="1.6" />
+    </svg>
+  )
+}
+function IconDiamond() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 9 8 4h8l4 5-8 11Z" />
+      <path d="M4 9h16M9 4l-1 5 4 11 4-11-1-5" />
+    </svg>
+  )
+}
+function IconLeaf() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 4c-7 0-13 4-13 12v4h4c8 0 12-6 12-13V4Z" />
+      <path d="M7 20 20 4" />
+    </svg>
+  )
+}
+
+const HERO_FEATURES = [
+  { icon: <IconMountain />, title: 'Natürlich',  sub: 'Echt & zeitlos' },
+  { icon: <IconDiamond />,  title: 'Beständig',  sub: 'Für Generationen' },
+  { icon: <IconLeaf />,     title: 'Nachhaltig', sub: 'Aus der Natur' },
+]
+
+export default function BereichPage({
+  title, label, subtitle, heroImage, basePath, categories, products,
+}: Props) {
+  const [einsatzbereich, setEinsatzbereich] = useState('')
+  const [steinart,       setSteinart]       = useState('')
+  const [farbe,           setFarbe]          = useState('')
+  const [oberflaeche,     setOberflaeche]    = useState('')
+  const [format,          setFormat]         = useState('')
+
+  const einsatzOptions = useMemo(() => uniqueValues(products, 'einsatzbereich'), [products])
+  const materialOptions = useMemo(() => uniqueValues(products, 'material'), [products])
+  const farbeOptions    = useMemo(() => uniqueValues(products, 'farbe'), [products])
+  const surfaceOptions  = useMemo(() => uniqueValues(products, 'surface'), [products])
+  const formatOptions   = useMemo(() => uniqueValues(products, 'format'), [products])
+
+  const filtered = useMemo(() => products.filter((p) =>
+    (!einsatzbereich || p.einsatzbereich === einsatzbereich) &&
+    (!steinart       || p.material       === steinart) &&
+    (!farbe          || p.farbe          === farbe) &&
+    (!oberflaeche    || p.surface        === oberflaeche) &&
+    (!format         || p.format         === format)
+  ), [products, einsatzbereich, steinart, farbe, oberflaeche, format])
+
+  const hasFilterOptions = einsatzOptions.length > 0 || materialOptions.length > 0 ||
+    farbeOptions.length > 0 || surfaceOptions.length > 0 || formatOptions.length > 0
+
+  const filterBarContent = (
+    <>
+      {einsatzOptions.length > 0 && (
+        <select className={styles.filterSelect} value={einsatzbereich} onChange={(e) => setEinsatzbereich(e.target.value)}>
+          <option value="">Einsatzbereich</option>
+          {einsatzOptions.map((v) => <option key={v} value={v}>{v}</option>)}
+        </select>
+      )}
+      {materialOptions.length > 0 && (
+        <select className={styles.filterSelect} value={steinart} onChange={(e) => setSteinart(e.target.value)}>
+          <option value="">Steinart</option>
+          {materialOptions.map((v) => <option key={v} value={v}>{v}</option>)}
+        </select>
+      )}
+      {farbeOptions.length > 0 && (
+        <select className={styles.filterSelect} value={farbe} onChange={(e) => setFarbe(e.target.value)}>
+          <option value="">Farbe</option>
+          {farbeOptions.map((v) => <option key={v} value={v}>{v}</option>)}
+        </select>
+      )}
+      {surfaceOptions.length > 0 && (
+        <select className={styles.filterSelect} value={oberflaeche} onChange={(e) => setOberflaeche(e.target.value)}>
+          <option value="">Oberfläche</option>
+          {surfaceOptions.map((v) => <option key={v} value={v}>{v}</option>)}
+        </select>
+      )}
+      {formatOptions.length > 0 && (
+        <select className={styles.filterSelect} value={format} onChange={(e) => setFormat(e.target.value)}>
+          <option value="">Format</option>
+          {formatOptions.map((v) => <option key={v} value={v}>{v}</option>)}
+        </select>
+      )}
+      <span className={styles.filterCount}>{filtered.length} PRODUKT{filtered.length === 1 ? '' : 'E'}</span>
+    </>
+  )
+
+  return (
+    <div className={styles.pageBg}>
+    <section className={styles.page}>
+
+      {heroImage ? (
+        <div className={styles.heroWrap}>
+          <div className={styles.heroBanner}>
+            <img src={heroImage} alt={title} className={styles.heroBannerImg} />
+            <div className={styles.heroBannerOverlay}>
+              <div className={styles.heroBannerInner}>
+                <p className={styles.heroBannerLabel}>{label}</p>
+                <h1 className={styles.heroBannerTitle}>{title}</h1>
+                {subtitle && <p className={styles.heroBannerSubtitle}>{subtitle}</p>}
+                <div className={styles.heroBannerFeatures}>
+                  {HERO_FEATURES.map((f) => (
+                    <div key={f.title} className={styles.heroFeature}>
+                      <span className={styles.heroFeatureIcon}>{f.icon}</span>
+                      <span className={styles.heroFeatureText}>
+                        <span className={styles.heroFeatureTitle}>{f.title}</span>
+                        <span className={styles.heroFeatureSub}>{f.sub}</span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Info- und Filterleiste liegen als transparent-dunkles Overlay UNTEN AUF dem
+              Titelbild — das Foto geht optisch bis zur Unterkante durch. */}
+          <div className={styles.heroOverlayBars}>
+            <CategoryFilter categories={categories} basePath={basePath} />
+            {hasFilterOptions && (
+              <div className={styles.filterBar}>
+                {filterBarContent}
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className={styles.hero}>
+            <p className={styles.label}>// {label}</p>
+            <h1 className={styles.title}>{title}</h1>
+            {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
+          </div>
+
+          {categories.length > 0 && (
+            <>
+              <p className={styles.sectionSubLabel}>Kategorien</p>
+              <div className={styles.categoriesGrid}>
+                {categories.map((cat) => (
+                  <Link key={cat.id} href={`${basePath}/kategorie/${cat.slug}`} className={styles.categoryCard}>
+                    {cat.image_url ? (
+                      <img src={cat.image_url} alt={cat.name} className={styles.categoryCardImg} />
+                    ) : (
+                      <div className={styles.categoryCardPlaceholder} />
+                    )}
+                    <div className={styles.categoryCardOverlay}>
+                      <span className={styles.categoryCardTitle}>{cat.name}</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              <p className={styles.sectionSubLabel}>Alle Produkte</p>
+            </>
+          )}
+
+          {hasFilterOptions && (
+            <div className={`${styles.filterBar} ${styles.filterBarStandalone}`}>
+              {filterBarContent}
+            </div>
+          )}
+        </>
+      )}
+
+      {filtered.length === 0 ? (
+        <div className={styles.empty}>
+          <p>Keine Produkte gefunden.</p>
+        </div>
+      ) : (
+        <div className={styles.grid}>
+          {filtered.map((product) => (
+            <Link
+              key={product.id}
+              href={`${basePath}/${product.slug}`}
+              className={styles.card}
+              style={{ textDecoration: 'none', display: 'block' }}
+            >
+              <div className={styles.cardImage}>
+                <ProductCardImage
+                  images={product.images ?? []}
+                  thumbnail={product.thumbnail}
+                  alt={product.name}
+                  altMap={product.image_alts}
+                  className={styles.img}
+                  placeholderClassName={styles.imgPlaceholder}
+                  placeholderLabel={product.material ?? label}
+                />
+                {(product.category as any)?.name && (
+                  <span className={styles.categoryBadge}>{(product.category as any).name}</span>
+                )}
+                {product.icon_url && (
+                  <img src={product.icon_url} alt="" className={styles.iconOverlay} />
+                )}
+              </div>
+              <div className={styles.cardBody}>
+                <p className={styles.cardMaterial}>{product.material}</p>
+                <h3 className={styles.cardTitle}>{product.name}</h3>
+                <p className={styles.cardSurface}>{product.surface}</p>
+                <span className={styles.cardCta}>Details & Anfrage →</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </section>
+    </div>
+  )
+}

@@ -1,5 +1,5 @@
 import { createSupabaseAdminClient } from '@/lib/supabase'
-import BereichListingPage from '@/components/public/BereichListingPage'
+import BereichPage from '@/components/public/BereichPage'
 import type { Metadata } from 'next'
 import type { Product, Category } from '@/lib/types'
 
@@ -14,49 +14,30 @@ export const metadata: Metadata = {
 async function getData() {
   try {
     const supabase = createSupabaseAdminClient()
-    const [
-      { data: aussenProds },
-      { data: innenProds },
-      { data: aussenCats },
-      { data: innenCats },
-    ] = await Promise.all([
+    const [{ data: products }, { data: categories }] = await Promise.all([
       supabase.from('products')
-        .select('*, category:categories!inner(*)')
+        .select('*, category:categories!products_category_id_fkey(*)')
         .eq('is_active', true).is('deleted_at', null)
-        .eq('category.type', 'gartengestaltung')
-        .eq('category.location', 'aussen')
+        .eq('bereich', 'gartengestaltung')
         .order('sort_order'),
-      supabase.from('products')
-        .select('*, category:categories!inner(*)')
-        .eq('is_active', true).is('deleted_at', null)
-        .eq('category.type', 'gartengestaltung')
-        .eq('category.location', 'innen')
-        .order('sort_order'),
-      supabase.from('categories').select('*')
-        .eq('type', 'gartengestaltung').eq('location', 'aussen').order('sort_order'),
-      supabase.from('categories').select('*')
-        .eq('type', 'gartengestaltung').eq('location', 'innen').order('sort_order'),
+      supabase.from('categories').select('*').eq('type', 'gartengestaltung').order('sort_order'),
     ])
-    return {
-      aussenProducts:   (aussenProds as Product[])  ?? [],
-      innenProducts:    (innenProds  as Product[])  ?? [],
-      aussenCategories: (aussenCats  as Category[]) ?? [],
-      innenCategories:  (innenCats   as Category[]) ?? [],
-    }
+    return { products: (products as Product[]) ?? [], categories: (categories as Category[]) ?? [] }
   } catch {
-    return { aussenProducts: [], innenProducts: [], aussenCategories: [], innenCategories: [] }
+    return { products: [], categories: [] }
   }
 }
 
 export default async function GartengestaltungPage() {
-  const data = await getData()
+  const { products, categories } = await getData()
   return (
-    <BereichListingPage
+    <BereichPage
       title="Gartengestaltung"
       label="Gartengestaltung"
-      aussenSubtitle="Terrassenplatten · Mauersteine · Stelen · Blockstufen"
-      innenSubtitle="Naturstein im Innenbereich"
-      {...data}
+      subtitle="Terrassenplatten · Mauersteine · Stelen · Blockstufen"
+      basePath="/gartengestaltung"
+      categories={categories}
+      products={products}
     />
   )
 }

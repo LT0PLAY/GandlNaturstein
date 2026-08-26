@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { logChange } from '@/lib/utils/changelog'
-import type { CategoryBereich, CategoryLocation } from '@/lib/types'
+import type { CategoryBereich } from '@/lib/types'
 
 async function getCurrentMemberId(): Promise<string | null> {
   try {
@@ -16,16 +16,35 @@ async function getCurrentMemberId(): Promise<string | null> {
   } catch { return null }
 }
 
+// ── Titelbild-URL aus FormData lesen (ImageUploader schickt hidden inputs) ──
+function readImageUrl(formData: FormData, field: string): string | null {
+  const count = Number(formData.get(`${field}_count`) ?? 0)
+  if (count > 0) {
+    const indexed = formData.get(`${field}_0`) as string | null
+    if (indexed) return indexed
+  }
+  return (formData.get(field) as string) || null
+}
+
+function revalidateAllBereiche() {
+  revalidatePath('/admin/kategorien')
+  revalidatePath('/massivproduktion')
+  revalidatePath('/sonderanfertigung')
+  revalidatePath('/gartengestaltung')
+  revalidatePath('/extras')
+  revalidatePath('/sitemap.xml')
+}
+
 export async function createCategory(formData: FormData) {
   const supabase = createSupabaseAdminClient()
   const bereich  = formData.get('type') as CategoryBereich
-  const location = formData.get('location') as CategoryLocation | null
+  const imageUrl = readImageUrl(formData, 'image')
 
   const data = {
     name:        formData.get('name')        as string,
     slug:        formData.get('slug')        as string,
     type:        bereich,
-    location:    location || null,
+    image_url:   imageUrl,
     description: formData.get('description') as string || null,
     sort_order:  Number(formData.get('sort_order')) || 0,
   }
@@ -38,12 +57,7 @@ export async function createCategory(formData: FormData) {
     action: 'create', entity_type: 'category',
     entity_id: created.id, entity_name: data.name, new_value: data,
   })
-  revalidatePath('/admin/kategorien')
-  revalidatePath('/aussen')
-  revalidatePath('/innen')
-  revalidatePath('/sonderanfertigung')
-  revalidatePath('/extras')
-  revalidatePath('/sitemap.xml')
+  revalidateAllBereiche()
   return { error: null, success: true }
 }
 
@@ -52,30 +66,35 @@ export async function updateCategory(id: string, formData: FormData) {
   const { data: old } = await supabase.from('categories').select('*').eq('id', id).single()
 
   const bereich  = formData.get('type') as CategoryBereich
-  const location = formData.get('location') as CategoryLocation | null
+  const imageUrl = readImageUrl(formData, 'image')
 
-  const data = {
+  const data: Record<string, unknown> = {
     name:        formData.get('name')        as string,
     slug:        formData.get('slug')        as string,
     type:        bereich,
-    location:    location || null,
     description: formData.get('description') as string || null,
     sort_order:  Number(formData.get('sort_order')) || 0,
   }
+  // Titelbild nur überschreiben, wenn ein neues hochgeladen wurde
+  if (imageUrl) data.image_url = imageUrl
 
   const { error } = await supabase.from('categories').update(data).eq('id', id)
   if (error) return { error: error.message, success: false }
 
   await logChange({
     action: 'update', entity_type: 'category',
-    entity_id: id, entity_name: data.name, old_value: old, new_value: data,
+    entity_id: id, entity_name: data.name as string, old_value: old, new_value: data,
   })
-  revalidatePath('/admin/kategorien')
-  revalidatePath('/aussen')
-  revalidatePath('/innen')
-  revalidatePath('/sonderanfertigung')
-  revalidatePath('/extras')
-  revalidatePath('/sitemap.xml')
+  revalidateAllBereiche()
+  return { error: null, success: true }
+}
+
+export async function removeCategoryImage(id: string) {
+  const supabase = createSupabaseAdminClient()
+  const { error } = await supabase.from('categories').update({ image_url: null }).eq('id', id)
+  if (error) return { error: error.message, success: false }
+  revalidatePath(`/admin/kategorien/${id}`)
+  revalidateAllBereiche()
   return { error: null, success: true }
 }
 

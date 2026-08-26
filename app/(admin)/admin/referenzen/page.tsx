@@ -42,7 +42,8 @@ export default async function AdminReferenzenPage() {
           </Link>
         </div>
       ) : (
-        <table className={styles.table}>
+        <div className={styles.tableScroll}>
+<table className={styles.table}>
           <thead>
             <tr>
               <th>Bild</th>
@@ -107,6 +108,7 @@ export default async function AdminReferenzenPage() {
             ))}
           </tbody>
         </table>
+</div>
       )}
     </div>
   )

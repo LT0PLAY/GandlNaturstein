@@ -5,7 +5,7 @@
   z-index: 100;
   transition: background 0.3s, border-color 0.3s, backdrop-filter 0.3s, top 0.3s;
   border-bottom: 0.5px solid transparent;
-  background: rgba(20, 20, 20, 0.16);
+  background: rgba(20, 20, 20, 0.26);
   backdrop-filter: blur(3px);
 }
 
@@ -495,7 +495,7 @@
   .nav   { gap: 14px; }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .nav, .actions       { display: none; }
   .mobileActions       { display: flex; }
   .mobileSearchIconBtn { display: flex; }

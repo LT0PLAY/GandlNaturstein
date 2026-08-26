@@ -15,7 +15,7 @@ import { restorePartner, permanentDeletePartner } from '@/lib/actions/partners'
 import { restoreRestposten, permanentDeleteRestposten } from '@/lib/actions/restposten'
 import { restoreGuideEntry, permanentDeleteGuideEntry } from '@/lib/actions/guide'
 import DeleteButton from '@/components/admin/DeleteButton'
-import { BEREICH_LABELS, LOCATION_LABELS } from '@/lib/types'
+import { BEREICH_LABELS } from '@/lib/types'
 import styles from '../table.module.css'
 import trashStyles from './papierkorb.module.css'
 
@@ -27,7 +27,7 @@ async function getPendingProducts() {
   try {
     const { data } = await createSupabaseAdminClient()
       .from('products')
-      .select('*, category:categories(name, type)')
+      .select('*, category:categories!products_category_id_fkey(name, type)')
       .eq('delete_pending', true)
       .is('deleted_at', null)
       .order('delete_requested_at', { ascending: false })
@@ -39,7 +39,7 @@ async function getTrashedProducts() {
   try {
     const { data } = await createSupabaseAdminClient()
       .from('products')
-      .select('*, category:categories(name, type)')
+      .select('*, category:categories!products_category_id_fkey(name, type)')
       .not('deleted_at', 'is', null)
       .order('deleted_at', { ascending: false })
     return data ?? []
@@ -173,7 +173,8 @@ export default async function PapierkorbPage() {
               Von einem Editor zum Löschen vorgeschlagen — bitte genehmigen oder ablehnen.
             </p>
           </div>
-          <table className={styles.table}>
+          <div className={styles.tableScroll}>
+<table className={styles.table}>
             <thead>
               <tr>
                 <th>Bild</th>
@@ -217,6 +218,7 @@ export default async function PapierkorbPage() {
               ))}
             </tbody>
           </table>
+</div>
         </section>
       )}
 
@@ -234,7 +236,8 @@ export default async function PapierkorbPage() {
         {trashedProducts.length === 0 ? (
           <div className={trashStyles.empty}>Keine gelöschten Produkte.</div>
         ) : (
-          <table className={styles.table}>
+          <div className={styles.tableScroll}>
+<table className={styles.table}>
             <thead>
               <tr>
                 <th>Bild</th>
@@ -278,6 +281,7 @@ export default async function PapierkorbPage() {
               ))}
             </tbody>
           </table>
+</div>
         )}
       </section>
 
@@ -295,7 +299,8 @@ export default async function PapierkorbPage() {
         {trashedReferences.length === 0 ? (
           <div className={trashStyles.empty}>Keine gelöschten Referenzen.</div>
         ) : (
-          <table className={styles.table}>
+          <div className={styles.tableScroll}>
+<table className={styles.table}>
             <thead>
               <tr>
                 <th>Bild</th>
@@ -339,6 +344,7 @@ export default async function PapierkorbPage() {
               ))}
             </tbody>
           </table>
+</div>
         )}
       </section>
 
@@ -356,7 +362,8 @@ export default async function PapierkorbPage() {
         {trashedCategories.length === 0 ? (
           <div className={trashStyles.empty}>Keine gelöschten Kategorien.</div>
         ) : (
-          <table className={styles.table}>
+          <div className={styles.tableScroll}>
+<table className={styles.table}>
             <thead>
               <tr>
                 <th>Kategorie</th>
@@ -371,7 +378,6 @@ export default async function PapierkorbPage() {
                   <td className={styles.tdName}>{c.name}</td>
                   <td className={styles.tdMuted}>
                     {BEREICH_LABELS[c.type as keyof typeof BEREICH_LABELS] ?? c.type}
-                    {c.location ? ` › ${LOCATION_LABELS[c.location as keyof typeof LOCATION_LABELS]}` : ''}
                   </td>
                   <td className={styles.tdMuted}>
                     {c.deleted_at ? new Date(c.deleted_at).toLocaleDateString('de-DE') : '—'}
@@ -396,6 +402,7 @@ export default async function PapierkorbPage() {
               ))}
             </tbody>
           </table>
+</div>
         )}
       </section>
 
@@ -413,7 +420,8 @@ export default async function PapierkorbPage() {
         {trashedJobs.length === 0 ? (
           <div className={trashStyles.empty}>Keine gelöschten Stellenangebote.</div>
         ) : (
-          <table className={styles.table}>
+          <div className={styles.tableScroll}>
+<table className={styles.table}>
             <thead>
               <tr>
                 <th>Stelle</th>
@@ -453,6 +461,7 @@ export default async function PapierkorbPage() {
               ))}
             </tbody>
           </table>
+</div>
         )}
       </section>
 
@@ -470,7 +479,8 @@ export default async function PapierkorbPage() {
         {trashedPartners.length === 0 ? (
           <div className={trashStyles.empty}>Keine gelöschten Partner.</div>
         ) : (
-          <table className={styles.table}>
+          <div className={styles.tableScroll}>
+<table className={styles.table}>
             <thead>
               <tr>
                 <th>Logo</th>
@@ -511,6 +521,7 @@ export default async function PapierkorbPage() {
               ))}
             </tbody>
           </table>
+</div>
         )}
       </section>
 
@@ -528,7 +539,8 @@ export default async function PapierkorbPage() {
         {trashedRestposten.length === 0 ? (
           <div className={trashStyles.empty}>Keine gelöschten Restposten.</div>
         ) : (
-          <table className={styles.table}>
+          <div className={styles.tableScroll}>
+<table className={styles.table}>
             <thead>
               <tr>
                 <th>Bild</th>
@@ -571,6 +583,7 @@ export default async function PapierkorbPage() {
               ))}
             </tbody>
           </table>
+</div>
         )}
       </section>
 
@@ -588,7 +601,8 @@ export default async function PapierkorbPage() {
         {trashedGuideEntries.length === 0 ? (
           <div className={trashStyles.empty}>Keine gelöschten Guide-Einträge.</div>
         ) : (
-          <table className={styles.table}>
+          <div className={styles.tableScroll}>
+<table className={styles.table}>
             <thead>
               <tr>
                 <th>#</th>
@@ -631,6 +645,7 @@ export default async function PapierkorbPage() {
               ))}
             </tbody>
           </table>
+</div>
         )}
       </section>
     </div>

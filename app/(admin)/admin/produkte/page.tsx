@@ -3,17 +3,8 @@ export const dynamic = 'force-dynamic'
 import Link from 'next/link'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { getCurrentUser } from '@/lib/actions/auth'
-import { moveProductToTrash } from '@/lib/actions/products'
-import DeleteButton from '@/components/admin/DeleteButton'
+import ProductsTable from './ProductsTable'
 import styles from '../table.module.css'
-
-function getPublicUrl(p: any): string {
-  const type     = p.category?.type     as string | undefined
-  const location = p.category?.location as string | undefined
-  if (type === 'sonderanfertigung') return `/sonderanfertigung/${p.slug}`
-  if (type === 'extras')            return `/extras/${p.slug}`
-  return `/${location ?? 'aussen'}/${p.slug}`
-}
 
 const SUPABASE_CONFIGURED =
   process.env.NEXT_PUBLIC_SUPABASE_URL &&
@@ -25,7 +16,7 @@ async function getProducts() {
   // Versuche mit deleted_at-Filter (Migration 005 muss gelaufen sein)
   const { data, error } = await supabase
     .from('products')
-    .select('*, category:categories(name, type, location)')
+    .select('*, category:categories!products_category_id_fkey(name, type)')
     .is('deleted_at', null)
     .order('created_at', { ascending: false })
 
@@ -35,7 +26,7 @@ async function getProducts() {
   console.warn('[Admin/Produkte] deleted_at-Spalte fehlt, Migration 005 ausführen!', error.message)
   const { data: all } = await supabase
     .from('products')
-    .select('*, category:categories(name, type, location)')
+    .select('*, category:categories!products_category_id_fkey(name, type)')
     .order('created_at', { ascending: false })
   return all ?? []
 }
@@ -86,73 +77,7 @@ export default async function ProduktePage() {
           </Link>
         </div>
       ) : (
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Bild</th>
-              <th>Name</th>
-              <th>Material</th>
-              <th>Kategorie</th>
-              <th>Status</th>
-              <th>Aktionen</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((p: any) => (
-              <tr key={p.id} style={p.delete_pending ? { opacity: 0.55, background: 'rgba(224,96,96,0.04)' } : undefined}>
-                <td>
-                  {p.thumbnail || p.images?.[0]
-                    ? <img src={p.thumbnail ?? p.images[0]} alt={p.name} className={styles.thumb} />
-                    : <div className={styles.thumbEmpty}>—</div>
-                  }
-                </td>
-                <td className={styles.tdName}>
-                  {p.name}
-                  {p.delete_pending && (
-                    <span style={{ marginLeft: '8px', fontSize: '12px', color: '#E06060', letterSpacing: '.06em', fontFamily: 'var(--font-inter)' }}>
-                      ⏳ LÖSCHANTRAG
-                    </span>
-                  )}
-                </td>
-                <td className={styles.tdMuted}>{p.material ?? '—'}</td>
-                <td className={styles.tdMuted}>{(p.category as any)?.name ?? '—'}</td>
-                <td>
-                  <span className={styles.badge} data-active={p.is_active}>
-                    {p.is_active ? 'Aktiv' : 'Inaktiv'}
-                  </span>
-                </td>
-                <td>
-                  <div className={styles.btnGroup}>
-                    <Link href={`/admin/produkte/${p.id}`} className={styles.btnEdit}>
-                      Bearbeiten
-                    </Link>
-                    <a
-                      href={getPublicUrl(p)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.btnEdit}
-                      style={{ opacity: 0.7 }}
-                    >
-                      ↗ Vorschau
-                    </a>
-                    {p.delete_pending ? (
-                      <span style={{ fontSize: '13px', color: '#E06060', fontFamily: 'var(--font-inter)', padding: '0 8px' }}>
-                        <Link href="/admin/papierkorb" style={{ color: '#E06060', textDecoration: 'none' }}>→ Im Papierkorb</Link>
-                      </span>
-                    ) : (
-                      <DeleteButton
-                        action={moveProductToTrash.bind(null, p.id)}
-                        confirmMsg={`Produkt „${p.name}" in den Papierkorb verschieben?`}
-                        label="Papierkorb"
-                        className={styles.btnDelete}
-                      />
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <ProductsTable products={products} />
       )}
     </div>
   )

@@ -66,6 +66,14 @@
   color: var(--color-text-dim);
 }
 
+/* Unauffälliger Direktzugang zum Admin-Bereich — sieht aus wie ein
+   normaler Trennpunkt im Text, ist aber klickbar. */
+.hiddenAdminDot {
+  color: inherit;
+  text-decoration: none;
+  cursor: default;
+}
+
 /* ── Cols ── */
 .colTitle {
   font-family: var(--font-inter), sans-serif;

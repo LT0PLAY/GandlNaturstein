@@ -44,7 +44,8 @@ export default async function AdminRestpostenPage() {
           </Link>
         </div>
       ) : (
-        <table className={styles.table}>
+        <div className={styles.tableScroll}>
+<table className={styles.table}>
           <thead>
             <tr>
               <th>Bild</th>
@@ -91,6 +92,7 @@ export default async function AdminRestpostenPage() {
             ))}
           </tbody>
         </table>
+</div>
       )}
     </div>
   )

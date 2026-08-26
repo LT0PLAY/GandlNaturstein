@@ -55,7 +55,8 @@ export default async function AdminKarrierePage() {
           </Link>
         </div>
       ) : (
-        <table className={styles.table}>
+        <div className={styles.tableScroll}>
+<table className={styles.table}>
           <thead>
             <tr>
               <th>Stelle</th>
@@ -116,6 +117,7 @@ export default async function AdminKarrierePage() {
             ))}
           </tbody>
         </table>
+</div>
       )}
     </div>
   )

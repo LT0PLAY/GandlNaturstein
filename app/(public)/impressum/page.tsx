@@ -68,6 +68,12 @@ export default function ImpressumPage() {
             www.munichmotions.com
           </a>
         </p>
+        <p>
+          Für die Inhalte dieser Website ist ausschließlich der oben genannte Seitenbetreiber
+          (GANDL Natursteine GmbH) verantwortlich. MunichMotions war lediglich mit der technischen
+          Umsetzung der Website beauftragt und übernimmt keine Haftung für die dargestellten
+          Inhalte, Angebote oder Produkte.
+        </p>
 
         <h2>Hosting</h2>
         <p>

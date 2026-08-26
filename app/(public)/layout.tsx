@@ -1,6 +1,7 @@
 import TopBar from '@/components/public/TopBar'
 import NavWrapper from '@/components/Navbar/NavWrapper'
 import Footer from '@/components/Footer/Footer'
+import NewsPopup from '@/components/public/NewsPopup'
 import { BasketProvider } from '@/components/public/BasketContext'
 import BasketDrawer from '@/components/public/BasketDrawer'
 import BasketButton from '@/components/public/BasketButton'
@@ -17,6 +18,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         <Footer />
         <BasketButton />
         <BasketDrawer />
+        <NewsPopup />
       </div>
     </BasketProvider>
   )

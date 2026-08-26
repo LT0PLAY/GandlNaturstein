@@ -23,15 +23,22 @@ export default function ProductCardImage({
 
   const [index, setIndex]     = useState(0)
   const [hovering, setHover]  = useState(false)
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const timerRef   = useRef<ReturnType<typeof setInterval> | null>(null)
+  const quickRef   = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     if (hovering && ordered.length > 1) {
-      timerRef.current = setInterval(() => {
+      // Sofort beim Hovern zügig zum nächsten Bild wechseln (kurze Verzögerung,
+      // damit der Effekt spürbar sofort reagiert), danach im normalen Takt weiter.
+      quickRef.current = setTimeout(() => {
         setIndex((i) => (i + 1) % ordered.length)
-      }, 1800)
+        timerRef.current = setInterval(() => {
+          setIndex((i) => (i + 1) % ordered.length)
+        }, 1800)
+      }, 120)
     }
     return () => {
+      if (quickRef.current) clearTimeout(quickRef.current)
       if (timerRef.current) clearInterval(timerRef.current)
     }
   }, [hovering, ordered.length])

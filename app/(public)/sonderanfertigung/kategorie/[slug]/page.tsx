@@ -1,13 +1,10 @@
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
-import { Suspense } from 'react'
 import { createSupabaseAdminClient } from '@/lib/supabase'
-import CategoryFilter from '@/components/public/CategoryFilter'
+import { getProductIdsForCategory } from '@/lib/queries/products'
+import BereichPage from '@/components/public/BereichPage'
 import type { Metadata } from 'next'
 import type { Product, Category } from '@/lib/types'
-import styles from '../../../category.module.css'
 import { canonical, SITE_NAME, SITE_URL } from '@/lib/seo'
-import ProductCardImage from '@/components/public/ProductCardImage'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,12 +14,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     .from('categories').select('name, description').eq('slug', slug).eq('type', 'sonderanfertigung').single()
   if (!cat) return { title: 'Kategorie nicht gefunden' }
   return {
-    title:       `${cat.name} – Sonderanfertigung Naturstein | ${SITE_NAME}`,
-    description: cat.description ?? `Individuelle Naturstein-Sonderanfertigung ${cat.name}. Maßgefertigt nach Ihren Wünschen – ${SITE_NAME}, Inning am Ammersee.`,
+    title:       `${cat.name} | ${SITE_NAME}`,
+    description: cat.description ?? `${cat.name} – ${SITE_NAME}, Inning am Ammersee.`,
     alternates:  { canonical: canonical(`/sonderanfertigung/kategorie/${slug}`) },
     openGraph: {
-      title:       `${cat.name} – Sonderanfertigung | ${SITE_NAME}`,
-      description: cat.description ?? `Naturstein ${cat.name} – Sonderanfertigung.`,
+      title:       `${cat.name} | ${SITE_NAME}`,
+      description: cat.description ?? `${cat.name}.`,
       type:        'website',
     },
   }
@@ -31,21 +28,35 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 async function getData(kategorieSlug: string) {
   try {
     const supabase = createSupabaseAdminClient()
-    const [{ data: products }, { data: categories }] = await Promise.all([
-      supabase.from('products')
-        .select('*, category:categories!inner(*)')
-        .eq('is_active', true)
-        .is('deleted_at', null)
-        .eq('category.type', 'sonderanfertigung')
-        .eq('category.slug', kategorieSlug)
-        .order('sort_order'),
+    const [{ data: cat }, { data: categories }] = await Promise.all([
+      supabase.from('categories').select('id').eq('slug', kategorieSlug).eq('type', 'sonderanfertigung').maybeSingle(),
       supabase.from('categories').select('*').eq('type', 'sonderanfertigung').order('sort_order'),
     ])
+    if (!cat) return { products: [], categories: (categories as Category[]) ?? [] }
+
+    // Produkte, die dieser Kategorie zugeordnet sind — Hauptkategorie ODER
+    // Mehrfachzuordnung (product_categories), damit ein Produkt auch dann
+    // hier erscheint, wenn diese Kategorie nur eine zusätzliche ist.
+    const productIds = await getProductIdsForCategory(cat.id)
+    if (productIds.length === 0) return { products: [], categories: (categories as Category[]) ?? [] }
+
+    // Kein zusätzlicher .eq('bereich', ...)-Filter mehr hier: die Kategorie-
+    // Zuordnung (productIds, via Haupt- oder Mehrfachkategorie) entscheidet
+    // allein, ob ein Produkt hier erscheint — auch wenn sein eigenes
+    // "Hauptbereich"-Feld einem anderen Bereich zugeordnet ist.
+    const { data: products } = await supabase
+      .from('products')
+      .select('*, category:categories!products_category_id_fkey(*)')
+      .eq('is_active', true)
+      .is('deleted_at', null)
+      .in('id', productIds)
+      .order('sort_order')
+
     return { products: (products as Product[]) ?? [], categories: (categories as Category[]) ?? [] }
   } catch { return { products: [], categories: [] } }
 }
 
-export default async function SonderanfertigungKategoriePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function sonderanfertigungKategoriePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const supabase = createSupabaseAdminClient()
   const { data: cat } = await supabase
@@ -57,8 +68,8 @@ export default async function SonderanfertigungKategoriePage({ params }: { param
   const jsonLd = {
     '@context':  'https://schema.org',
     '@type':     'CollectionPage',
-    name:        `${cat.name} – Sonderanfertigung Naturstein`,
-    description: cat.description ?? `Naturstein-Sonderanfertigung ${cat.name}`,
+    name:        cat.name,
+    description: cat.description ?? cat.name,
     url:         `${SITE_URL}/sonderanfertigung/kategorie/${slug}`,
     provider:    { '@type': 'Organization', name: SITE_NAME },
   }
@@ -66,49 +77,14 @@ export default async function SonderanfertigungKategoriePage({ params }: { param
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <section className={styles.page}>
-        <div className={styles.hero}>
-          <p className={styles.label}>// Sonderanfertigung</p>
-          <h1 className={styles.title}>{cat.name}</h1>
-          <p className={styles.subtitle}>Sonderanfertigung · Maßarbeit{cat.description ? ` · ${cat.description.slice(0, 60)}` : ''}</p>
-        </div>
-
-        <Suspense>
-          <CategoryFilter categories={categories} basePath="/sonderanfertigung" />
-        </Suspense>
-
-        {products.length === 0 ? (
-          <div className={styles.empty}>
-            <p>Noch keine Produkte in dieser Kategorie.</p>
-            <Link href="/sonderanfertigung" style={{ color: 'var(--color-gold)' }}>← Alle Sonderanfertigungen</Link>
-          </div>
-        ) : (
-          <div className={styles.grid}>
-            {products.map((product) => (
-              <Link key={product.id} href={`/sonderanfertigung/${product.slug}`} className={styles.card} style={{ textDecoration: 'none', display: 'block' }}>
-                <div className={styles.cardImage}>
-                  <ProductCardImage
-                      images={product.images ?? []}
-                      thumbnail={product.thumbnail}
-                      alt={product.name}
-                      altMap={product.image_alts}
-                      className={styles.img}
-                      placeholderClassName={styles.imgPlaceholder}
-                      placeholderLabel={product.material ?? 'Naturstein'}
-                    />
-                  {(product.category as any)?.name && <span className={styles.categoryBadge}>{(product.category as any).name}</span>}
-                </div>
-                <div className={styles.cardBody}>
-                  <p className={styles.cardMaterial}>{product.material}</p>
-                  <h3 className={styles.cardTitle}>{product.name}</h3>
-                  <p className={styles.cardSurface}>{product.surface}</p>
-                  <span className={styles.cardCta}>Details & Anfrage →</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
+      <BereichPage
+        title={cat.name}
+        label="Sonderanfertigung"
+        heroImage={cat.image_url}
+        basePath="/sonderanfertigung"
+        categories={categories}
+        products={products}
+      />
     </>
   )
 }

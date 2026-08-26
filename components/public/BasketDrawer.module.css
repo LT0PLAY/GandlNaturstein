@@ -77,6 +77,10 @@
   font-size: 15px; font-weight: 500; color: #dcdcd6;
   margin: 0 0 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+.itemSize {
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
 .itemPrice {
   font-family: var(--font-inter), sans-serif;
   font-size: 13px; color: var(--color-sage);

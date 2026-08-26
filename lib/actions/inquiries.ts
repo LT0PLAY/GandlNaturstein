@@ -61,6 +61,8 @@ export async function submitBasketInquiry(data: {
     unit: string
     /** Woher der Eintrag stammt – fehlt = normales Katalogprodukt (Rückwärtskompatibilität) */
     sourceType?: 'product' | 'restposten' | 'guide'
+    /** Gewählte Größenvariante, falls das Produkt mehrere Größen anbietet */
+    size?: string | null
   }>
   consent: boolean | string
   website?: string  // Honeypot – muss leer bleiben
@@ -85,7 +87,7 @@ export async function submitBasketInquiry(data: {
   }
 
   const itemsText = data.items
-    .map((it) => `– ${SOURCE_LABEL[it.sourceType ?? 'product'] ?? ''}${it.productName}: ${it.quantity} ${UNIT_LABELS[normalizeUnit(it.unit)].short}`)
+    .map((it) => `– ${SOURCE_LABEL[it.sourceType ?? 'product'] ?? ''}${it.productName}${it.size ? ` (Größe: ${it.size})` : ''}: ${it.quantity} ${UNIT_LABELS[normalizeUnit(it.unit)].short}`)
     .join('\n')
 
   const message = `Anfrage-Korb:\n${itemsText}${data.message ? `\n\nKommentar: ${data.message}` : ''}`

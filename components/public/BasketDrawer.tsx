@@ -38,7 +38,10 @@ export default function BasketDrawer() {
                       ? <img src={item.thumbnail} alt={item.productName} className={styles.thumb} />
                       : <div className={styles.thumbPlaceholder} />}
                     <div className={styles.itemInfo}>
-                      <p className={styles.itemName}>{item.productName}</p>
+                      <p className={styles.itemName}>
+                        {item.productName}
+                        {item.size && <span className={styles.itemSize}> · {item.size}</span>}
+                      </p>
                       {/* Preisschätzung */}
                       {item.show_price && item.price != null && (
                         <p className={styles.itemPrice}>

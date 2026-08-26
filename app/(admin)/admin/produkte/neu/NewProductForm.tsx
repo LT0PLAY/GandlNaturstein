@@ -4,20 +4,21 @@ import { useActionState, useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createProduct } from '@/lib/actions/products'
 import ImageUploader from '@/components/admin/ImageUploader'
-import type { Category, CategoryBereich, CategoryLocation } from '@/lib/types'
-import { BEREICH_LABELS, LOCATION_LABELS } from '@/lib/types'
+import type { Category, CategoryBereich } from '@/lib/types'
+import { BEREICH_LABELS } from '@/lib/types'
 import styles from '../../form.module.css'
 import imageStyles from '../images.module.css'
 
 const initial = { error: null as string | null, success: false, id: null as string | null }
+const MAX_SIZES = 6
 
 export default function NewProductForm({ categories }: { categories: Category[] }) {
   const [state, action, isPending] = useActionState(createProduct, initial)
   const router = useRouter()
 
   const [bereich,    setBereich]    = useState<CategoryBereich | ''>('')
-  const [location,   setLocation]   = useState<CategoryLocation | ''>('')
   const [categoryId, setCategoryId] = useState<string>('')
+  const [extraCategoryIds, setExtraCategoryIds] = useState<string[]>([])
   const [slug,       setSlug]       = useState<string>('')
   const [slugTouched, setSlugTouched] = useState(false)
 
@@ -35,32 +36,22 @@ export default function NewProductForm({ categories }: { categories: Category[] 
     if (state.success && state.id) router.push('/admin/produkte')
   }, [state.success, state.id, router])
 
-  // Gefilterte Location-Optionen basierend auf gewähltem Bereich
-  const locationOptions = useMemo(() => {
-    if (!bereich || bereich === 'extras') return []
-    const locs = [...new Set(
-      categories.filter(c => c.type === bereich && c.location).map(c => c.location!)
-    )]
-    return locs
-  }, [bereich, categories])
-
-  // Gefilterte Unterkategorien
+  // Kategorien, die zum gewählten Bereich passen — Produkt kann aber auch ohne
+  // Kategorie direkt am Bereich hängen (z.B. Gartengestaltung ohne Unterkategorie)
   const filteredCategories = useMemo(() => {
     if (!bereich) return []
-    if (bereich === 'extras') return categories.filter(c => c.type === 'extras')
-    if (!location) return []
-    return categories.filter(c => c.type === bereich && c.location === location)
-  }, [bereich, location, categories])
+    return categories.filter(c => c.type === bereich)
+  }, [bereich, categories])
 
-  // Reset bei Bereich/Location-Wechsel
   const handleBereichChange = (val: CategoryBereich | '') => {
     setBereich(val)
-    setLocation('')
     setCategoryId('')
   }
-  const handleLocationChange = (val: CategoryLocation | '') => {
-    setLocation(val)
-    setCategoryId('')
+
+  function toggleExtraCategory(id: string) {
+    setExtraCategoryIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    )
   }
 
   return (
@@ -105,10 +96,11 @@ export default function NewProductForm({ categories }: { categories: Category[] 
           />
         </div>
 
-        {/* ── Kategorie-Kaskade ── */}
+        {/* ── Bereich + Kategorie ── */}
         <div className={styles.field}>
           <label>Hauptbereich</label>
           <select
+            name="bereich"
             value={bereich}
             onChange={(e) => handleBereichChange(e.target.value as CategoryBereich | '')}
           >
@@ -119,45 +111,40 @@ export default function NewProductForm({ categories }: { categories: Category[] 
           </select>
         </div>
 
-        {bereich && bereich !== 'extras' && (
-          <div className={styles.field}>
-            <label>Außen / Innen</label>
-            <select
-              value={location}
-              onChange={(e) => handleLocationChange(e.target.value as CategoryLocation | '')}
-            >
-              <option value="">— Bitte wählen —</option>
-              {locationOptions.map((loc) => (
-                <option key={loc} value={loc}>{LOCATION_LABELS[loc]}</option>
-              ))}
-              {locationOptions.length === 0 && (
-                <option disabled value="">Noch keine Kategorien in diesem Bereich</option>
-              )}
-            </select>
-          </div>
-        )}
-
-        <div className={`${styles.field} ${bereich && bereich !== 'extras' && !location ? '' : ''}`}
-          style={(bereich === '' || (bereich !== 'extras' && !location)) ? { opacity: 0.5, pointerEvents: 'none' } : {}}>
+        <div className={styles.field} style={bereich ? {} : { opacity: 0.5, pointerEvents: 'none' }}>
           <label>
-            Unterkategorie
-            {bereich && (location || bereich === 'extras') && (
-              <span> — {BEREICH_LABELS[bereich as CategoryBereich]}{location ? ` › ${LOCATION_LABELS[location as CategoryLocation]}` : ''}</span>
-            )}
+            Kategorie <span>— optional, Produkt kann auch direkt im Bereich stehen</span>
           </label>
           <select
             name="category_id"
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
           >
-            <option value="">— Keine —</option>
+            <option value="">— Keine (direkt im Bereich) —</option>
             {filteredCategories.map((cat) => (
               <option key={cat.id} value={cat.id}>{cat.name}</option>
             ))}
-            {filteredCategories.length === 0 && bereich && (location || bereich === 'extras') && (
-              <option disabled value="">Keine Unterkategorien vorhanden — erst anlegen</option>
-            )}
           </select>
+        </div>
+
+        <div className={`${styles.field} ${styles.fullWidth}`}>
+          <label>
+            Weitere Kategorien <span>— optional, Produkt zusätzlich in anderen Kategorien anzeigen (z.B. auch bei &bdquo;Gartengestaltung&ldquo;)</span>
+          </label>
+          <div className={styles.categoryCheckList}>
+            {categories.filter((cat) => cat.id !== categoryId).map((cat) => (
+              <label key={cat.id} className={styles.categoryCheckItem}>
+                <input
+                  type="checkbox"
+                  name="category_ids"
+                  value={cat.id}
+                  checked={extraCategoryIds.includes(cat.id)}
+                  onChange={() => toggleExtraCategory(cat.id)}
+                />
+                {cat.name}
+              </label>
+            ))}
+          </div>
         </div>
 
         <div className={styles.field}>
@@ -169,7 +156,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
         </div>
 
         <div className={styles.field}>
-          <label>Material</label>
+          <label>Material / Steinart</label>
           <input name="material" type="text" placeholder="z.B. Granit, Marmor" />
         </div>
         <div className={styles.field}>
@@ -184,6 +171,14 @@ export default function NewProductForm({ categories }: { categories: Category[] 
           <label>Herkunft</label>
           <input name="origin" type="text" placeholder="z.B. Portugal" />
         </div>
+        <div className={styles.field}>
+          <label>Einsatzbereich</label>
+          <input name="einsatzbereich" type="text" placeholder="z.B. Terrasse, Bad, Fassade" />
+        </div>
+        <div className={styles.field}>
+          <label>Farbe</label>
+          <input name="farbe" type="text" placeholder="z.B. Grau, Beige, Anthrazit" />
+        </div>
         <div className={`${styles.field} ${styles.fullWidth}`}>
           <label>Beschreibung</label>
           <textarea name="description" rows={3} placeholder="Kurze Produktbeschreibung..." />
@@ -192,12 +187,16 @@ export default function NewProductForm({ categories }: { categories: Category[] 
         {/* ── Einheit + Preis ── */}
         <div className={styles.field}>
           <label>Einheit</label>
-          <select name="unit" defaultValue="qm">
-            <option value="qm">Quadratmeter (m²)</option>
+          <select name="unit" defaultValue="" required>
+            <option value="" disabled>Bitte wählen…</option>
             <option value="stueck">Stück</option>
+            <option value="qm">Quadratmeter (m²)</option>
             <option value="laufmeter">Laufmeter</option>
             <option value="gewicht">Gewicht (kg)</option>
           </select>
+          <span style={{ fontSize: '12px', color: 'var(--color-text-muted)', display: 'block', marginTop: '4px' }}>
+            Wichtig für den Anfragekorb: z.B. Reinigungs-/Pflegemittel meist &bdquo;Stück&ldquo;, Platten/Beläge meist &bdquo;m²&ldquo;.
+          </span>
         </div>
         <div className={styles.field}>
           <label>Preis <span>optional, pro gewählter Einheit</span></label>
@@ -214,6 +213,45 @@ export default function NewProductForm({ categories }: { categories: Category[] 
         </div>
       </div>
 
+      <p className={styles.sectionLabel}>
+        Größenvarianten <span style={{ fontWeight: 400, color: 'var(--color-text-muted)' }}>
+          (optional — bis zu {MAX_SIZES}, statt mehrerer einzelner Produkte)
+        </span>
+      </p>
+      <div className={styles.formGrid}>
+        <div className={`${styles.field} ${styles.fullWidth}`} style={{ marginBottom: 0 }}>
+          <p style={{ fontSize: '14px', color: 'var(--color-text-muted)', marginBottom: '12px' }}>
+            Bietet dieses Produkt mehrere Größen/Formate an (z.B. verschiedene Plattenmaße), können
+            hier bis zu {MAX_SIZES} Varianten mit eigenem Preis hinterlegt werden — Besucher wählen die
+            gewünschte Größe dann direkt auf der Produktseite aus.
+          </p>
+        </div>
+        {Array.from({ length: MAX_SIZES }).map((_, i) => (
+          <div key={i} className={`${styles.sizeRow} ${styles.fullWidth}`}>
+            <input
+              name={`size_label_${i}`}
+              type="text"
+              placeholder={`Größe ${i + 1}, z.B. 30x30x3 cm`}
+              className={styles.sizeLabelInput}
+            />
+            <input
+              name={`size_price_${i}`}
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Preis (optional)"
+              className={styles.sizePriceInput}
+            />
+            <input
+              name={`size_article_${i}`}
+              type="text"
+              placeholder="Artikelnr. (optional)"
+              className={styles.sizeArticleInput}
+            />
+          </div>
+        ))}
+      </div>
+
       <div className={imageStyles.section}>
         <div className={imageStyles.sectionHeader}>
           <p className={imageStyles.sectionTitle}>Titelbild</p>
@@ -225,6 +263,16 @@ export default function NewProductForm({ categories }: { categories: Category[] 
             <label>Alt-Text <span>— für SEO</span></label>
             <input name="thumbnail_alt" type="text" placeholder="z.B. Granit Pflaster anthrazit geflammt" />
           </div>
+        </div>
+      </div>
+
+      <div className={imageStyles.section}>
+        <div className={imageStyles.sectionHeader}>
+          <p className={imageStyles.sectionTitle}>Icon</p>
+          <p className={imageStyles.sectionDesc}>Kleines PNG-Icon, wird unten rechts im Produktbild eingeblendet (z.B. Pflastersteine-Symbol).</p>
+        </div>
+        <div style={{ padding: '16px 20px' }}>
+          <ImageUploader field="icon" label="Icon hochladen" hint="PNG mit transparentem Hintergrund empfohlen" />
         </div>
       </div>
 

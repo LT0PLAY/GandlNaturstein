@@ -32,20 +32,63 @@ function readImageUrls(formData: FormData, field: string): string[] {
   return urls
 }
 
+// ── Größenvarianten aus FormData lesen (bis zu MAX_SIZES Zeilen) ────────────
+const MAX_SIZES = 6
+
+function readSizes(formData: FormData): Array<{ label: string; price: number | null; article_number: string | null }> {
+  const sizes: Array<{ label: string; price: number | null; article_number: string | null }> = []
+  for (let i = 0; i < MAX_SIZES; i++) {
+    const label = (formData.get(`size_label_${i}`) as string || '').trim()
+    if (!label) continue
+    const priceRaw = formData.get(`size_price_${i}`) as string
+    const articleRaw = (formData.get(`size_article_${i}`) as string || '').trim()
+    sizes.push({
+      label,
+      price: priceRaw ? Number(priceRaw) : null,
+      article_number: articleRaw || null,
+    })
+  }
+  return sizes
+}
+
+// ── Mehrfachkategorien aus FormData lesen (Checkboxen "category_ids") ───────
+function readCategoryIds(formData: FormData, primaryCategoryId: string | null): string[] {
+  const extra = formData.getAll('category_ids').map((v) => String(v)).filter(Boolean)
+  const all = new Set<string>(extra)
+  if (primaryCategoryId) all.add(primaryCategoryId)
+  return [...all]
+}
+
+// ── product_categories-Tabelle mit der aktuellen Auswahl synchronisieren ────
+// Tolerant: falls die Tabelle noch nicht existiert (Migration 024 fehlt),
+// wird das stillschweigend übersprungen statt das Speichern zu blockieren.
+async function syncProductCategories(
+  supabase: ReturnType<typeof createSupabaseAdminClient>,
+  productId: string,
+  categoryIds: string[]
+) {
+  try {
+    await supabase.from('product_categories').delete().eq('product_id', productId)
+    if (categoryIds.length > 0) {
+      await supabase.from('product_categories').insert(
+        categoryIds.map((category_id) => ({ product_id: productId, category_id }))
+      )
+    }
+  } catch {
+    // Tabelle fehlt noch — Migration 024 wurde noch nicht ausgeführt
+  }
+}
+
 export type ProductActionState = { error: string | null; success: boolean; id: string | null }
+
+const ALL_BEREICHE = ['massivproduktion', 'sonderanfertigung', 'gartengestaltung', 'extras'] as const
 
 /** Alle öffentlichen Produkt-Listingseiten + Detailseite + Sitemap invalidieren */
 function revalidatePublicProductPaths(slug?: string) {
-  revalidatePath('/aussen')
-  revalidatePath('/innen')
-  revalidatePath('/sonderanfertigung')
-  revalidatePath('/extras')
+  for (const b of ALL_BEREICHE) revalidatePath(`/${b}`)
   revalidatePath('/sitemap.xml')
   if (slug) {
-    revalidatePath(`/aussen/${slug}`)
-    revalidatePath(`/innen/${slug}`)
-    revalidatePath(`/sonderanfertigung/${slug}`)
-    revalidatePath(`/extras/${slug}`)
+    for (const b of ALL_BEREICHE) revalidatePath(`/${b}/${slug}`)
   }
 }
 
@@ -76,23 +119,29 @@ export async function createProduct(
 
   const thumbnailUrls = readImageUrls(formData, 'thumbnail')
   const galleryUrls   = readImageUrls(formData, 'gallery')
+  const iconUrls       = readImageUrls(formData, 'icon')
 
   const data = {
     name,
     slug,
     article_number: formData.get('article_number') as string || null,
     description: formData.get('description') as string || null,
+    bereich:     formData.get('bereich')     as string || null,
     category_id: formData.get('category_id') as string || null,
     material:    formData.get('material')    as string || null,
     surface:     formData.get('surface')     as string || null,
     format:      formData.get('format')      as string || null,
     origin:      formData.get('origin')      as string || null,
+    einsatzbereich: formData.get('einsatzbereich') as string || null,
+    farbe:          formData.get('farbe')          as string || null,
     unit:        (['stueck','laufmeter','qm','gewicht'].includes(formData.get('unit') as string) ? formData.get('unit') : 'qm') as string,
     is_active:   formData.get('is_active') === 'true',
     show_price:  formData.get('show_price') === 'true',
     price:       formData.get('price') ? Number(formData.get('price')) : null,
+    sizes:       readSizes(formData),
     sort_order:  Number(formData.get('sort_order')) || 0,
     thumbnail:   thumbnailUrls[0] ?? null,
+    icon_url:    iconUrls[0] ?? null,
     images:      galleryUrls,
     image_alts:  {} as Record<string, string>,
   }
@@ -104,6 +153,8 @@ export async function createProduct(
   const { data: product, error } = await supabase
     .from('products').insert(data).select().single()
   if (error) return { error: `Fehler: ${error.message}`, success: false, id: null }
+
+  await syncProductCategories(supabase, product.id, readCategoryIds(formData, data.category_id))
 
   await logChange({ action: 'create', entity_type: 'product', entity_id: product.id, entity_name: data.name, new_value: data })
   revalidatePath('/admin/produkte')
@@ -118,6 +169,7 @@ export async function updateProduct(id: string, _prevState: ProductActionState, 
 
   const thumbnailUrls  = readImageUrls(formData, 'thumbnail')
   const newGalleryUrls = readImageUrls(formData, 'gallery')
+  const iconUrls        = readImageUrls(formData, 'icon')
   const existingGallery = (existing?.images as string[]) ?? []
 
   const data: Record<string, unknown> = {
@@ -125,20 +177,25 @@ export async function updateProduct(id: string, _prevState: ProductActionState, 
     slug:           sanitizeSlug(formData.get('slug') as string || formData.get('name') as string),
     article_number: formData.get('article_number') as string || null,
     description:    formData.get('description') as string || null,
+    bereich:        formData.get('bereich')     as string || null,
     category_id:    formData.get('category_id') as string || null,
     material:       formData.get('material')    as string || null,
     surface:        formData.get('surface')     as string || null,
     format:         formData.get('format')      as string || null,
     origin:         formData.get('origin')      as string || null,
+    einsatzbereich: formData.get('einsatzbereich') as string || null,
+    farbe:          formData.get('farbe')          as string || null,
     unit:           (['stueck','laufmeter','qm','gewicht'].includes(formData.get('unit') as string) ? formData.get('unit') : 'qm') as string,
     is_active:      formData.get('is_active') === 'true',
     show_price:     formData.get('show_price') === 'true',
     price:          formData.get('price') ? Number(formData.get('price')) : null,
+    sizes:          readSizes(formData),
     sort_order:     Number(formData.get('sort_order')) || 0,
     images:         [...existingGallery, ...newGalleryUrls],
   }
 
   if (thumbnailUrls.length > 0) data.thumbnail = thumbnailUrls[0]
+  if (iconUrls.length > 0) data.icon_url = iconUrls[0]
 
   const alts: Record<string, string> = { ...((existing?.image_alts as Record<string, string>) ?? {}) }
   if (data.thumbnail) alts[data.thumbnail as string] = formData.get('thumbnail_alt') as string || data.name as string
@@ -146,6 +203,8 @@ export async function updateProduct(id: string, _prevState: ProductActionState, 
 
   const { error } = await supabase.from('products').update(data).eq('id', id)
   if (error) return { error: `Fehler: ${error.message}`, success: false, id }
+
+  await syncProductCategories(supabase, id, readCategoryIds(formData, data.category_id as string | null))
 
   await logChange({ action: 'update', entity_type: 'product', entity_id: id, entity_name: data.name as string, old_value: existing, new_value: data })
 
@@ -333,6 +392,13 @@ export async function removeGalleryImage(productId: string, imageUrl: string) {
 export async function removeThumbnail(productId: string) {
   const supabase = createSupabaseAdminClient()
   await supabase.from('products').update({ thumbnail: null }).eq('id', productId)
+  revalidatePath(`/admin/produkte/${productId}`)
+  return { success: true }
+}
+
+export async function removeIcon(productId: string) {
+  const supabase = createSupabaseAdminClient()
+  await supabase.from('products').update({ icon_url: null }).eq('id', productId)
   revalidatePath(`/admin/produkte/${productId}`)
   return { success: true }
 }

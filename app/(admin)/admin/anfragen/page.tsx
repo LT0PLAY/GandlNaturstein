@@ -98,7 +98,8 @@ export default async function AnfragenPage({
           <p>Keine Anfragen{status ? ` mit Status „${STATUS_LABELS[status]?.label}"` : ''}.</p>
         </div>
       ) : (
-        <table className={styles.table}>
+        <div className={styles.tableScroll}>
+<table className={styles.table}>
           <thead>
             <tr>
               <th>Name</th>
@@ -139,6 +140,7 @@ export default async function AnfragenPage({
             ))}
           </tbody>
         </table>
+</div>
       )}
     </div>
   )

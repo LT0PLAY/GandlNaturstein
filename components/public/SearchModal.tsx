@@ -55,7 +55,7 @@ export default function SearchModal({ isOpen, onClose }: Props) {
   }, [query, search])
 
   function navigate(result: SearchResult) {
-    router.push(getProductUrl(result))
+    router.push(getProductUrl({ slug: result.slug, bereich: result.categoryType }))
     onClose()
   }
 

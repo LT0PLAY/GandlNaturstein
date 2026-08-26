@@ -4,8 +4,6 @@
 
 /** Hauptbereich (früher CategoryType) */
 export type CategoryBereich  = 'massivproduktion' | 'sonderanfertigung' | 'gartengestaltung' | 'extras'
-/** Außen/Innen – nur bei Bereichen außer 'extras' */
-export type CategoryLocation = 'aussen' | 'innen'
 /** Alias – type-Feld in der DB entspricht jetzt dem Bereich */
 export type CategoryType     = CategoryBereich
 
@@ -23,8 +21,8 @@ export interface Category {
   slug:        string
   /** Hauptbereich: massivproduktion | sonderanfertigung | gartengestaltung | extras */
   type:        CategoryBereich
-  /** Standort: aussen | innen | null (für extras/sonderanfertigung ohne Split) */
-  location:    CategoryLocation | null
+  /** Titelbild / Hero-Banner der Kategorie */
+  image_url:   string | null
   description: string | null
   sort_order:  number
   created_at:  string
@@ -38,9 +36,10 @@ export const BEREICH_LABELS: Record<CategoryBereich, string> = {
   extras:            'Extras',
 }
 
-export const LOCATION_LABELS: Record<CategoryLocation, string> = {
-  aussen: 'Außenbereich',
-  innen:  'Innenbereich',
+export interface ProductSize {
+  label:          string
+  price?:         number | null
+  article_number?: string | null
 }
 
 export interface Product {
@@ -49,11 +48,21 @@ export interface Product {
   slug:           string
   article_number: string | null
   description:    string | null
+  /** Hauptbereich – direkt am Produkt, unabhängig von einer evtl. Kategorie */
+  bereich:        CategoryBereich | null
   category_id:    string | null
   material:       string | null
   surface:        string | null
   format:         string | null
   origin:         string | null
+  /** Einsatzbereich, z.B. "Terrasse", "Bad", "Fassade" */
+  einsatzbereich: string | null
+  /** Farbe, z.B. "Grau", "Beige" */
+  farbe:          string | null
+  /** Kleines Icon/PNG, das als Overlay unten rechts im Produktbild angezeigt wird */
+  icon_url:       string | null
+  /** Optionale Größenvarianten (z.B. verschiedene Formate) mit eigenem Preis, statt separater Produkte */
+  sizes:          ProductSize[]
   unit:           ProductUnit
   price:          number | null
   show_price:     boolean
@@ -64,8 +73,12 @@ export interface Product {
   sort_order:     number
   created_at:     string
   updated_at:     string
+  /** Optionale weitere Kategorien (Mehrfachzuordnung über product_categories) — category_id/category bleibt die Hauptkategorie */
+  category_ids?:  string[]
   // Join
   category?:      Category
+  /** Alle zugeordneten Kategorien (Haupt- + weitere), falls geladen */
+  categories?:    Category[]
 }
 
 export interface Inquiry {
@@ -142,6 +155,8 @@ export interface BasketItem {
   unit:        BasketUnit
   /** Woher der Eintrag stammt – fehlt = normales Katalogprodukt (Rückwärtskompatibilität) */
   sourceType?: 'product' | 'restposten' | 'guide'
+  /** Gewählte Größenvariante (falls das Produkt mehrere Größen anbietet) */
+  size?:       string | null
 }
 
 // ============================================================
@@ -179,7 +194,7 @@ export type RefProduct = {
   id: string; name: string; slug: string
   thumbnail?: string | null; material?: string | null
   surface?: string | null; description?: string | null
-  category?: { type: string; location: string | null } | null
+  category?: { type: string } | null
 }
 
 export interface Reference {
@@ -250,6 +265,17 @@ export interface Partner {
   deleted_at:  string | null
   created_at:  string
   updated_at:  string
+}
+
+export interface Popup {
+  id:           string
+  title:        string
+  message:      string | null
+  image_url:    string | null
+  is_active:    boolean
+  active_until: string | null
+  created_at:   string
+  updated_at:   string
 }
 
 export interface Restposten {

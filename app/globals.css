@@ -14,9 +14,10 @@
   --color-border:    rgba(155, 174, 159, 0.08);
 }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
 
 body {
+  overflow-x: hidden;
   background-color: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-inter), sans-serif;

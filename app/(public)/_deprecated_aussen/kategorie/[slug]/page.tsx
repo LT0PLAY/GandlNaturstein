@@ -14,15 +14,15 @@ export const dynamic = 'force-dynamic'
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const { data: cat } = await createSupabaseAdminClient()
-    .from('categories').select('name, description').eq('slug', slug).eq('location', 'innen').single()
+    .from('categories').select('name, description').eq('slug', slug).eq('location', 'aussen').single()
   if (!cat) return { title: 'Kategorie nicht gefunden' }
   return {
-    title:       `${cat.name} – Innenbereich Naturstein | ${SITE_NAME}`,
-    description: cat.description ?? `Edle Natursteine ${cat.name} für den Innenbereich. Maßanfertigung & Beratung – ${SITE_NAME}, Inning am Ammersee.`,
-    alternates:  { canonical: canonical(`/innen/kategorie/${slug}`) },
+    title:       `${cat.name} – Außenbereich Naturstein | ${SITE_NAME}`,
+    description: cat.description ?? `Hochwertige Natursteine ${cat.name} für den Außenbereich. Beratung & Lieferung – ${SITE_NAME}, Inning am Ammersee.`,
+    alternates:  { canonical: canonical(`/aussen/kategorie/${slug}`) },
     openGraph: {
-      title:       `${cat.name} – Innenbereich | ${SITE_NAME}`,
-      description: cat.description ?? `Naturstein ${cat.name} für den Innenbereich.`,
+      title:       `${cat.name} – Außenbereich | ${SITE_NAME}`,
+      description: cat.description ?? `Naturstein ${cat.name} für den Außenbereich.`,
       type:        'website',
     },
   }
@@ -33,23 +33,23 @@ async function getData(kategorieSlug: string) {
     const supabase = createSupabaseAdminClient()
     const [{ data: products }, { data: categories }] = await Promise.all([
       supabase.from('products')
-        .select('*, category:categories!inner(*)')
+        .select('*, category:categories!products_category_id_fkey!inner(*)')
         .eq('is_active', true)
         .is('deleted_at', null)
-        .eq('category.location', 'innen')
+        .eq('category.location', 'aussen')
         .eq('category.slug', kategorieSlug)
         .order('sort_order'),
-      supabase.from('categories').select('*').eq('location', 'innen').order('sort_order'),
+      supabase.from('categories').select('*').eq('location', 'aussen').order('sort_order'),
     ])
     return { products: (products as Product[]) ?? [], categories: (categories as Category[]) ?? [] }
   } catch { return { products: [], categories: [] } }
 }
 
-export default async function InnenKategoriePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function AussenKategoriePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const supabase = createSupabaseAdminClient()
   const { data: cat } = await supabase
-    .from('categories').select('*').eq('slug', slug).eq('location', 'innen').single()
+    .from('categories').select('*').eq('slug', slug).eq('location', 'aussen').single()
   if (!cat) notFound()
 
   const { products, categories } = await getData(slug)
@@ -57,9 +57,9 @@ export default async function InnenKategoriePage({ params }: { params: Promise<{
   const jsonLd = {
     '@context':  'https://schema.org',
     '@type':     'CollectionPage',
-    name:        `${cat.name} – Innenbereich Naturstein`,
-    description: cat.description ?? `Naturstein ${cat.name} für den Innenbereich`,
-    url:         `${SITE_URL}/innen/kategorie/${slug}`,
+    name:        `${cat.name} – Außenbereich Naturstein`,
+    description: cat.description ?? `Naturstein ${cat.name} für den Außenbereich`,
+    url:         `${SITE_URL}/aussen/kategorie/${slug}`,
     provider:    { '@type': 'Organization', name: SITE_NAME },
   }
 
@@ -68,24 +68,24 @@ export default async function InnenKategoriePage({ params }: { params: Promise<{
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <section className={styles.page}>
         <div className={styles.hero}>
-          <p className={styles.label}>// Innenbereich</p>
+          <p className={styles.label}>// Außenbereich</p>
           <h1 className={styles.title}>{cat.name}</h1>
-          <p className={styles.subtitle}>Innenbereich · Naturstein{cat.description ? ` · ${cat.description.slice(0, 60)}` : ''}</p>
+          <p className={styles.subtitle}>Außenbereich · Naturstein{cat.description ? ` · ${cat.description.slice(0, 60)}` : ''}</p>
         </div>
 
         <Suspense>
-          <CategoryFilter categories={categories} basePath="/innen" />
+          <CategoryFilter categories={categories} basePath="/aussen" />
         </Suspense>
 
         {products.length === 0 ? (
           <div className={styles.empty}>
             <p>Noch keine Produkte in dieser Kategorie.</p>
-            <Link href="/innen" style={{ color: 'var(--color-gold)' }}>← Alle Innenbereich-Produkte</Link>
+            <Link href="/aussen" style={{ color: 'var(--color-gold)' }}>← Alle Außenbereich-Produkte</Link>
           </div>
         ) : (
           <div className={styles.grid}>
             {products.map((product) => (
-              <Link key={product.id} href={`/innen/${product.slug}`} className={styles.card} style={{ textDecoration: 'none', display: 'block' }}>
+              <Link key={product.id} href={`/aussen/${product.slug}`} className={styles.card} style={{ textDecoration: 'none', display: 'block' }}>
                 <div className={styles.cardImage}>
                   <ProductCardImage
                       images={product.images ?? []}

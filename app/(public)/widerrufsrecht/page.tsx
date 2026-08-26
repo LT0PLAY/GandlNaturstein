@@ -89,6 +89,23 @@ export default function WiderrufsrechtPage() {
           (Wenn Sie den Vertrag widerrufen wollen, dann füllen Sie bitte dieses Formular aus
           und senden Sie es zurück.)
         </p>
+        <p>
+          <a
+            href="/dokumente/Muster-Widerrufsformular.pdf"
+            download
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: '8px',
+              padding: '10px 18px', marginTop: '4px',
+              background: 'rgba(155, 174, 159,0.08)',
+              border: '0.5px solid rgba(155, 174, 159,0.3)',
+              color: 'var(--color-sage)', textDecoration: 'none',
+              fontFamily: 'var(--font-inter), sans-serif', fontSize: '14px',
+              letterSpacing: '.04em',
+            }}
+          >
+            ↓ Muster-Widerrufsformular als PDF herunterladen
+          </a>
+        </p>
 
         <div style={{
           border: '0.5px solid rgba(155, 174, 159,0.2)',

@@ -51,7 +51,8 @@ export default async function TeamPage() {
           <Link href="/admin/team/neu" className={styles.btnPrimary}>Ersten einladen</Link>
         </div>
       ) : (
-        <table className={styles.table}>
+        <div className={styles.tableScroll}>
+<table className={styles.table}>
           <thead>
             <tr>
               <th>Name</th>
@@ -93,6 +94,7 @@ export default async function TeamPage() {
             ))}
           </tbody>
         </table>
+</div>
       )}
     </div>
   )

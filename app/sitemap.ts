@@ -21,7 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Alle aktiven Produkte mit Kategorie
   const { data: products } = await supabase
     .from('products')
-    .select('slug, updated_at, category:categories(type, location)')
+    .select('slug, updated_at, bereich, category:categories!products_category_id_fkey(type)')
     .eq('is_active', true)
     .is('deleted_at', null)
 
@@ -32,32 +32,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .eq('is_published', true)
     .is('deleted_at', null)
 
-  // Alle aktiven Kategorien (deleted_at / updated_at evtl. nicht vorhanden → Fallback)
+  // Alle aktiven Kategorien (deleted_at evtl. nicht vorhanden → Fallback)
   let categories: any[] = []
   try {
     const { data, error } = await supabase
       .from('categories')
-      .select('slug, type, location')
+      .select('slug, type')
       .is('deleted_at', null)
     if (!error) categories = data ?? []
     else {
-      // deleted_at-Spalte existiert noch nicht → ohne Filter laden
-      const { data: fallback } = await supabase
-        .from('categories')
-        .select('slug, type, location')
+      const { data: fallback } = await supabase.from('categories').select('slug, type')
       categories = fallback ?? []
     }
   } catch { /* ignore */ }
 
-  // Produkt-URLs — je nach Kategorie-Typ den richtigen Pfad wählen
+  // Produkt-URLs — Bereich bestimmt den Pfad
   const productUrls: MetadataRoute.Sitemap = (products ?? []).map((p: any) => {
-    const type     = p.category?.type     as string | undefined
-    const location = p.category?.location as string | undefined
-    let path = `/${location ?? 'aussen'}/${p.slug}`
-    if (type === 'sonderanfertigung') path = `/sonderanfertigung/${p.slug}`
-    else if (type === 'extras')       path = `/extras/${p.slug}`
+    const bereich = p.bereich ?? p.category?.type ?? 'massivproduktion'
     return {
-      url:          `${BASE}${path}`,
+      url:          `${BASE}/${bereich}/${p.slug}`,
       lastModified: new Date(p.updated_at),
       priority:     0.8,
       changeFrequency: 'weekly' as const,
@@ -72,32 +65,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'monthly' as const,
   }))
 
-  // Kategorie-URLs — je nach Bereich den richtigen Pfad wählen
-  const categoryUrls: MetadataRoute.Sitemap = (categories ?? []).map((c: any) => {
-    let basePath = `/${c.location ?? 'aussen'}`
-    if (c.type === 'sonderanfertigung') basePath = '/sonderanfertigung'
-    else if (c.type === 'extras')       basePath = '/extras'
-    return {
-      url:          `${BASE}${basePath}/kategorie/${c.slug}`,
-      lastModified: new Date(),
-      priority:     0.75,
-      changeFrequency: 'weekly' as const,
-    }
-  })
+  // Kategorie-URLs
+  const categoryUrls: MetadataRoute.Sitemap = (categories ?? []).map((c: any) => ({
+    url:          `${BASE}/${c.type}/kategorie/${c.slug}`,
+    lastModified: new Date(),
+    priority:     0.75,
+    changeFrequency: 'weekly' as const,
+  }))
 
   // Statische Seiten
   const staticUrls: MetadataRoute.Sitemap = [
-    url('/',                  1.0, 'weekly'),
-    url('/aussen',            0.9, 'daily'),
-    url('/innen',             0.9, 'daily'),
-    url('/sonderanfertigung', 0.8, 'weekly'),
-    url('/extras',            0.7, 'weekly'),
-    url('/referenzen',        0.8, 'weekly'),
-    url('/ueber-uns',         0.6, 'monthly'),
-    url('/karriere',          0.6, 'weekly'),
-    url('/impressum',         0.3, 'yearly'),
-    url('/datenschutz',       0.3, 'yearly'),
-    url('/agb',               0.3, 'yearly'),
+    url('/',                   1.0, 'weekly'),
+    url('/massivproduktion',   0.9, 'daily'),
+    url('/sonderanfertigung',  0.8, 'weekly'),
+    url('/gartengestaltung',   0.8, 'weekly'),
+    url('/extras',             0.7, 'weekly'),
+    url('/referenzen',         0.8, 'weekly'),
+    url('/ueber-uns',          0.6, 'monthly'),
+    url('/karriere',           0.6, 'weekly'),
+    url('/impressum',          0.3, 'yearly'),
+    url('/datenschutz',        0.3, 'yearly'),
+    url('/agb',                0.3, 'yearly'),
   ]
 
   return [...staticUrls, ...categoryUrls, ...productUrls, ...referenceUrls]

@@ -85,28 +85,31 @@ function AllBereicheDropdown({
       onMouseEnter={openMenu}
       onMouseLeave={closeMenu}
     >
-      <button
+      <Link
+        href="/bereiche"
         className={clsx(styles.navLink, styles.dropdownTrigger, styles.bereicheTrigger, isActive && styles.active)}
-        onClick={() => setOpen((o) => !o)}
-        aria-label="Unsere Bereiche"
+        onClick={() => setOpen(false)}
+        aria-label="Alle Bereiche und Kategorien ansehen"
       >
         <IconBereiche />
         Bereiche
-        <svg
+        <span
           className={clsx(styles.chevron, open && styles.chevronOpen)}
-          width="9" height="9" viewBox="0 0 10 10" fill="none"
-          stroke="currentColor" strokeWidth="1.5"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen((o) => !o) }}
+          role="button"
+          aria-label="Bereiche-Menü öffnen"
+          style={{ display: 'inline-flex' }}
         >
-          <path d="M2 3.5 L5 6.5 L8 3.5"/>
-        </svg>
-      </button>
+          <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M2 3.5 L5 6.5 L8 3.5"/>
+          </svg>
+        </span>
+      </Link>
 
       {open && (
         <div className={clsx(styles.dropdownMenu, styles.megaMenu)}>
           {bereiche.map((b) => {
-            const hasAussen = b.aussen.length > 0
-            const hasInnen  = b.innen.length  > 0
-            const hasAny    = hasAussen || hasInnen
+            const hasAny = b.categories.length > 0
             return (
               <div key={b.key} className={styles.megaCol}>
                 <Link
@@ -121,42 +124,18 @@ function AllBereicheDropdown({
                 {!hasAny ? (
                   <span className={styles.dropdownEmpty}>Noch keine Kategorien</span>
                 ) : (
-                  <>
-                    {hasAussen && (
-                      <div className={styles.dropdownGroup}>
-                        <Link href="/aussen" className={styles.dropdownGroupLabel} onClick={() => setOpen(false)}>
-                          Außenbereich →
-                        </Link>
-                        {b.aussen.map((cat) => (
-                          <Link
-                            key={cat.slug}
-                            href={`/aussen/kategorie/${cat.slug}`}
-                            className={styles.dropdownItem}
-                            onClick={() => setOpen(false)}
-                          >
-                            {cat.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                    {hasInnen && (
-                      <div className={clsx(styles.dropdownGroup, hasAussen && styles.dropdownGroupBorder)}>
-                        <Link href="/innen" className={styles.dropdownGroupLabel} onClick={() => setOpen(false)}>
-                          Innenbereich →
-                        </Link>
-                        {b.innen.map((cat) => (
-                          <Link
-                            key={cat.slug}
-                            href={`/innen/kategorie/${cat.slug}`}
-                            className={styles.dropdownItem}
-                            onClick={() => setOpen(false)}
-                          >
-                            {cat.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </>
+                  <div className={styles.dropdownGroup}>
+                    {b.categories.map((cat) => (
+                      <Link
+                        key={cat.slug}
+                        href={`/${b.key}/kategorie/${cat.slug}`}
+                        className={styles.dropdownItem}
+                        onClick={() => setOpen(false)}
+                      >
+                        {cat.name}
+                      </Link>
+                    ))}
+                  </div>
                 )}
               </div>
             )
@@ -297,11 +276,11 @@ export default function Navbar({ bereiche = [], extrasCategories = [] }: Props) 
   function isBereichActive(b: NavBereich): boolean {
     // Direkte Übereinstimmung mit der eigenen Bereich-Seite
     if (pathname.startsWith(`/${b.key}`)) return true
-    // Kategorie-Seiten: /aussen/kategorie/[slug] oder /innen/kategorie/[slug]
+    // Kategorie-Seiten: /<bereich>/kategorie/[slug]
     const isKategorie = pathname.includes('/kategorie/')
     if (!isKategorie) return false
     const catSlug = pathname.split('/kategorie/')[1] ?? ''
-    return [...b.aussen, ...b.innen].some((cat) => cat.slug === catSlug)
+    return b.categories.some((cat) => cat.slug === catSlug)
   }
   const anyBereichActive = bereiche.some(isBereichActive)
 
@@ -420,7 +399,6 @@ export default function Navbar({ bereiche = [], extrasCategories = [] }: Props) 
 
           {bereiche.map((b) => {
             const isOpen = mobileOpen === b.key
-            const mainHref = b.key === 'sonderanfertigung' ? '/sonderanfertigung' : '/aussen'
             return (
               <div key={b.key}>
                 <button
@@ -438,35 +416,14 @@ export default function Navbar({ bereiche = [], extrasCategories = [] }: Props) 
                 </button>
                 {isOpen && (
                   <div className={styles.mobileSubMenu}>
-                    <Link href={mainHref} className={clsx(styles.mobileSubLink, styles.mobileSubLinkHeader)}>
+                    <Link href={`/${b.key}`} className={clsx(styles.mobileSubLink, styles.mobileSubLinkHeader)}>
                       Alle {b.label} →
                     </Link>
-                    {b.aussen.length > 0 && (
-                      <>
-                        <div className={styles.mobileSubGroupLabel}>Außenbereich</div>
-                        {b.aussen.map((cat) => (
-                          <Link key={cat.slug} href={`/aussen/kategorie/${cat.slug}`} className={styles.mobileSubLink}>
-                            {cat.name}
-                          </Link>
-                        ))}
-                      </>
-                    )}
-                    {b.innen.length > 0 && (
-                      <>
-                        <div className={styles.mobileSubGroupLabel}>Innenbereich</div>
-                        {b.innen.map((cat) => (
-                          <Link key={cat.slug} href={`/innen/kategorie/${cat.slug}`} className={styles.mobileSubLink}>
-                            {cat.name}
-                          </Link>
-                        ))}
-                      </>
-                    )}
-                    {b.aussen.length === 0 && b.innen.length === 0 && (
-                      <>
-                        <Link href="/aussen" className={styles.mobileSubLink}>Außenbereich</Link>
-                        <Link href="/innen"  className={styles.mobileSubLink}>Innenbereich</Link>
-                      </>
-                    )}
+                    {b.categories.map((cat) => (
+                      <Link key={cat.slug} href={`/${b.key}/kategorie/${cat.slug}`} className={styles.mobileSubLink}>
+                        {cat.name}
+                      </Link>
+                    ))}
                   </div>
                 )}
               </div>

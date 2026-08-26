@@ -14,15 +14,30 @@ const HOURS = [
   { days: 'Abholungen Mo – Fr', time: 'bis 16:45 Uhr' },
 ]
 
-// TODO: dritten Standort ergänzen, sobald Adresse bekannt ist
 const LOCATIONS = [
   {
     name:    'Hauptsitz – Inning am Ammersee',
     address: 'Rudolf-Diesel-Ring 6, 82266 Inning am Ammersee',
+    phone:   null as { display: string; href: string } | null,
+    email:   null as string | null,
   },
   {
-    name:    'Filiale Kaisheim',
+    name:    'Gandl Natursteine GmbH – Kaisheim',
     address: 'Gewerbepark 11, 86687 Kaisheim',
+    phone:   { display: '09099 966910', href: '+4909099966910' } as { display: string; href: string } | null,
+    email:   null as string | null,
+  },
+  {
+    name:    'Gandl Natursteine – Kirchheim',
+    address: 'Konsul-Metzing-Str. 3, 97268 Kirchheim',
+    phone:   { display: '+49 9366 99397', href: '+4993669397' } as { display: string; href: string } | null,
+    email:   'info@gandl-kirchheim.de' as string | null,
+  },
+  {
+    name:    'Baustoffe und Natursteine Hammerl GmbH – Pöttmes',
+    address: 'Rudolf-Diesel-Str. 18, 86554 Pöttmes',
+    phone:   { display: '08253 997600', href: '+498253997600' } as { display: string; href: string } | null,
+    email:   'info@hammerl-baustoffe.de' as string | null,
   },
 ]
 
@@ -126,16 +141,31 @@ export default function ContactSidebar() {
             <div className={styles.popover}>
               <p className={styles.popoverTitle}>Unsere Standorte</p>
               {LOCATIONS.map((loc) => (
-                <a
-                  key={loc.name}
-                  href={mapsUrl(loc.address)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.locationLink}
-                >
-                  <strong>{loc.name}</strong>
-                  <span>{loc.address}</span>
-                </a>
+                <div key={loc.name} className={styles.locationBlock}>
+                  <a
+                    href={mapsUrl(loc.address)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.locationLink}
+                  >
+                    <strong>{loc.name}</strong>
+                    <span>{loc.address}</span>
+                  </a>
+                  {(loc.phone || loc.email) && (
+                    <div className={styles.locationContact}>
+                      {loc.phone && (
+                        <a href={`tel:${loc.phone.href}`} className={styles.locationContactLink}>
+                          {loc.phone.display}
+                        </a>
+                      )}
+                      {loc.email && (
+                        <a href={`mailto:${loc.email}`} className={styles.locationContactLink}>
+                          {loc.email}
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           )}

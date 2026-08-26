@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useBasket } from './BasketContext'
-import type { Product } from '@/lib/types'
+import type { Product, ProductSize } from '@/lib/types'
 import { UNIT_LABELS } from '@/lib/types'
 import styles from './ProductDetail.module.css'
 
@@ -19,7 +19,17 @@ export default function ProductDetail({ product, backHref, backLabel }: {
     ...(product.images ?? []).filter((u) => u !== product.thumbnail),
   ].slice(0, 7) // thumbnail + max 6 gallery
 
+  const sizes: ProductSize[] = (product as any).sizes ?? []
+  const hasSizes = sizes.length > 0
+  const [selectedSizeIdx, setSelectedSizeIdx] = useState<number>(0)
+  const selectedSize = hasSizes ? sizes[selectedSizeIdx] : null
+
   const inBasket = hasItem(product.id)
+
+  // Bei Größenvarianten: eigener Preis der gewählten Größe, sonst der normale Produktpreis.
+  const activePrice = hasSizes
+    ? (selectedSize?.price ?? null)
+    : (product.price ?? null)
 
   function handleAddToBasket() {
     if (inBasket) { openDrawer(); return }
@@ -27,11 +37,12 @@ export default function ProductDetail({ product, backHref, backLabel }: {
       productId:    product.id,
       productName:  product.name,
       productSlug:  product.slug,
-      categoryType: (product.category?.type ?? 'massivproduktion'),
+      categoryType: ((product as any).bereich ?? product.category?.type ?? 'massivproduktion'),
       thumbnail:    product.thumbnail,
-      price:        product.show_price ? (product.price ?? null) : null,
+      price:        product.show_price ? activePrice : null,
       show_price:   product.show_price ?? false,
       unit:         (product as any).unit ?? 'qm',
+      size:         hasSizes ? selectedSize?.label ?? null : null,
     })
   }
 
@@ -92,15 +103,35 @@ export default function ProductDetail({ product, backHref, backLabel }: {
             )}
           </dl>
 
-          {product.description && (
-            <p className={styles.description}>{product.description}</p>
+          {hasSizes && (
+            <div style={{ margin: '20px 0' }}>
+              <label style={{ display: 'block', fontSize: '13px', letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--color-text-dim)', marginBottom: '8px' }}>
+                Größe wählen
+              </label>
+              <select
+                value={selectedSizeIdx}
+                onChange={(e) => setSelectedSizeIdx(Number(e.target.value))}
+                style={{
+                  width: '100%', height: '46px', padding: '0 14px',
+                  background: 'rgba(155,174,159,0.04)', border: '0.5px solid rgba(155,174,159,0.2)',
+                  color: '#efece4', fontFamily: 'var(--font-inter), sans-serif', fontSize: '15px',
+                }}
+              >
+                {sizes.map((s, i) => (
+                  <option key={i} value={i}>
+                    {s.label}
+                    {product.show_price && s.price != null ? ` — ${Number(s.price).toLocaleString('de-DE', { minimumFractionDigits: 2 })} €` : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
           )}
 
           <div className={styles.divider} />
 
-          {(product as any).show_price && (product as any).price != null ? (
+          {(product as any).show_price && activePrice != null ? (
             <p className={styles.priceNote} style={{ fontSize: '22px', color: '#9bae9f', letterSpacing: '.04em' }}>
-              ab {Number((product as any).price).toLocaleString('de-DE', { minimumFractionDigits: 2 })} € / {UNIT_LABELS[((product as any).unit ?? 'qm') as keyof typeof UNIT_LABELS].short}
+              ab {Number(activePrice).toLocaleString('de-DE', { minimumFractionDigits: 2 })} € / {UNIT_LABELS[((product as any).unit ?? 'qm') as keyof typeof UNIT_LABELS].short}
             </p>
           ) : (
             <p className={styles.priceNote}>
@@ -116,6 +147,19 @@ export default function ProductDetail({ product, backHref, backLabel }: {
           </button>
 
           <p className={styles.ctaNote}>Unverbindlich · Antwort innerhalb 1–2 Werktagen</p>
+
+          {/* Beschreibung steht bewusst NACH der Anfrage-Aktion und in einem eigenen
+              scrollbaren Kasten, damit ein langer Text den Button nicht nach unten
+              wegdrückt — der Button bleibt immer direkt sichtbar. */}
+          {product.description && (
+            <>
+              <div className={styles.divider} />
+              <p className={styles.descriptionLabel}>Produktinformation</p>
+              <div className={styles.descriptionBox}>
+                <p className={styles.description}>{product.description}</p>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </article>

@@ -53,6 +53,7 @@ export default function InquiryForm({ productId, productName }: InquiryFormProps
           quantity:    it.quantity,
           unit:        it.unit,
           sourceType:  it.sourceType,
+          size:        it.size,
         })),
       })
 

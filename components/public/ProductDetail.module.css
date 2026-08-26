@@ -100,10 +100,34 @@
   font-size: 15px; color: #9caea1; margin: 0;
 }
 
+.descriptionLabel {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--color-text-dim); margin: 20px 0 10px;
+}
+
+/* Eigener, begrenzter Scroll-Kasten für lange Beschreibungstexte — so bleibt
+   die Anfrage-Aktion oben immer sofort erreichbar, egal wie lang der Text ist. */
+.descriptionBox {
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 6px;
+  /* dezenter Ausblendeffekt am unteren Rand als Scroll-Hinweis */
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent 100%);
+}
+.descriptionBox::-webkit-scrollbar { width: 5px; }
+.descriptionBox::-webkit-scrollbar-track { background: transparent; }
+.descriptionBox::-webkit-scrollbar-thumb {
+  background: rgba(155, 174, 159,0.25);
+  border-radius: 3px;
+}
+
 .description {
   font-family: var(--font-inter), sans-serif;
   font-size: 15px; color: var(--color-text-muted);
   line-height: 1.75; margin: 0 0 24px;
+  white-space: pre-wrap;
 }
 
 .divider {
@@ -147,4 +171,5 @@
   .info   { position: static; }
   .page   { padding: 24px 20px 60px; }
   .thumbRow { grid-template-columns: repeat(4, 1fr); }
+  .descriptionBox { max-height: 200px; }
 }

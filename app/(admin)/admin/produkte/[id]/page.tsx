@@ -8,28 +8,36 @@ import type { Product, Category } from '@/lib/types'
 import styles from '../../form.module.css'
 
 function getPublicUrl(product: Product): string {
-  const cat = product.category as any
-  const type     = cat?.type     as string | undefined
-  const location = cat?.location as string | undefined
-  if (type === 'sonderanfertigung') return `/sonderanfertigung/${product.slug}`
-  if (type === 'extras')            return `/extras/${product.slug}`
-  return `/${location ?? 'aussen'}/${product.slug}`
+  const bereich = (product as any).bereich ?? product.category?.type ?? 'massivproduktion'
+  return `/${bereich}/${product.slug}`
 }
 
 async function getData(id: string) {
   try {
     const supabase = createSupabaseAdminClient()
     const [{ data: product }, { data: categories }] = await Promise.all([
-      supabase.from('products').select('*, category:categories(*)').eq('id', id).single(),
+      supabase.from('products').select('*, category:categories!products_category_id_fkey(*)').eq('id', id).single(),
       supabase.from('categories').select('*').order('type').order('sort_order'),
     ])
-    return { product: product as Product, categories: (categories as Category[]) ?? [] }
-  } catch { return { product: null, categories: [] } }
+
+    // Weitere zugeordnete Kategorien (Mehrfachzuordnung) — tolerant, falls
+    // Migration 024 (product_categories) noch nicht ausgeführt wurde.
+    let extraCategoryIds: string[] = []
+    try {
+      const { data: links } = await supabase
+        .from('product_categories').select('category_id').eq('product_id', id)
+      extraCategoryIds = ((links ?? []) as { category_id: string }[])
+        .map((l) => l.category_id)
+        .filter((catId) => catId !== (product as any)?.category_id)
+    } catch {}
+
+    return { product: product as Product, categories: (categories as Category[]) ?? [], extraCategoryIds }
+  } catch { return { product: null, categories: [], extraCategoryIds: [] as string[] } }
 }
 
 export default async function EditProduktPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const { product, categories } = await getData(id)
+  const { product, categories, extraCategoryIds } = await getData(id)
   if (!product) notFound()
 
   return (
@@ -55,7 +63,7 @@ export default async function EditProduktPage({ params }: { params: Promise<{ id
         </div>
       </div>
 
-      <EditProductForm product={product!} categories={categories} />
+      <EditProductForm product={product!} categories={categories} extraCategoryIds={extraCategoryIds} />
     </div>
   )
 }

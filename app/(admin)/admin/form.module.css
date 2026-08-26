@@ -13,13 +13,45 @@
   font-size: 12px; letter-spacing: .14em;
   text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 12px;
 }
-.form { max-width: 800px; }
+.form { max-width: 800px; width: 100%; }
 .formGrid {
   display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px;
-  margin-bottom: 32px; align-items: end;
+  margin-bottom: 32px; align-items: start;
 }
-.field { display: flex; flex-direction: column; gap: 7px; }
+.field { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
 .fullWidth { grid-column: 1 / -1; }
+
+/* ── Größenvarianten-Zeile (Produktformular) ── */
+.sizeRow {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  border-bottom: 0.5px solid rgba(155,174,159,0.08);
+  padding-bottom: 14px;
+  margin-bottom: 4px;
+}
+.sizeRow input {
+  background: #141413;
+  border: 0.5px solid rgba(155, 174, 159,0.12);
+  padding: 11px 14px;
+  font-size: 16px; color: #dcdcd6;
+  font-family: var(--font-inter), sans-serif;
+  outline: none; transition: border-color .2s;
+}
+.sizeRow input:focus { border-color: rgba(155, 174, 159,0.4); }
+.sizeRow input::placeholder { color: var(--color-text-dim); }
+.sizeLabelInput  { flex: 2 1 220px; min-width: 0; }
+.sizePriceInput  { flex: 1 1 140px; min-width: 0; }
+.sizeArticleInput { flex: 1 1 140px; min-width: 0; }
+
+/* ── Responsiv: Admin-Formulare auf Tablet/Handy ── */
+@media (max-width: 720px) {
+  .formGrid { grid-template-columns: 1fr; gap: 16px; }
+  .pageTitle { font-size: 32px; }
+  .form { max-width: 100%; }
+  .sizeRow { flex-direction: column; }
+  .sizeLabelInput, .sizePriceInput, .sizeArticleInput { flex: 1 1 auto; width: 100%; }
+}
 
 .field label {
   font-family: var(--font-inter), sans-serif;
@@ -76,4 +108,33 @@
   border: none; width: 20px; height: 20px;
   font-size: 12px; cursor: pointer; border-radius: 2px;
   display: flex; align-items: center; justify-content: center;
+}
+
+/* ── Mehrfach-Kategorien: Checkbox-Liste ── */
+.categoryCheckList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(155,174,159,0.25);
+  border-radius: 4px;
+  background: rgba(155,174,159,0.03);
+  max-height: 220px;
+  overflow-y: auto;
+}
+.categoryCheckItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.categoryCheckItem input {
+  width: 15px;
+  height: 15px;
+  accent-color: #9bae9f;
+  cursor: pointer;
+}
+.categoryCheckItem.disabledPrimary {
+  opacity: 0.6;
 }

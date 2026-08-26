@@ -20,7 +20,7 @@ async function getData() {
     const supabase = createSupabaseAdminClient()
     const [{ data: products }, { data: categories }] = await Promise.all([
       supabase.from('products')
-        .select('*, category:categories!inner(*)')
+        .select('*, category:categories!products_category_id_fkey!inner(*)')
         .eq('is_active', true)
         .is('deleted_at', null)
         .eq('category.location', 'aussen')

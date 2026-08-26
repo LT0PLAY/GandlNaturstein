@@ -4,9 +4,10 @@ import OekostromBadge from '@/components/public/OekostromBadge'
 import styles from './Footer.module.css'
 
 const LINKS_BEREICHE = [
-  { label: 'Außenbereich',      href: '/aussen'            },
-  { label: 'Innenbereich',      href: '/innen'             },
+  { label: 'Massivproduktion',  href: '/massivproduktion'  },
   { label: 'Sonderanfertigung', href: '/sonderanfertigung' },
+  { label: 'Gartengestaltung',  href: '/gartengestaltung'  },
+  { label: 'Extras',            href: '/extras'            },
   { label: 'Referenzen',        href: '/referenzen'        },
 ]
 
@@ -47,7 +48,11 @@ export default function Footer() {
               Naturstein für Außen, Innen<br />
               und Sonderanfertigungen.
             </p>
-            <p className={styles.taglineSub}>München · Seit 1987</p>
+            <p className={styles.taglineSub}>
+              München{' '}
+              <Link href="/admin" className={styles.hiddenAdminDot} tabIndex={-1}>·</Link>
+              {' '}Seit 1987
+            </p>
           </div>
 
           {/* Bereiche */}

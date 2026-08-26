@@ -1,15 +1,10 @@
-import type { CategoryBereich, CategoryLocation } from '@/lib/types'
+import type { CategoryBereich } from '@/lib/types'
 
-/** Leitet zur richtigen Produkt-URL weiter, basierend auf Bereich + Location */
+/** Leitet zur richtigen Produkt-URL weiter, basierend auf dem Bereich */
 export function getProductUrl(opts: {
-  slug:             string
-  categoryType:     CategoryBereich | null | undefined
-  categoryLocation: CategoryLocation | null | undefined
+  slug:    string
+  bereich: CategoryBereich | null | undefined
 }): string {
-  const { slug, categoryType, categoryLocation } = opts
-  if (categoryType === 'sonderanfertigung') return `/sonderanfertigung/${slug}`
-  if (categoryType === 'extras')            return `/extras/${slug}`
-  // aussen/innen anhand location, fallback auf aussen
-  const location = categoryLocation ?? 'aussen'
-  return `/${location}/${slug}`
+  const { slug, bereich } = opts
+  return `/${bereich ?? 'massivproduktion'}/${slug}`
 }
