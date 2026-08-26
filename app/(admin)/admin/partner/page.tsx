@@ -63,14 +63,14 @@ export default async function AdminPartnerPage() {
                     ? <img src={p.logo_url} alt={p.name} className={styles.thumb} style={{ objectFit: 'contain', background: '#fff' }} />
                     : <div className={styles.thumbEmpty} />}
                 </td>
-                <td className={styles.tdName}>{p.name}</td>
-                <td className={styles.tdMuted}>{p.pdfs?.length ?? 0} / 10</td>
-                <td>
+                <td className={styles.tdName} data-label="Name">{p.name}</td>
+                <td className={styles.tdMuted} data-label="PDFs">{p.pdfs?.length ?? 0} / 10</td>
+                <td data-label="Status">
                   <span className={styles.badge} data-active={p.is_active}>
                     {p.is_active ? 'Aktiv' : 'Inaktiv'}
                   </span>
                 </td>
-                <td>
+                <td className={styles.tdActionsCell}>
                   <div className={styles.btnGroup}>
                     <Link href={`/admin/partner/${p.id}`} className={styles.btnEdit}>
                       Bearbeiten

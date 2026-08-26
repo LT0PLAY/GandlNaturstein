@@ -70,7 +70,7 @@ export default async function AdminKarrierePage() {
           <tbody>
             {jobs.map((j) => (
               <tr key={j.id}>
-                <td className={styles.tdName}>
+                <td className={styles.tdName} data-label="Stelle">
                   {j.title}
                   {j.department && (
                     <span className={styles.tdMuted} style={{ display: 'block', fontSize: '13px' }}>
@@ -78,19 +78,19 @@ export default async function AdminKarrierePage() {
                     </span>
                   )}
                 </td>
-                <td className={styles.tdMuted}>{j.employment_type ?? '—'}</td>
-                <td className={styles.tdMuted}>{j.location ?? '—'}</td>
-                <td className={styles.tdMuted}>
+                <td className={styles.tdMuted} data-label="Art">{j.employment_type ?? '—'}</td>
+                <td className={styles.tdMuted} data-label="Standort">{j.location ?? '—'}</td>
+                <td className={styles.tdMuted} data-label="PDF">
                   {j.pdf_url
                     ? <a href={j.pdf_url} target="_blank" rel="noreferrer" style={{ color: 'var(--color-sage)', fontSize: '13px' }}>PDF ↗</a>
                     : '—'}
                 </td>
-                <td>
+                <td data-label="Status">
                   <span className={styles.badge} data-active={j.is_published}>
                     {j.is_published ? 'Veröffentlicht' : 'Entwurf'}
                   </span>
                 </td>
-                <td>
+                <td className={styles.tdActionsCell}>
                   <div className={styles.btnGroup}>
                     <Link href={`/admin/karriere/${j.id}`} className={styles.btnEdit}>
                       Bearbeiten

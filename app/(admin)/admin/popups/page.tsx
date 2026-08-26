@@ -68,17 +68,17 @@ export default async function AdminPopupsPage() {
                     ? <img src={p.image_url} alt={p.title} className={styles.thumb} />
                     : <div className={styles.thumbEmpty} />}
                 </td>
-                <td className={styles.tdName}>{p.title}</td>
-                <td className={styles.tdMuted} style={{ maxWidth: '260px' }}>
+                <td className={styles.tdName} data-label="Name">{p.title}</td>
+                <td className={styles.tdMuted} style={{ maxWidth: '260px' }} data-label="Info-Text">
                   {p.message ? (p.message.length > 60 ? `${p.message.slice(0, 60)}…` : p.message) : '—'}
                 </td>
-                <td className={styles.tdMuted}>{formatDate(p.active_until)}</td>
-                <td>
+                <td className={styles.tdMuted} data-label="Deaktiviert am">{formatDate(p.active_until)}</td>
+                <td data-label="Status">
                   <span className={styles.badge} data-active={p.is_active}>
                     {p.is_active ? 'Aktiv' : 'Inaktiv'}
                   </span>
                 </td>
-                <td>
+                <td className={styles.tdActionsCell}>
                   <div className={styles.btnGroup}>
                     <ToggleActiveButton
                       action={togglePopupActive.bind(null, p.id, !p.is_active)}

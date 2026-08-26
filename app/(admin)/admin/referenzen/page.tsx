@@ -62,7 +62,7 @@ export default async function AdminReferenzenPage() {
                     ? <img src={r.cover_image} alt={r.title} className={styles.thumb} />
                     : <div className={styles.thumbEmpty}>—</div>}
                 </td>
-                <td className={styles.tdName}>
+                <td className={styles.tdName} data-label="Titel">
                   {r.title}
                   {r.subtitle && (
                     <span className={styles.tdMuted} style={{ display: 'block', fontSize: '13px' }}>
@@ -70,18 +70,18 @@ export default async function AdminReferenzenPage() {
                     </span>
                   )}
                 </td>
-                <td className={styles.tdMuted} style={{ fontSize: '13px' }}>
+                <td className={styles.tdMuted} style={{ fontSize: '13px' }} data-label="Tags">
                   {r.category_tags?.join(' · ') || '—'}
                 </td>
-                <td className={styles.tdMuted}>
+                <td className={styles.tdMuted} data-label="Produkt">
                   {(r.product as any)?.name ?? '—'}
                 </td>
-                <td>
+                <td data-label="Status">
                   <span className={styles.badge} data-active={r.is_published}>
                     {r.is_published ? 'Veröffentlicht' : 'Entwurf'}
                   </span>
                 </td>
-                <td>
+                <td className={styles.tdActionsCell}>
                   <div className={styles.btnGroup}>
                     <Link href={`/admin/referenzen/${r.id}`} className={styles.btnEdit}>
                       Bearbeiten

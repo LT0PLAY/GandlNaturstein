@@ -191,14 +191,14 @@ export default async function PapierkorbPage() {
                       ? <img src={p.thumbnail ?? p.images[0]} alt={p.name} className={styles.thumb} />
                       : <div className={styles.thumbEmpty}>—</div>}
                   </td>
-                  <td className={styles.tdName}>
+                  <td className={styles.tdName} data-label="Produkt">
                     {p.name}
                     {p.material && <span className={styles.tdMuted} style={{ display: 'block', fontSize: '13px' }}>{p.material}</span>}
                   </td>
-                  <td className={styles.tdMuted}>
+                  <td className={styles.tdMuted} data-label="Beantragt">
                     {p.delete_requested_at ? timeAgo(p.delete_requested_at) : '—'}
                   </td>
-                  <td>
+                  <td className={styles.tdActionsCell}>
                     <div className={trashStyles.btnGroup}>
                       <DeleteButton
                         action={approveDeleteProduct.bind(null, p.id)}
@@ -254,14 +254,14 @@ export default async function PapierkorbPage() {
                       ? <img src={p.thumbnail ?? p.images[0]} alt={p.name} className={styles.thumb} style={{ filter: 'grayscale(0.6)' }} />
                       : <div className={styles.thumbEmpty}>—</div>}
                   </td>
-                  <td className={styles.tdName}>
+                  <td className={styles.tdName} data-label="Produkt">
                     {p.name}
                     {p.material && <span className={styles.tdMuted} style={{ display: 'block', fontSize: '13px' }}>{p.material}</span>}
                   </td>
-                  <td className={styles.tdMuted}>
+                  <td className={styles.tdMuted} data-label="Gelöscht">
                     {p.deleted_at ? new Date(p.deleted_at).toLocaleDateString('de-DE') : '—'}
                   </td>
-                  <td>
+                  <td className={styles.tdActionsCell}>
                     <div className={trashStyles.btnGroup}>
                       <DeleteButton
                         action={restoreProduct.bind(null, p.id)}
@@ -317,14 +317,14 @@ export default async function PapierkorbPage() {
                       ? <img src={r.cover_image} alt={r.title} className={styles.thumb} style={{ filter: 'grayscale(0.6)' }} />
                       : <div className={styles.thumbEmpty}>—</div>}
                   </td>
-                  <td className={styles.tdName}>
+                  <td className={styles.tdName} data-label="Referenz">
                     {r.title}
                     {r.subtitle && <span className={styles.tdMuted} style={{ display: 'block', fontSize: '13px' }}>{r.subtitle}</span>}
                   </td>
-                  <td className={styles.tdMuted}>
+                  <td className={styles.tdMuted} data-label="Gelöscht">
                     {r.deleted_at ? new Date(r.deleted_at).toLocaleDateString('de-DE') : '—'}
                   </td>
-                  <td>
+                  <td className={styles.tdActionsCell}>
                     <div className={trashStyles.btnGroup}>
                       <DeleteButton
                         action={restoreReference.bind(null, r.id)}
@@ -375,14 +375,14 @@ export default async function PapierkorbPage() {
             <tbody>
               {trashedCategories.map((c: any) => (
                 <tr key={c.id} style={{ opacity: 0.65 }}>
-                  <td className={styles.tdName}>{c.name}</td>
-                  <td className={styles.tdMuted}>
+                  <td className={styles.tdName} data-label="Kategorie">{c.name}</td>
+                  <td className={styles.tdMuted} data-label="Bereich">
                     {BEREICH_LABELS[c.type as keyof typeof BEREICH_LABELS] ?? c.type}
                   </td>
-                  <td className={styles.tdMuted}>
+                  <td className={styles.tdMuted} data-label="Gelöscht">
                     {c.deleted_at ? new Date(c.deleted_at).toLocaleDateString('de-DE') : '—'}
                   </td>
-                  <td>
+                  <td className={styles.tdActionsCell}>
                     <div className={trashStyles.btnGroup}>
                       <DeleteButton
                         action={restoreCategory.bind(null, c.id)}
@@ -433,15 +433,15 @@ export default async function PapierkorbPage() {
             <tbody>
               {trashedJobs.map((j: any) => (
                 <tr key={j.id} style={{ opacity: 0.65 }}>
-                  <td className={styles.tdName}>
+                  <td className={styles.tdName} data-label="Stelle">
                     {j.title}
                     {j.department && <span className={styles.tdMuted} style={{ display: 'block', fontSize: '13px' }}>{j.department}</span>}
                   </td>
-                  <td className={styles.tdMuted}>{j.employment_type ?? '—'}</td>
-                  <td className={styles.tdMuted}>
+                  <td className={styles.tdMuted} data-label="Art">{j.employment_type ?? '—'}</td>
+                  <td className={styles.tdMuted} data-label="Gelöscht">
                     {j.deleted_at ? new Date(j.deleted_at).toLocaleDateString('de-DE') : '—'}
                   </td>
-                  <td>
+                  <td className={styles.tdActionsCell}>
                     <div className={trashStyles.btnGroup}>
                       <DeleteButton
                         action={restoreJobListing.bind(null, j.id)}
@@ -497,11 +497,11 @@ export default async function PapierkorbPage() {
                       ? <img src={pt.logo_url} alt={pt.name} className={styles.thumb} style={{ filter: 'grayscale(0.6)', objectFit: 'contain', background: '#fff' }} />
                       : <div className={styles.thumbEmpty}>—</div>}
                   </td>
-                  <td className={styles.tdName}>{pt.name}</td>
-                  <td className={styles.tdMuted}>
+                  <td className={styles.tdName} data-label="Partner">{pt.name}</td>
+                  <td className={styles.tdMuted} data-label="Gelöscht">
                     {pt.deleted_at ? new Date(pt.deleted_at).toLocaleDateString('de-DE') : '—'}
                   </td>
-                  <td>
+                  <td className={styles.tdActionsCell}>
                     <div className={trashStyles.btnGroup}>
                       <DeleteButton
                         action={restorePartner.bind(null, pt.id)}
@@ -558,12 +558,12 @@ export default async function PapierkorbPage() {
                       ? <img src={r.images[0]} alt={r.title} className={styles.thumb} style={{ filter: 'grayscale(0.6)' }} />
                       : <div className={styles.thumbEmpty}>—</div>}
                   </td>
-                  <td className={styles.tdName}>{r.title}</td>
-                  <td className={styles.tdMuted}>{r.price != null ? `${r.price.toLocaleString('de-DE')} €` : '—'}</td>
-                  <td className={styles.tdMuted}>
+                  <td className={styles.tdName} data-label="Titel">{r.title}</td>
+                  <td className={styles.tdMuted} data-label="Preis">{r.price != null ? `${r.price.toLocaleString('de-DE')} €` : '—'}</td>
+                  <td className={styles.tdMuted} data-label="Gelöscht">
                     {r.deleted_at ? new Date(r.deleted_at).toLocaleDateString('de-DE') : '—'}
                   </td>
-                  <td>
+                  <td className={styles.tdActionsCell}>
                     <div className={trashStyles.btnGroup}>
                       <DeleteButton
                         action={restoreRestposten.bind(null, r.id)}
@@ -615,17 +615,17 @@ export default async function PapierkorbPage() {
             <tbody>
               {trashedGuideEntries.map((g: any) => (
                 <tr key={g.id} style={{ opacity: 0.65 }}>
-                  <td className={styles.tdName} style={{ fontFamily: 'var(--font-bebas)', fontSize: '20px' }}>{g.number}</td>
+                  <td className={styles.tdName} style={{ fontFamily: 'var(--font-bebas)', fontSize: '20px' }} data-label="#">{g.number}</td>
                   <td>
                     {g.images?.[0]
                       ? <img src={g.images[0]} alt={g.name} className={styles.thumb} style={{ filter: 'grayscale(0.6)' }} />
                       : <div className={styles.thumbEmpty}>—</div>}
                   </td>
-                  <td className={styles.tdName}>{g.name}</td>
-                  <td className={styles.tdMuted}>
+                  <td className={styles.tdName} data-label="Name">{g.name}</td>
+                  <td className={styles.tdMuted} data-label="Gelöscht">
                     {g.deleted_at ? new Date(g.deleted_at).toLocaleDateString('de-DE') : '—'}
                   </td>
-                  <td>
+                  <td className={styles.tdActionsCell}>
                     <div className={trashStyles.btnGroup}>
                       <DeleteButton
                         action={restoreGuideEntry.bind(null, g.id)}

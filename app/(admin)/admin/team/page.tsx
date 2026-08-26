@@ -65,19 +65,19 @@ export default async function TeamPage() {
           <tbody>
             {members.map((m) => (
               <tr key={m.id}>
-                <td className={styles.tdName}>{m.name}</td>
-                <td className={styles.tdMuted}>{m.email}</td>
-                <td>
+                <td className={styles.tdName} data-label="Name">{m.name}</td>
+                <td className={styles.tdMuted} data-label="E-Mail">{m.email}</td>
+                <td data-label="Rolle">
                   <span className={styles.badge} data-role={m.role}>
                     {ROLE_LABELS[m.role]?.label ?? m.role}
                   </span>
                 </td>
-                <td>
+                <td data-label="Status">
                   <span className={styles.badge} data-active={m.is_active}>
                     {m.is_active ? 'Aktiv' : 'Deaktiviert'}
                   </span>
                 </td>
-                <td className={styles.tdActions}>
+                <td className={`${styles.tdActions} ${styles.tdActionsCell}`}>
                   <Link href={`/admin/team/${m.id}`} className={styles.btnEdit}>
                     Bearbeiten
                   </Link>

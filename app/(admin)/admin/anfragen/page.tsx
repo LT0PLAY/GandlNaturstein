@@ -113,10 +113,10 @@ export default async function AnfragenPage({
           <tbody>
             {inquiries.map((inq: any) => (
               <tr key={inq.id}>
-                <td className={styles.tdName}>{inq.name}</td>
-                <td className={styles.tdMuted}>{inq.email}</td>
-                <td className={styles.tdMuted}>{inq.product?.name ?? '—'}</td>
-                <td>
+                <td className={styles.tdName} data-label="Name">{inq.name}</td>
+                <td className={styles.tdMuted} data-label="E-Mail">{inq.email}</td>
+                <td className={styles.tdMuted} data-label="Produkt">{inq.product?.name ?? '—'}</td>
+                <td data-label="Status">
                   <span
                     className={styles.badge}
                     style={{
@@ -128,8 +128,8 @@ export default async function AnfragenPage({
                     {STATUS_LABELS[inq.status]?.label ?? inq.status}
                   </span>
                 </td>
-                <td className={styles.tdMuted}>{timeAgo(inq.created_at)}</td>
-                <td>
+                <td className={styles.tdMuted} data-label="Eingang">{timeAgo(inq.created_at)}</td>
+                <td className={styles.tdActionsCell}>
                   <div className={styles.btnGroup}>
                     <Link href={`/admin/anfragen/${inq.id}`} className={styles.btnEdit}>
                       Öffnen

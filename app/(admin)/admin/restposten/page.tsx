@@ -64,19 +64,19 @@ export default async function AdminRestpostenPage() {
                     ? <img src={r.images[0]} alt={r.title} className={styles.thumb} />
                     : <div className={styles.thumbEmpty} />}
                 </td>
-                <td className={styles.tdName}>{r.title}</td>
-                <td className={styles.tdMuted}>{r.price != null ? `${r.price.toLocaleString('de-DE')} €` : '—'}</td>
-                <td className={styles.tdMuted}>
+                <td className={styles.tdName} data-label="Titel">{r.title}</td>
+                <td className={styles.tdMuted} data-label="Preis">{r.price != null ? `${r.price.toLocaleString('de-DE')} €` : '—'}</td>
+                <td className={styles.tdMuted} data-label="Externer Link">
                   {r.external_link
                     ? <a href={r.external_link} target="_blank" rel="noreferrer" style={{ color: 'var(--color-sage)', fontSize: '13px' }}>Link ↗</a>
                     : '—'}
                 </td>
-                <td>
+                <td data-label="Status">
                   <span className={styles.badge} data-active={r.is_active}>
                     {r.is_active ? 'Aktiv' : 'Inaktiv'}
                   </span>
                 </td>
-                <td>
+                <td className={styles.tdActionsCell}>
                   <div className={styles.btnGroup}>
                     <Link href={`/admin/restposten/${r.id}`} className={styles.btnEdit}>
                       Bearbeiten

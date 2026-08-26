@@ -49,3 +49,8 @@
   justify-content: flex-end;
   align-items: center;
 }
+
+/* ── Responsiv: Aktions-Buttons in den Papierkorb-Tabellen umbrechen lassen ── */
+@media (max-width: 640px) {
+  .btnGroup { flex-wrap: wrap; }
+}

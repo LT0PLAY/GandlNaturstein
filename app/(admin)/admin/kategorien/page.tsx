@@ -113,15 +113,15 @@ export default async function KategorienPage() {
                   <tbody>
                     {cats.map((cat) => (
                       <tr key={cat.id}>
-                        <td className={styles.tdName}>{cat.name}</td>
-                        <td className={styles.tdMuted}>{cat.slug}</td>
-                        <td className={styles.tdMuted}>
+                        <td className={styles.tdName} data-label="Name">{cat.name}</td>
+                        <td className={styles.tdMuted} data-label="Slug">{cat.slug}</td>
+                        <td className={styles.tdMuted} data-label="Titelbild">
                           {cat.image_url
                             ? <img src={cat.image_url} alt={cat.name} className={styles.thumb} />
                             : '—'}
                         </td>
-                        <td className={styles.tdMuted}>{cat.sort_order}</td>
-                        <td>
+                        <td className={styles.tdMuted} data-label="Reihenfolge">{cat.sort_order}</td>
+                        <td className={styles.tdActionsCell}>
                           <div className={styles.btnGroup}>
                             <Link href={`/admin/kategorien/${cat.id}`} className={styles.btnEdit}>
                               Bearbeiten

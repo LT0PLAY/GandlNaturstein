@@ -57,7 +57,7 @@ export default async function AdminGuidePage() {
           <tbody>
             {entries.map((g) => (
               <tr key={g.id}>
-                <td className={styles.tdName} style={{ fontFamily: 'var(--font-bebas)', fontSize: '20px' }}>
+                <td className={styles.tdName} style={{ fontFamily: 'var(--font-bebas)', fontSize: '20px' }} data-label="#">
                   {g.number}
                 </td>
                 <td>
@@ -65,7 +65,7 @@ export default async function AdminGuidePage() {
                     ? <img src={g.images[0]} alt={g.name} className={styles.thumb} />
                     : <div className={styles.thumbEmpty} />}
                 </td>
-                <td className={styles.tdName}>
+                <td className={styles.tdName} data-label="Name">
                   {g.name}
                   {g.product && (
                     <span className={styles.tdMuted} style={{ display: 'block', fontSize: '13px' }}>
@@ -73,12 +73,12 @@ export default async function AdminGuidePage() {
                     </span>
                   )}
                 </td>
-                <td>
+                <td data-label="Status">
                   <span className={styles.badge} data-active={g.is_active}>
                     {g.is_active ? 'Aktiv' : 'Inaktiv'}
                   </span>
                 </td>
-                <td>
+                <td className={styles.tdActionsCell}>
                   <div className={styles.btnGroup}>
                     <Link href={`/admin/guide/${g.id}`} className={styles.btnEdit}>
                       Bearbeiten

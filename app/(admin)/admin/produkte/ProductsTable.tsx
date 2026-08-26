@@ -86,7 +86,7 @@ export default function ProductsTable({ products }: { products: any[] }) {
                     : <div className={styles.thumbEmpty}>—</div>
                   }
                 </td>
-                <td className={styles.tdName}>
+                <td className={styles.tdName} data-label="Name">
                   {p.name}
                   {p.delete_pending && (
                     <span style={{ marginLeft: '8px', fontSize: '12px', color: '#E06060', letterSpacing: '.06em', fontFamily: 'var(--font-inter)' }}>
@@ -94,16 +94,16 @@ export default function ProductsTable({ products }: { products: any[] }) {
                     </span>
                   )}
                 </td>
-                <td className={styles.tdMuted}>{p.article_number ?? '—'}</td>
-                <td className={styles.tdMuted}>{p.material ?? '—'}</td>
-                <td className={styles.tdMuted}>{p.farbe ?? '—'}</td>
-                <td className={styles.tdMuted}>{(p.category as any)?.name ?? '—'}</td>
-                <td>
+                <td className={styles.tdMuted} data-label="Artikelnr.">{p.article_number ?? '—'}</td>
+                <td className={styles.tdMuted} data-label="Material">{p.material ?? '—'}</td>
+                <td className={styles.tdMuted} data-label="Farbe">{p.farbe ?? '—'}</td>
+                <td className={styles.tdMuted} data-label="Kategorie">{(p.category as any)?.name ?? '—'}</td>
+                <td data-label="Status">
                   <span className={styles.badge} data-active={p.is_active}>
                     {p.is_active ? 'Aktiv' : 'Inaktiv'}
                   </span>
                 </td>
-                <td>
+                <td className={styles.tdActionsCell}>
                   <div className={styles.btnGroup}>
                     <Link href={`/admin/produkte/${p.id}`} className={styles.btnEdit}>
                       Bearbeiten

@@ -196,3 +196,61 @@
   padding: 14px 18px; display: flex; flex-direction: column; gap: 6px;
 }
 .roleDesc { font-size: 14px; color: var(--color-text-muted); font-family: var(--font-inter), sans-serif; }
+
+/* ════════════════════════════════════════
+   RESPONSIV: Tabellen werden auf dem Handy zu
+   gestapelten Karten statt horizontal zu scrollen.
+   Jede <td> braucht ein data-label="..." (Spaltenname),
+   das per ::before als Mini-Label vor dem Wert erscheint.
+   ════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .tableScroll { overflow-x: visible; }
+
+  .table { min-width: 0; width: 100%; }
+  .table thead { display: none; }
+
+  .table, .table tbody, .table tr, .table td {
+    display: block;
+    width: 100%;
+  }
+
+  .table tr {
+    margin-bottom: 10px;
+    border: 0.5px solid rgba(155, 174, 159,0.1);
+    padding: 4px 14px;
+    background: #141413;
+  }
+  .table tr:hover td { background: transparent; }
+
+  .table td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 0.5px solid rgba(155, 174, 159,0.05);
+    font-size: 14px;
+  }
+  .table td:last-child { border-bottom: none; }
+
+  .table td[data-label]::before {
+    content: attr(data-label);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--color-text-dim);
+    flex-shrink: 0;
+  }
+
+  /* Zellen ohne Label (z.B. Bild) links ausrichten statt spreizen */
+  .table td:not([data-label]) { justify-content: flex-start; }
+
+  /* Aktionen-Spalte: Buttons rechtsbündig, ohne Label-Pseudo-Element */
+  .table td.tdActionsCell {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .table td.tdActionsCell::before { content: none; }
+  .btnGroup { flex-wrap: wrap; justify-content: flex-end; }
+}
