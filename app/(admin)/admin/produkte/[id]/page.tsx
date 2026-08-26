@@ -47,7 +47,7 @@ export default async function EditProduktPage({ params }: { params: Promise<{ id
           <p className={styles.pageLabel}>// Produkte</p>
           <h1 className={styles.pageTitle}>Bearbeiten: {product!.name}</h1>
         </div>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
           <Link href="/admin/produkte" className={styles.btnEdit}>
             ← Zurück
           </Link>

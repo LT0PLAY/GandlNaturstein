@@ -57,7 +57,7 @@ export default async function ProduktePage() {
             Produkte <span className={styles.count}>{products.length}</span>
           </h1>
         </div>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
           {isAdmin && pendingCount > 0 && (
             <Link href="/admin/papierkorb" className={styles.btnWarning}>
               ⚠ {pendingCount} Löschantrag{pendingCount > 1 ? 'anträge' : ''} prüfen

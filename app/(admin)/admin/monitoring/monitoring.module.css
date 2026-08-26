@@ -349,3 +349,29 @@
   font-size: 13px; color: #9bae9f;
   word-break: break-all; font-family: monospace;
 }
+
+/* ════════════════════════════════════════
+   RESPONSIV: Tablet/Handy
+   ════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .title { font-size: 34px; }
+  .headerRight { align-items: flex-start; }
+  .actions { flex-wrap: wrap; }
+}
+
+@media (max-width: 640px) {
+  .title { font-size: 26px; }
+  .retentionBar { grid-template-columns: 1fr; }
+  .retentionIcon { width: 100%; height: 36px; border-right: none; border-bottom: 0.5px solid rgba(155, 174, 159,0.1); }
+  .entry { gap: 10px; }
+  .diffGrid { max-width: 100%; }
+  .diffRow {
+    grid-template-columns: 1fr;
+    gap: 2px;
+    padding-bottom: 6px;
+    border-bottom: 0.5px solid rgba(155, 174, 159,0.05);
+  }
+  .diffArrow { display: none; }
+  .time { margin-left: 0; }
+  .entryMeta { flex-wrap: wrap; }
+}

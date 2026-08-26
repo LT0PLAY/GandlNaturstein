@@ -189,7 +189,8 @@
   flex-direction: column; align-items: center; gap: 20px;
 }
 
-.rolesGrid { display: flex; gap: 12px; margin-bottom: 32px; }
+.rolesGrid { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+.roleCard { flex: 1 1 200px; }
 .roleCard {
   background: #141413; border: 0.5px solid rgba(155, 174, 159,0.06);
   padding: 14px 18px; display: flex; flex-direction: column; gap: 6px;
