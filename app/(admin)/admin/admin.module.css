@@ -111,9 +111,13 @@
   min-height: 100vh;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .sidebar  { display: none; }
-  .content  { margin-left: 0; padding: 72px 20px 32px; }
+  .content  { margin-left: 0; padding: 72px 24px 32px; }
+}
+
+@media (max-width: 480px) {
+  .content { padding: 68px 16px 28px; }
 }
 
 /* ── User Section ── */

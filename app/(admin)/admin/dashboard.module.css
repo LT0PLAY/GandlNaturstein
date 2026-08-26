@@ -177,3 +177,24 @@
   background: rgba(155, 174, 159,0.1); padding: 1px 6px;
   color: var(--color-sage);
 }
+
+/* ── Responsiv: Dashboard auf Tablet/Handy ── */
+@media (max-width: 1024px) {
+  .statsGrid  { grid-template-columns: repeat(2, 1fr); }
+  .quickGrid  { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .pageTitle  { font-size: 34px; }
+  .statsGrid  { grid-template-columns: 1fr; gap: 8px; margin-bottom: 32px; }
+  .quickGrid  { grid-template-columns: 1fr; }
+  .statValue  { font-size: 36px; }
+  .sectionRow { margin-top: 32px; }
+
+  .logItem {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    align-items: start;
+  }
+  .logTime { order: -1; }
+}

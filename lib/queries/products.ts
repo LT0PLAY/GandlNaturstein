@@ -92,6 +92,32 @@ export async function getProductIdsForCategory(categoryId: string): Promise<stri
   return [...ids]
 }
 
+// Alle Produkt-IDs eines Bereichs — sowohl über das eigene "Hauptbereich"-Feld
+// (products.bereich) als auch über eine zusätzliche Kategorie-Zuordnung
+// (product_categories) zu einer Kategorie dieses Bereichs. Damit ein Produkt,
+// das nur über "Weitere Kategorien" einem anderen Bereich zugeordnet wurde,
+// auch in dessen "Alle Produkte"-Übersicht auftaucht — konsistent mit den
+// einzelnen Kategorie-Unterseiten.
+export async function getProductIdsForBereich(bereich: string): Promise<string[]> {
+  const supabase = createSupabaseAdminClient()
+  const ids = new Set<string>()
+
+  const { data: byBereich } = await supabase.from('products').select('id').eq('bereich', bereich)
+  for (const p of (byBereich ?? []) as { id: string }[]) ids.add(p.id)
+
+  try {
+    const { data: catsOfBereich } = await supabase.from('categories').select('id').eq('type', bereich)
+    const catIds = ((catsOfBereich ?? []) as { id: string }[]).map((c) => c.id)
+    if (catIds.length > 0) {
+      const { data: links } = await supabase
+        .from('product_categories').select('product_id').in('category_id', catIds)
+      for (const l of (links ?? []) as { product_id: string }[]) ids.add(l.product_id)
+    }
+  } catch {}
+
+  return [...ids]
+}
+
 // Produkte einer Kategorie
 export async function getProductsByCategory(categorySlug: string) {
   const supabase = createSupabaseAdminClient()
