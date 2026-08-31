@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { deleteGuideEntry } from '@/lib/actions/guide'
 import DeleteButton from '@/components/admin/DeleteButton'
+import PageHeroSettings from '@/components/admin/PageHeroSettings'
+import { getPageHeroImage } from '@/lib/actions/pageHeroes'
 import type { GuideEntry } from '@/lib/types'
 import styles from '../table.module.css'
 
@@ -19,7 +21,7 @@ async function getEntries(): Promise<GuideEntry[]> {
 }
 
 export default async function AdminGuidePage() {
-  const entries = await getEntries()
+  const [entries, heroImage] = await Promise.all([getEntries(), getPageHeroImage('guide')])
 
   return (
     <div>
@@ -34,6 +36,8 @@ export default async function AdminGuidePage() {
           + Neue Nummer
         </Link>
       </div>
+
+      <PageHeroSettings pageKey="guide" title="Ausstellungsguide" currentImageUrl={heroImage} />
 
       {entries.length === 0 ? (
         <div className={styles.empty}>

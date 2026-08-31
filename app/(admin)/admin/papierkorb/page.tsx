@@ -125,7 +125,7 @@ function timeAgo(dateStr: string) {
 export default async function PapierkorbPage() {
   if (SUPABASE_CONFIGURED) {
     const user = await getCurrentUser()
-    if (user && (user.role as string) !== 'admin') redirect('/admin')
+    if (!user || (user.role as string) !== 'admin') redirect('/admin/login')
   }
 
   const [

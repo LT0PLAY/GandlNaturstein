@@ -12,6 +12,9 @@ interface Props {
   label:       string
   subtitle?:   string
   heroImage?:  string | null   // Titelbild einer einzelnen Kategorie-Seite
+  /** Freitext-Info zur Kategorie (Beschreibung + Verwendungsgebiet), aus dem Admin gepflegt.
+   *  Wird über den „ⓘ Produktinformation"-Button im Titelbild angezeigt. */
+  categoryDescription?: string | null
   basePath:    string          // z.B. '/massivproduktion'
   categories:  Category[]      // für den Kategorie-Filter (Chips)
   products:    Product[]
@@ -26,41 +29,10 @@ function uniqueValues(products: Product[], field: keyof Product): string[] {
   return [...set].sort()
 }
 
-// ── Kleine Trust-Icons für die Infoleiste im Titelbild ──
-function IconMountain() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-      <path d="m3 20 6-11 4 6.5 2.5-4L20 20Z" />
-      <circle cx="8" cy="7" r="1.6" />
-    </svg>
-  )
-}
-function IconDiamond() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 9 8 4h8l4 5-8 11Z" />
-      <path d="M4 9h16M9 4l-1 5 4 11 4-11-1-5" />
-    </svg>
-  )
-}
-function IconLeaf() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 4c-7 0-13 4-13 12v4h4c8 0 12-6 12-13V4Z" />
-      <path d="M7 20 20 4" />
-    </svg>
-  )
-}
-
-const HERO_FEATURES = [
-  { icon: <IconMountain />, title: 'Natürlich',  sub: 'Echt & zeitlos' },
-  { icon: <IconDiamond />,  title: 'Beständig',  sub: 'Für Generationen' },
-  { icon: <IconLeaf />,     title: 'Nachhaltig', sub: 'Aus der Natur' },
-]
-
 export default function BereichPage({
-  title, label, subtitle, heroImage, basePath, categories, products,
+  title, label, subtitle, heroImage, categoryDescription, basePath, categories, products,
 }: Props) {
+  const [showInfo, setShowInfo] = useState(false)
   const [einsatzbereich, setEinsatzbereich] = useState('')
   const [steinart,       setSteinart]       = useState('')
   const [farbe,           setFarbe]          = useState('')
@@ -133,17 +105,14 @@ export default function BereichPage({
                 <p className={styles.heroBannerLabel}>{label}</p>
                 <h1 className={styles.heroBannerTitle}>{title}</h1>
                 {subtitle && <p className={styles.heroBannerSubtitle}>{subtitle}</p>}
-                <div className={styles.heroBannerFeatures}>
-                  {HERO_FEATURES.map((f) => (
-                    <div key={f.title} className={styles.heroFeature}>
-                      <span className={styles.heroFeatureIcon}>{f.icon}</span>
-                      <span className={styles.heroFeatureText}>
-                        <span className={styles.heroFeatureTitle}>{f.title}</span>
-                        <span className={styles.heroFeatureSub}>{f.sub}</span>
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                <button
+                  type="button"
+                  className={styles.infoBtn}
+                  onClick={() => setShowInfo(true)}
+                >
+                  <span className={styles.infoBtnIcon}>ⓘ</span>
+                  Produktinformation
+                </button>
               </div>
             </div>
           </div>
@@ -237,6 +206,31 @@ export default function BereichPage({
         </div>
       )}
     </section>
+
+    {showInfo && (
+      <div className={styles.infoOverlay} onClick={() => setShowInfo(false)}>
+        <div className={styles.infoModal} onClick={(e) => e.stopPropagation()}>
+          <button
+            type="button"
+            className={styles.infoModalClose}
+            onClick={() => setShowInfo(false)}
+            aria-label="Schließen"
+          >
+            ✕
+          </button>
+          <p className={styles.infoModalLabel}>// Produktinformation</p>
+          <h2 className={styles.infoModalTitle}>{title}</h2>
+          {categoryDescription ? (
+            <p className={styles.infoModalText}>{categoryDescription}</p>
+          ) : (
+            <p className={styles.infoModalTextEmpty}>
+              Für diese Kategorie ist noch keine Produktinformation hinterlegt.
+              Im Admin unter „Kategorien" → „Beschreibung" lässt sie sich ergänzen.
+            </p>
+          )}
+        </div>
+      </div>
+    )}
     </div>
   )
 }

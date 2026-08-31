@@ -54,6 +54,13 @@ export default function ContactSidebar() {
 
   return (
     <div className={styles.sidebar}>
+      {openPanel && (
+        <div
+          className={styles.backdrop}
+          onClick={() => setOpenPanel(null)}
+          aria-hidden="true"
+        />
+      )}
       <div className={styles.icons}>
 
         {/* WhatsApp */}
@@ -83,6 +90,14 @@ export default function ContactSidebar() {
           </button>
           {openPanel === 'phone' && (
             <div className={styles.popover}>
+              <button
+                type="button"
+                className={styles.popoverClose}
+                onClick={() => setOpenPanel(null)}
+                aria-label="Schließen"
+              >
+                ✕
+              </button>
               <p className={styles.popoverTitle}>Bestellung &amp; Beratung unter:</p>
               <a href={`tel:${PHONE_HREF}`} className={styles.phoneLink}>{PHONE_DISPLAY}</a>
             </div>
@@ -112,6 +127,14 @@ export default function ContactSidebar() {
           </button>
           {openPanel === 'hours' && (
             <div className={styles.popover}>
+              <button
+                type="button"
+                className={styles.popoverClose}
+                onClick={() => setOpenPanel(null)}
+                aria-label="Schließen"
+              >
+                ✕
+              </button>
               <p className={styles.popoverTitle}>Öffnungszeiten</p>
               {HOURS.map((h) => (
                 <div key={h.days} className={styles.popoverRow}>
@@ -139,6 +162,14 @@ export default function ContactSidebar() {
           </button>
           {openPanel === 'maps' && (
             <div className={styles.popover}>
+              <button
+                type="button"
+                className={styles.popoverClose}
+                onClick={() => setOpenPanel(null)}
+                aria-label="Schließen"
+              >
+                ✕
+              </button>
               <p className={styles.popoverTitle}>Unsere Standorte</p>
               {LOCATIONS.map((loc) => (
                 <div key={loc.name} className={styles.locationBlock}>

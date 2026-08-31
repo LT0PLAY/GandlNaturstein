@@ -30,6 +30,7 @@ function parseFormData(formData: FormData) {
     image_url:    readImageUrl(formData, 'image'),
     is_active:    formData.get('is_active') === 'true',
     active_until: activeUntilRaw ? new Date(activeUntilRaw).toISOString() : null,
+    layout:       (formData.get('layout') as string) === 'din_a5' ? 'din_a5' : 'standard',
     updated_at:   new Date().toISOString(),
   }
 }

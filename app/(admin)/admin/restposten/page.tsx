@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { deleteRestposten } from '@/lib/actions/restposten'
 import DeleteButton from '@/components/admin/DeleteButton'
+import PageHeroSettings from '@/components/admin/PageHeroSettings'
+import { getPageHeroImage } from '@/lib/actions/pageHeroes'
 import type { Restposten } from '@/lib/types'
 import styles from '../table.module.css'
 
@@ -20,7 +22,7 @@ async function getItems(): Promise<Restposten[]> {
 }
 
 export default async function AdminRestpostenPage() {
-  const items = await getItems()
+  const [items, heroImage] = await Promise.all([getItems(), getPageHeroImage('restposten')])
 
   return (
     <div>
@@ -35,6 +37,8 @@ export default async function AdminRestpostenPage() {
           + Neuer Restposten
         </Link>
       </div>
+
+      <PageHeroSettings pageKey="restposten" title="Aktuelle Restposten" currentImageUrl={heroImage} />
 
       {items.length === 0 ? (
         <div className={styles.empty}>

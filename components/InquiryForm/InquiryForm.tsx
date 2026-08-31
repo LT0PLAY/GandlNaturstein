@@ -54,6 +54,7 @@ export default function InquiryForm({ productId, productName }: InquiryFormProps
           unit:        it.unit,
           sourceType:  it.sourceType,
           size:        it.size,
+          surface:     it.surface,
         })),
       })
 

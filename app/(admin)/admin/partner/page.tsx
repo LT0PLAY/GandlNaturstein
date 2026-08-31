@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { deletePartner } from '@/lib/actions/partners'
 import DeleteButton from '@/components/admin/DeleteButton'
+import PageHeroSettings from '@/components/admin/PageHeroSettings'
+import { getPageHeroImage } from '@/lib/actions/pageHeroes'
 import type { Partner } from '@/lib/types'
 import styles from '../table.module.css'
 
@@ -20,7 +22,7 @@ async function getPartners(): Promise<Partner[]> {
 }
 
 export default async function AdminPartnerPage() {
-  const partners = await getPartners()
+  const [partners, heroImage] = await Promise.all([getPartners(), getPageHeroImage('partner')])
 
   return (
     <div>
@@ -35,6 +37,8 @@ export default async function AdminPartnerPage() {
           + Neuer Partner
         </Link>
       </div>
+
+      <PageHeroSettings pageKey="partner" title="Unsere Partner" currentImageUrl={heroImage} />
 
       {partners.length === 0 ? (
         <div className={styles.empty}>

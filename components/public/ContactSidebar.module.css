@@ -42,12 +42,23 @@
   position: relative;
 }
 
+/* Unsichtbarer Klick-Catcher hinter dem Popover — schließt es bei Klick
+   außerhalb. Auf Mobile zusätzlich abgedunkelt, da das Popover dort als
+   zentriertes Overlay über der ganzen Seite liegt. */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 190;
+  background: transparent;
+}
+
 .popover {
   position: absolute;
+  z-index: 200;
   right: 54px;
   top: 50%;
   transform: translateY(-50%);
-  min-width: 220px;
+  min-width: 280px;
   max-height: min(70vh, 520px);
   overflow-y: auto;
   background: rgba(63, 63, 63, 0.97);
@@ -55,6 +66,10 @@
   border: 0.5px solid rgba(155, 174, 159, 0.2);
   padding: 14px 16px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.popoverClose {
+  display: none; /* nur auf Mobile sichtbar, siehe Media Query unten */
 }
 
 .popoverTitle {
@@ -68,12 +83,25 @@
 
 .popoverRow {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
+  gap: 2px;
   font-family: var(--font-inter), sans-serif;
-  font-size: 13px;
+  padding: 8px 0;
+}
+.popoverRow + .popoverRow {
+  border-top: 0.5px solid rgba(155, 174, 159, 0.1);
+}
+.popoverRow span:first-child {
+  font-size: 11px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--color-sage-muted, var(--color-text-muted));
+  white-space: nowrap;
+}
+.popoverRow span:last-child {
+  font-size: 14px;
   color: var(--color-text);
-  padding: 4px 0;
+  text-wrap: balance;
 }
 
 .popoverNote {
@@ -162,7 +190,43 @@
   .sidebar { right: 8px; gap: 8px; top: auto; bottom: 100px; transform: none; }
   .icon    { width: 34px; height: 34px; }
   .icon svg { width: 16px; height: 16px; }
-  .popover { right: 42px; min-width: 180px; max-width: calc(100vw - 60px); padding: 12px 14px; }
+
+  /* Popover löst sich vom Icon und öffnet stattdessen zentriert über der
+     ganzen Seite — verhindert, dass es je nach Icon-Position (z.B. ganz
+     unten am Bildschirmrand) abgeschnitten wird oder schief hängt. */
+  .backdrop {
+    background: rgba(6, 5, 3, 0.72);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+  }
+  .popover {
+    position: fixed;
+    right: auto;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(88vw, 360px);
+    min-width: 0;
+    max-width: none;
+    max-height: 76vh;
+    padding: 20px 18px 16px;
+  }
+  .popoverClose {
+    display: flex;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    align-items: center;
+    justify-content: center;
+    background: rgba(155, 174, 159, 0.1);
+    border: 0.5px solid rgba(155, 174, 159, 0.25);
+    color: var(--color-text);
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .popoverTitle { padding-right: 26px; }
 }
 
 @media (max-width: 360px) {

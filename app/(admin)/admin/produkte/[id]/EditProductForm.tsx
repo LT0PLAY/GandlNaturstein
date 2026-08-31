@@ -5,13 +5,30 @@ import { useRouter } from 'next/navigation'
 import { updateProduct, removeGalleryImage, removeThumbnail, removeIcon } from '@/lib/actions/products'
 import ImageUploader from '@/components/admin/ImageUploader'
 import DeleteButton from '@/components/admin/DeleteButton'
-import type { Product, Category, CategoryBereich } from '@/lib/types'
+import VariantsEditor from '@/components/admin/VariantsEditor'
+import type { Product, Category, CategoryBereich, ProductUnit } from '@/lib/types'
 import { BEREICH_LABELS } from '@/lib/types'
 import styles from '../../form.module.css'
 import imageStyles from '../images.module.css'
 
 const initial = { error: null as string | null, success: false, id: null as string | null }
-const MAX_SIZES = 6
+const MAX_SIZES = 8
+const MAX_SURFACES = 8
+
+const UNIT_VARIANT_HINT: Record<ProductUnit, string> = {
+  groesse:   'z.B. 30x30x3 cm',
+  gewicht:   'z.B. 5 kg, 10 kg, 25 kg',
+  stueck:    'z.B. 10er-Set, Einzelstück',
+  laufmeter: 'z.B. 2,5 lfm',
+  qm:        'z.B. 1 m², 5 m² Gebinde',
+}
+const UNIT_VARIANT_SECTION_TITLE: Record<ProductUnit, string> = {
+  groesse:   'Größenvarianten',
+  gewicht:   'Gewichtsvarianten',
+  stueck:    'Stückvarianten',
+  laufmeter: 'Längenvarianten',
+  qm:        'Mengenvarianten',
+}
 
 function toSlug(s: string): string {
   return s
@@ -48,6 +65,8 @@ export default function EditProductForm({
   const [bereich,    setBereich]    = useState<CategoryBereich | ''>((p as any).bereich ?? currentCat?.type ?? '')
   const [categoryId, setCategoryId] = useState<string>(p.category_id ?? '')
   const [extraCategoryIds, setExtraCategoryIds] = useState<string[]>(initialExtraCategoryIds)
+  const [unit, setUnit] = useState<ProductUnit>(((p as any).unit ?? 'qm') as ProductUnit)
+  const [surfaceLabels, setSurfaceLabels] = useState<string[]>((((p as any).surfaces as string[] | undefined) ?? []))
 
   useEffect(() => {
     if (state.success) router.push('/admin/produkte')
@@ -185,10 +204,6 @@ export default function EditProductForm({
           <input name="material" type="text" defaultValue={p.material ?? ''} />
         </div>
         <div className={styles.field}>
-          <label>Oberfläche</label>
-          <input name="surface" type="text" defaultValue={p.surface ?? ''} />
-        </div>
-        <div className={styles.field}>
           <label>Format / Maße</label>
           <input name="format" type="text" defaultValue={p.format ?? ''} />
         </div>
@@ -212,7 +227,12 @@ export default function EditProductForm({
         {/* ── Einheit + Preis ── */}
         <div className={styles.field}>
           <label>Einheit</label>
-          <select name="unit" defaultValue={(p as any).unit ?? 'qm'}>
+          <select
+            name="unit"
+            value={unit}
+            onChange={(e) => setUnit(e.target.value as ProductUnit)}
+          >
+            <option value="groesse">Größe / Maße</option>
             <option value="qm">Quadratmeter (m²)</option>
             <option value="stueck">Stück</option>
             <option value="laufmeter">Laufmeter</option>
@@ -238,48 +258,56 @@ export default function EditProductForm({
       </div>
 
       <p className={styles.sectionLabel}>
-        Größenvarianten <span style={{ fontWeight: 400, color: 'var(--color-text-muted)' }}>
+        Oberflächen <span style={{ fontWeight: 400, color: 'var(--color-text-muted)' }}>
+          (optional — bis zu {MAX_SURFACES})
+        </span>
+      </p>
+      <div className={styles.formGrid}>
+        <div className={`${styles.field} ${styles.fullWidth}`}>
+          <p style={{ fontSize: '14px', color: 'var(--color-text-muted)', marginBottom: '12px' }}>
+            Bietet dieses Produkt mehrere Oberflächen an (z.B. Poliert, Geflammt, Rau), wählt der Besucher
+            sie direkt auf der Produktseite aus. Bei den Varianten unten kann pro Größe ausgewählt werden,
+            welche Oberflächen dazu passen.
+          </p>
+          <VariantsEditor
+            namePrefix="surface"
+            initial={(((p as any).surfaces as string[] | undefined) ?? []).map((label) => ({ label }))}
+            max={MAX_SURFACES}
+            labelPlaceholder={(i) => `Oberfläche ${i + 1}, z.B. Poliert`}
+            addLabel="Oberfläche hinzufügen"
+            onRowsChange={(rows) => setSurfaceLabels(rows.map((r) => r.label.trim()).filter(Boolean))}
+          />
+        </div>
+      </div>
+
+      <p className={styles.sectionLabel}>
+        {UNIT_VARIANT_SECTION_TITLE[unit] ?? 'Varianten'} <span style={{ fontWeight: 400, color: 'var(--color-text-muted)' }}>
           (optional — bis zu {MAX_SIZES}, statt mehrerer einzelner Produkte)
         </span>
       </p>
       <div className={styles.formGrid}>
-        <div className={`${styles.field} ${styles.fullWidth}`} style={{ marginBottom: 0 }}>
+        <div className={`${styles.field} ${styles.fullWidth}`}>
           <p style={{ fontSize: '14px', color: 'var(--color-text-muted)', marginBottom: '12px' }}>
-            Bietet dieses Produkt mehrere Größen/Formate an (z.B. verschiedene Plattenmaße), können
-            hier bis zu {MAX_SIZES} Varianten mit eigenem Preis hinterlegt werden — Besucher wählen die
-            gewünschte Größe dann direkt auf der Produktseite aus.
+            Bietet dieses Produkt mehrere Varianten an (z.B. verschiedene Größen, Gewichte oder Mengen),
+            können hier eigene Preise hinterlegt werden — Besucher wählen die gewünschte Variante dann
+            direkt auf der Produktseite aus. Sind oben Oberflächen angelegt, kann pro Variante ausgewählt
+            werden, welche Oberflächen dazu passen (leer = alle erlaubt).
           </p>
+          <VariantsEditor
+            namePrefix="size"
+            initial={(((p as any).sizes as Array<{ label: string; price?: number | null; article_number?: string | null; surfaces?: string[] }> | undefined) ?? []).map((sVal) => ({
+              label: sVal.label ?? '',
+              price: sVal.price != null ? String(sVal.price) : '',
+              article_number: sVal.article_number ?? '',
+              surfaces: sVal.surfaces ?? [],
+            }))}
+            max={MAX_SIZES}
+            withPriceAndArticle
+            labelPlaceholder={(i) => `Variante ${i + 1}, ${UNIT_VARIANT_HINT[unit] ?? 'z.B. 30x30x3 cm'}`}
+            addLabel="Variante hinzufügen"
+            surfaceOptions={surfaceLabels}
+          />
         </div>
-        {Array.from({ length: MAX_SIZES }).map((_, i) => {
-          const existingSize = ((p as any).sizes as Array<{ label: string; price?: number | null; article_number?: string | null }> | undefined)?.[i]
-          return (
-            <div key={i} className={`${styles.sizeRow} ${styles.fullWidth}`}>
-              <input
-                name={`size_label_${i}`}
-                type="text"
-                placeholder={`Größe ${i + 1}, z.B. 30x30x3 cm`}
-                defaultValue={existingSize?.label ?? ''}
-                className={styles.sizeLabelInput}
-              />
-              <input
-                name={`size_price_${i}`}
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="Preis (optional)"
-                defaultValue={existingSize?.price ?? ''}
-                className={styles.sizePriceInput}
-              />
-              <input
-                name={`size_article_${i}`}
-                type="text"
-                placeholder="Artikelnr. (optional)"
-                defaultValue={existingSize?.article_number ?? ''}
-                className={styles.sizeArticleInput}
-              />
-            </div>
-          )
-        })}
       </div>
 
       {/* ── Titelbild ── */}

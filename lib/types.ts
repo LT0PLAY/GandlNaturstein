@@ -15,6 +15,24 @@ export type ChangeAction = 'create' | 'update' | 'delete'
 // DATABASE TYPES
 // ============================================================
 
+// ── Titelbilder für feste Seiten (Partner, Restposten, Ausstellungsguide,
+// Karriere, Referenzen) — analog zum Kategorie-Titelbild, aber pro Seite. ──
+export type PageHeroKey = 'partner' | 'restposten' | 'guide' | 'karriere' | 'referenzen'
+
+export interface PageHero {
+  page_key:   PageHeroKey
+  image_url:  string | null
+  updated_at: string
+}
+
+export const PAGE_HERO_LABELS: Record<PageHeroKey, string> = {
+  partner:    'Unsere Partner',
+  restposten: 'Aktuelle Restposten',
+  guide:      'Ausstellungsguide',
+  karriere:   'Karriere',
+  referenzen: 'Referenzen',
+}
+
 export interface Category {
   id:          string
   name:        string
@@ -40,6 +58,8 @@ export interface ProductSize {
   label:          string
   price?:         number | null
   article_number?: string | null
+  /** Nur diese Oberflächen sind für diese Größe wählbar (leer/undefined = alle Oberflächen des Produkts) */
+  surfaces?:      string[]
 }
 
 export interface Product {
@@ -63,6 +83,9 @@ export interface Product {
   icon_url:       string | null
   /** Optionale Größenvarianten (z.B. verschiedene Formate) mit eigenem Preis, statt separater Produkte */
   sizes:          ProductSize[]
+  /** Optionale Oberflächen-Varianten (z.B. Poliert, Geflammt, Rau) — wählbar auf der Produktseite,
+   *  kombiniert sich mit einer gewählten Größe, falls beides angelegt ist. */
+  surfaces:       string[]
   unit:           ProductUnit
   price:          number | null
   show_price:     boolean
@@ -125,7 +148,7 @@ export interface ChangeLog {
 // BASKET (Anfragekorb)
 // ============================================================
 
-export type ProductUnit = 'stueck' | 'laufmeter' | 'qm' | 'gewicht'
+export type ProductUnit = 'stueck' | 'laufmeter' | 'qm' | 'gewicht' | 'groesse'
 export type BasketUnit = ProductUnit
 
 export const UNIT_LABELS: Record<ProductUnit, { short: string; long: string }> = {
@@ -133,12 +156,13 @@ export const UNIT_LABELS: Record<ProductUnit, { short: string; long: string }> =
   laufmeter: { short: 'lfm',   long: 'Laufmeter'  },
   qm:        { short: 'm²',    long: 'Quadratmeter (m²)' },
   gewicht:   { short: 'kg',    long: 'Gewicht (kg)' },
+  groesse:   { short: 'Stk.',  long: 'Größe / Maße' },
 }
 
 /** Wandelt einen (evtl. veralteten, z.B. 'm2' aus altem localStorage-Korb) Wert
  *  in eine gültige ProductUnit um – Fallback: 'qm'. */
 export function normalizeUnit(u: unknown): ProductUnit {
-  if (u === 'qm' || u === 'stueck' || u === 'laufmeter' || u === 'gewicht') return u
+  if (u === 'qm' || u === 'stueck' || u === 'laufmeter' || u === 'gewicht' || u === 'groesse') return u
   if (u === 'm2') return 'qm'
   return 'qm'
 }
@@ -157,6 +181,8 @@ export interface BasketItem {
   sourceType?: 'product' | 'restposten' | 'guide'
   /** Gewählte Größenvariante (falls das Produkt mehrere Größen anbietet) */
   size?:       string | null
+  /** Gewählte Oberflächen-Variante (falls das Produkt mehrere Oberflächen anbietet) */
+  surface?:    string | null
 }
 
 // ============================================================
@@ -267,6 +293,13 @@ export interface Partner {
   updated_at:  string
 }
 
+export type PopupLayout = 'standard' | 'din_a5'
+
+export const POPUP_LAYOUT_LABELS: Record<PopupLayout, string> = {
+  standard: 'Standard — Bild oben, Text darunter',
+  din_a5:   'Poster / DIN A5 — großflächiges Bild im Hochformat (148×210 mm)',
+}
+
 export interface Popup {
   id:           string
   title:        string
@@ -274,6 +307,8 @@ export interface Popup {
   image_url:    string | null
   is_active:    boolean
   active_until: string | null
+  /** Anzeigeformat: standard = kleines Bild + Text, din_a5 = ganzflächiges Poster im Hochformat */
+  layout:       PopupLayout
   created_at:   string
   updated_at:   string
 }

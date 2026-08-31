@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createSupabaseAdminClient } from '@/lib/supabase'
+import { getPageHeroImage } from '@/lib/actions/pageHeroes'
+import PageHero from '@/components/public/PageHero'
 import type { JobListing } from '@/lib/types'
 import { canonical, jobJsonLd, SITE_NAME, SITE_URL } from '@/lib/seo'
 
@@ -149,7 +151,7 @@ function JobCard({ job }: { job: JobListing }) {
 }
 
 export default async function KarrierePage() {
-  const jobs = await getJobs()
+  const [jobs, heroImage] = await Promise.all([getJobs(), getPageHeroImage('karriere')])
 
   return (
     <>
@@ -163,6 +165,14 @@ export default async function KarrierePage() {
       ))}
 
       {/* ── Hero ── */}
+      {heroImage ? (
+        <PageHero
+          label="// Karriere"
+          title="Werden Sie Teil des Teams."
+          subtitle="Wir suchen Menschen, die Naturstein genauso schätzen wie wir — handwerkliches Können trifft auf ein familiäres, engagiertes Team."
+          image={heroImage}
+        />
+      ) : (
       <section style={{
         padding: '100px 40px 64px',
         borderBottom: '0.5px solid rgba(155, 174, 159,0.08)',
@@ -185,6 +195,7 @@ export default async function KarrierePage() {
           handwerkliches Können trifft auf ein familiäres, engagiertes Team.
         </p>
       </section>
+      )}
 
       {/* ── Stellen ── */}
       <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 40px 80px' }}>

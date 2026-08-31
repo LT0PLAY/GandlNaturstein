@@ -4,9 +4,18 @@ import { revalidatePath } from 'next/cache'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { logChange } from '@/lib/utils/changelog'
+import { sendBrandedEmail } from '@/lib/email/resend'
+import { inviteEmailHtml } from '@/lib/email/templates'
 import type { TeamRole } from '@/lib/types'
 
-export type TeamActionState = { error: string | null; success: boolean }
+export type TeamActionState = {
+  error:   string | null
+  success: boolean
+  /** Nur gesetzt, wenn der Einladungslink NICHT automatisch per Mail verschickt werden
+   *  konnte (z.B. weil RESEND_API_KEY fehlt) — der Admin kann ihn dann manuell teilen. */
+  inviteLink?:    string | null
+  emailWarning?:  string | null
+}
 
 // ── Hilfsfunktion: Prüft ob aktueller User Admin ist ──────────────
 async function requireAdmin() {
@@ -39,15 +48,28 @@ export async function createTeamMember(
   const name  = formData.get('name')  as string
   const role  = formData.get('role')  as TeamRole
 
-  // Einladungs-E-Mail via Supabase Auth
-  const { data: authData, error: authError } =
-    await supabase.auth.admin.inviteUserByEmail(email, {
-      data: { name, role },
-    })
-  if (authError) return { error: authError.message, success: false }
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+
+  // Einladungslink über Supabase erzeugen — OHNE dass Supabase selbst eine E-Mail
+  // verschickt (das übernehmen wir gleich unten selbst, mit eigenem Design/Absender).
+  const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
+    type:  'invite',
+    email,
+    options: {
+      data:       { name, role },
+      redirectTo: `${siteUrl}/admin/passwort-neu-setzen`,
+    },
+  })
+  if (linkError) return { error: linkError.message, success: false }
+
+  const actionLink = (linkData as any)?.properties?.action_link as string | undefined
+  const userId = linkData.user?.id
+  if (!actionLink || !userId) {
+    return { error: 'Einladungslink konnte nicht erzeugt werden.', success: false }
+  }
 
   const { error } = await supabase.from('team_members').insert({
-    user_id:   authData.user.id,
+    user_id:   userId,
     name,
     email,
     role,
@@ -58,6 +80,56 @@ export async function createTeamMember(
   await logChange({
     action: 'create', entity_type: 'team',
     entity_name: name, new_value: { email, role },
+  })
+  revalidatePath('/admin/team')
+
+  // Eigene, Gandl-gebrandete E-Mail statt der Standard-Supabase-Mail verschicken.
+  const emailResult = await sendBrandedEmail({
+    to:      email,
+    subject: 'Einladung ins Gandl Natursteine Admin-Team',
+    html:    inviteEmailHtml({ name, role, actionLink }),
+  })
+
+  if (emailResult.sent) {
+    return { error: null, success: true }
+  }
+
+  // Kein Mailversand konfiguriert (oder fehlgeschlagen) — Link zum manuellen Teilen zurückgeben,
+  // damit die Einladung trotzdem nutzbar ist.
+  return {
+    error:        null,
+    success:      true,
+    inviteLink:   actionLink,
+    emailWarning: emailResult.error ?? 'E-Mail konnte nicht verschickt werden.',
+  }
+}
+
+// ── Mitarbeiter endgültig löschen ───────────────────────────────────
+export async function deleteTeamMember(id: string) {
+  const auth = await requireAdmin()
+  if (!auth.ok) return { error: auth.error, success: false }
+
+  const supabase = createSupabaseAdminClient()
+  const { data: member } = await supabase
+    .from('team_members').select('name, role, user_id').eq('id', id).single()
+
+  if (member?.role === 'admin') {
+    return { error: 'Der Hauptadmin kann nicht gelöscht werden.', success: false }
+  }
+
+  // Login-Konto ebenfalls entfernen — sonst könnte die Person sich trotz gelöschtem
+  // Team-Eintrag technisch weiterhin einloggen.
+  if (member?.user_id) {
+    await supabase.auth.admin.deleteUser(member.user_id).catch(() => {})
+  }
+
+  const { error } = await supabase.from('team_members').delete().eq('id', id)
+  if (error) return { error: error.message, success: false }
+
+  await logChange({
+    action: 'delete', entity_type: 'team', entity_id: id,
+    entity_name: member?.name,
+    old_value: { role: member?.role },
   })
   revalidatePath('/admin/team')
   return { error: null, success: true }

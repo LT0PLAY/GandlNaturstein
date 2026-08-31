@@ -1,6 +1,8 @@
 export const dynamic = 'force-dynamic'
 
 import { createSupabaseAdminClient } from '@/lib/supabase'
+import { getPageHeroImage } from '@/lib/actions/pageHeroes'
+import PageHero from '@/components/public/PageHero'
 import type { Restposten } from '@/lib/types'
 import RestpostenAddButton from './RestpostenAddButton'
 
@@ -23,28 +25,41 @@ async function getItems(): Promise<Restposten[]> {
 }
 
 export default async function RestpostenPage() {
-  const items = await getItems()
+  const [items, heroImage] = await Promise.all([getItems(), getPageHeroImage('restposten')])
 
   return (
+    <>
+      {heroImage && (
+        <PageHero
+          label="// Sonderangebote"
+          title="Aktuelle Restposten"
+          subtitle="Reststücke, Auslaufware und Sonderangebote – solange der Vorrat reicht."
+          image={heroImage}
+        />
+      )}
     <div style={{ maxWidth: '1300px', margin: '0 auto', padding: '64px 24px 100px' }}>
-      <p style={{
-        fontFamily: 'var(--font-inter)', fontSize: '13px', letterSpacing: '.14em',
-        textTransform: 'uppercase', color: 'var(--color-sage)', marginBottom: '14px',
-      }}>
-        // Sonderangebote
-      </p>
-      <h1 style={{
-        fontFamily: 'var(--font-bebas)', fontSize: 'clamp(40px, 6vw, 64px)', color: '#dcdcd6',
-        letterSpacing: '.02em', lineHeight: '.95', marginBottom: '20px',
-      }}>
-        Aktuelle Restposten
-      </h1>
-      <p style={{
-        fontFamily: 'var(--font-inter)', fontSize: '16px', color: '#9caea1',
-        lineHeight: 1.8, marginBottom: '48px', maxWidth: '620px',
-      }}>
-        Reststücke, Auslaufware und Sonderangebote – solange der Vorrat reicht.
-      </p>
+      {!heroImage && (
+        <>
+          <p style={{
+            fontFamily: 'var(--font-inter)', fontSize: '13px', letterSpacing: '.14em',
+            textTransform: 'uppercase', color: 'var(--color-sage)', marginBottom: '14px',
+          }}>
+            // Sonderangebote
+          </p>
+          <h1 style={{
+            fontFamily: 'var(--font-bebas)', fontSize: 'clamp(40px, 6vw, 64px)', color: '#dcdcd6',
+            letterSpacing: '.02em', lineHeight: '.95', marginBottom: '20px',
+          }}>
+            Aktuelle Restposten
+          </h1>
+          <p style={{
+            fontFamily: 'var(--font-inter)', fontSize: '16px', color: '#9caea1',
+            lineHeight: 1.8, marginBottom: '48px', maxWidth: '620px',
+          }}>
+            Reststücke, Auslaufware und Sonderangebote – solange der Vorrat reicht.
+          </p>
+        </>
+      )}
 
       {items.length === 0 ? (
         <p style={{ color: '#9caea1', fontFamily: 'var(--font-inter)' }}>
@@ -103,5 +118,6 @@ export default async function RestpostenPage() {
         </div>
       )}
     </div>
+    </>
   )
 }

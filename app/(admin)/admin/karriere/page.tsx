@@ -6,6 +6,8 @@ import { createSupabaseAdminClient } from '@/lib/supabase'
 import { getCurrentUser } from '@/lib/actions/auth'
 import { deleteJobListing } from '@/lib/actions/karriere'
 import DeleteButton from '@/components/admin/DeleteButton'
+import PageHeroSettings from '@/components/admin/PageHeroSettings'
+import { getPageHeroImage } from '@/lib/actions/pageHeroes'
 import type { JobListing } from '@/lib/types'
 import styles from '../table.module.css'
 
@@ -28,10 +30,10 @@ async function getJobs(): Promise<JobListing[]> {
 export default async function AdminKarrierePage() {
   if (SUPABASE_CONFIGURED) {
     const user = await getCurrentUser()
-    if (user && (user.role as string) !== 'admin') redirect('/admin')
+    if (!user || (user.role as string) !== 'admin') redirect('/admin/login')
   }
 
-  const jobs = await getJobs()
+  const [jobs, heroImage] = await Promise.all([getJobs(), getPageHeroImage('karriere')])
 
   return (
     <div>
@@ -46,6 +48,8 @@ export default async function AdminKarrierePage() {
           + Neue Stelle
         </Link>
       </div>
+
+      <PageHeroSettings pageKey="karriere" title="Karriere" currentImageUrl={heroImage} />
 
       {jobs.length === 0 ? (
         <div className={styles.empty}>

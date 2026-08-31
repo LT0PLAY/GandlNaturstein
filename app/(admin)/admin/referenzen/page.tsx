@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { deleteReference } from '@/lib/actions/references'
 import DeleteButton from '@/components/admin/DeleteButton'
+import PageHeroSettings from '@/components/admin/PageHeroSettings'
+import { getPageHeroImage } from '@/lib/actions/pageHeroes'
 import type { Reference } from '@/lib/types'
 import styles from '../table.module.css'
 
@@ -18,7 +20,7 @@ async function getReferences(): Promise<Reference[]> {
 }
 
 export default async function AdminReferenzenPage() {
-  const refs = await getReferences()
+  const [refs, heroImage] = await Promise.all([getReferences(), getPageHeroImage('referenzen')])
 
   return (
     <div>
@@ -33,6 +35,8 @@ export default async function AdminReferenzenPage() {
           + Neue Referenz
         </Link>
       </div>
+
+      <PageHeroSettings pageKey="referenzen" title="Referenzen" currentImageUrl={heroImage} />
 
       {refs.length === 0 ? (
         <div className={styles.empty}>

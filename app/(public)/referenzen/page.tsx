@@ -3,6 +3,8 @@ export const dynamic = 'force-dynamic'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { createSupabaseAdminClient } from '@/lib/supabase'
+import { getPageHeroImage } from '@/lib/actions/pageHeroes'
+import PageHero from '@/components/public/PageHero'
 import type { Reference } from '@/lib/types'
 
 export const metadata: Metadata = {
@@ -111,11 +113,19 @@ function Card({ r }: { r: Reference }) {
 }
 
 export default async function ReferenzenPage() {
-  const refs = await getRefs()
+  const [refs, heroImage] = await Promise.all([getRefs(), getPageHeroImage('referenzen')])
 
   return (
     <>
       {/* ── Header — zentriert, kein Label ── */}
+      {heroImage ? (
+        <PageHero
+          label="// Referenzen"
+          title="Unsere Projekte"
+          subtitle="Realisierte Natursteinprojekte von der Terrasse bis zur individuellen Sonderanfertigung."
+          image={heroImage}
+        />
+      ) : (
       <section style={{
         padding: '80px 40px 52px',
         borderBottom: '0.5px solid rgba(155, 174, 159,0.08)',
@@ -137,6 +147,7 @@ export default async function ReferenzenPage() {
           Realisierte Natursteinprojekte von der Terrasse <br></br>bis zur individuellen Sonderanfertigung.
         </p>
       </section>
+      )}
 
       {/* ── Grid ── */}
       {refs.length === 0 ? (

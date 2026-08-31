@@ -4,13 +4,30 @@ import { useActionState, useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createProduct } from '@/lib/actions/products'
 import ImageUploader from '@/components/admin/ImageUploader'
-import type { Category, CategoryBereich } from '@/lib/types'
+import VariantsEditor from '@/components/admin/VariantsEditor'
+import type { Category, CategoryBereich, ProductUnit } from '@/lib/types'
 import { BEREICH_LABELS } from '@/lib/types'
 import styles from '../../form.module.css'
 import imageStyles from '../images.module.css'
 
 const initial = { error: null as string | null, success: false, id: null as string | null }
-const MAX_SIZES = 6
+const MAX_SIZES = 8
+const MAX_SURFACES = 8
+
+const UNIT_VARIANT_HINT: Record<ProductUnit, string> = {
+  groesse:   'z.B. 30x30x3 cm',
+  gewicht:   'z.B. 5 kg, 10 kg, 25 kg',
+  stueck:    'z.B. 10er-Set, Einzelstück',
+  laufmeter: 'z.B. 2,5 lfm',
+  qm:        'z.B. 1 m², 5 m² Gebinde',
+}
+const UNIT_VARIANT_SECTION_TITLE: Record<ProductUnit, string> = {
+  groesse:   'Größenvarianten',
+  gewicht:   'Gewichtsvarianten',
+  stueck:    'Stückvarianten',
+  laufmeter: 'Längenvarianten',
+  qm:        'Mengenvarianten',
+}
 
 export default function NewProductForm({ categories }: { categories: Category[] }) {
   const [state, action, isPending] = useActionState(createProduct, initial)
@@ -21,6 +38,8 @@ export default function NewProductForm({ categories }: { categories: Category[] 
   const [extraCategoryIds, setExtraCategoryIds] = useState<string[]>([])
   const [slug,       setSlug]       = useState<string>('')
   const [slugTouched, setSlugTouched] = useState(false)
+  const [unit,        setUnit]        = useState<ProductUnit | ''>('')
+  const [surfaceLabels, setSurfaceLabels] = useState<string[]>([])
 
   function toSlug(s: string) {
     return s.toLowerCase()
@@ -160,10 +179,6 @@ export default function NewProductForm({ categories }: { categories: Category[] 
           <input name="material" type="text" placeholder="z.B. Granit, Marmor" />
         </div>
         <div className={styles.field}>
-          <label>Oberfläche</label>
-          <input name="surface" type="text" placeholder="z.B. geflammt, poliert" />
-        </div>
-        <div className={styles.field}>
           <label>Format / Maße</label>
           <input name="format" type="text" placeholder="z.B. 9/11 cm, nach Maß" />
         </div>
@@ -187,8 +202,14 @@ export default function NewProductForm({ categories }: { categories: Category[] 
         {/* ── Einheit + Preis ── */}
         <div className={styles.field}>
           <label>Einheit</label>
-          <select name="unit" defaultValue="" required>
+          <select
+            name="unit"
+            required
+            value={unit}
+            onChange={(e) => setUnit(e.target.value as ProductUnit)}
+          >
             <option value="" disabled>Bitte wählen…</option>
+            <option value="groesse">Größe / Maße</option>
             <option value="stueck">Stück</option>
             <option value="qm">Quadratmeter (m²)</option>
             <option value="laufmeter">Laufmeter</option>
@@ -214,42 +235,51 @@ export default function NewProductForm({ categories }: { categories: Category[] 
       </div>
 
       <p className={styles.sectionLabel}>
-        Größenvarianten <span style={{ fontWeight: 400, color: 'var(--color-text-muted)' }}>
+        Oberflächen <span style={{ fontWeight: 400, color: 'var(--color-text-muted)' }}>
+          (optional — bis zu {MAX_SURFACES})
+        </span>
+      </p>
+      <div className={styles.formGrid}>
+        <div className={`${styles.field} ${styles.fullWidth}`}>
+          <p style={{ fontSize: '14px', color: 'var(--color-text-muted)', marginBottom: '12px' }}>
+            Bietet dieses Produkt mehrere Oberflächen an (z.B. Poliert, Geflammt, Rau), wählt der Besucher
+            sie direkt auf der Produktseite aus. Erst hier anlegen — bei den Varianten unten kann dann pro
+            Größe ausgewählt werden, welche Oberflächen dazu passen.
+          </p>
+          <VariantsEditor
+            namePrefix="surface"
+            initial={[]}
+            max={MAX_SURFACES}
+            labelPlaceholder={(i) => `Oberfläche ${i + 1}, z.B. Poliert`}
+            addLabel="Oberfläche hinzufügen"
+            onRowsChange={(rows) => setSurfaceLabels(rows.map((r) => r.label.trim()).filter(Boolean))}
+          />
+        </div>
+      </div>
+
+      <p className={styles.sectionLabel}>
+        {unit ? UNIT_VARIANT_SECTION_TITLE[unit] : 'Varianten'} <span style={{ fontWeight: 400, color: 'var(--color-text-muted)' }}>
           (optional — bis zu {MAX_SIZES}, statt mehrerer einzelner Produkte)
         </span>
       </p>
       <div className={styles.formGrid}>
-        <div className={`${styles.field} ${styles.fullWidth}`} style={{ marginBottom: 0 }}>
+        <div className={`${styles.field} ${styles.fullWidth}`}>
           <p style={{ fontSize: '14px', color: 'var(--color-text-muted)', marginBottom: '12px' }}>
-            Bietet dieses Produkt mehrere Größen/Formate an (z.B. verschiedene Plattenmaße), können
-            hier bis zu {MAX_SIZES} Varianten mit eigenem Preis hinterlegt werden — Besucher wählen die
-            gewünschte Größe dann direkt auf der Produktseite aus.
+            Bietet dieses Produkt mehrere Varianten an (z.B. verschiedene Größen, Gewichte oder Mengen),
+            können hier eigene Preise hinterlegt werden — Besucher wählen die gewünschte Variante dann
+            direkt auf der Produktseite aus. Sind oben Oberflächen angelegt, kann pro Variante ausgewählt
+            werden, welche Oberflächen dazu passen (leer = alle erlaubt).
           </p>
+          <VariantsEditor
+            namePrefix="size"
+            initial={[]}
+            max={MAX_SIZES}
+            withPriceAndArticle
+            labelPlaceholder={(i) => `Variante ${i + 1}, ${unit ? UNIT_VARIANT_HINT[unit] : 'z.B. 30x30x3 cm'}`}
+            addLabel="Variante hinzufügen"
+            surfaceOptions={surfaceLabels}
+          />
         </div>
-        {Array.from({ length: MAX_SIZES }).map((_, i) => (
-          <div key={i} className={`${styles.sizeRow} ${styles.fullWidth}`}>
-            <input
-              name={`size_label_${i}`}
-              type="text"
-              placeholder={`Größe ${i + 1}, z.B. 30x30x3 cm`}
-              className={styles.sizeLabelInput}
-            />
-            <input
-              name={`size_price_${i}`}
-              type="number"
-              min="0"
-              step="0.01"
-              placeholder="Preis (optional)"
-              className={styles.sizePriceInput}
-            />
-            <input
-              name={`size_article_${i}`}
-              type="text"
-              placeholder="Artikelnr. (optional)"
-              className={styles.sizeArticleInput}
-            />
-          </div>
-        ))}
       </div>
 
       <div className={imageStyles.section}>

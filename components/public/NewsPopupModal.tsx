@@ -32,21 +32,37 @@ export default function NewsPopupModal({ popup }: Props) {
 
   if (!visible) return null
 
+  const isPoster = popup.layout === 'din_a5'
+
   return (
     <div className={styles.overlay} onClick={close}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <button type="button" className={styles.close} onClick={close} aria-label="Schließen">✕</button>
-        {popup.image_url && (
-          <div className={styles.imageWrap}>
-            <img src={popup.image_url} alt={popup.title} className={styles.image} />
+      {isPoster ? (
+        <div className={styles.modalA5} onClick={(e) => e.stopPropagation()}>
+          <button type="button" className={styles.close} onClick={close} aria-label="Schließen">✕</button>
+          {popup.image_url && (
+            <img src={popup.image_url} alt={popup.title} className={styles.a5Image} />
+          )}
+          <div className={styles.a5Overlay}>
+            <h2 className={styles.a5Title}>{popup.title}</h2>
+            {popup.message && <p className={styles.a5Message}>{popup.message}</p>}
+            <button type="button" className={styles.a5DismissBtn} onClick={close}>Verstanden</button>
           </div>
-        )}
-        <div className={styles.content}>
-          <h2 className={styles.title}>{popup.title}</h2>
-          {popup.message && <p className={styles.message}>{popup.message}</p>}
-          <button type="button" className={styles.dismissBtn} onClick={close}>Verstanden</button>
         </div>
-      </div>
+      ) : (
+        <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+          <button type="button" className={styles.close} onClick={close} aria-label="Schließen">✕</button>
+          {popup.image_url && (
+            <div className={styles.imageWrap}>
+              <img src={popup.image_url} alt={popup.title} className={styles.image} />
+            </div>
+          )}
+          <div className={styles.content}>
+            <h2 className={styles.title}>{popup.title}</h2>
+            {popup.message && <p className={styles.message}>{popup.message}</p>}
+            <button type="button" className={styles.dismissBtn} onClick={close}>Verstanden</button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

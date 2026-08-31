@@ -81,6 +81,7 @@ export default async function extrasKategoriePage({ params }: { params: Promise<
         title={cat.name}
         label="Extras"
         heroImage={cat.image_url}
+        categoryDescription={cat.description}
         basePath="/extras"
         categories={categories}
         products={products}

@@ -53,7 +53,7 @@ export default async function MonitoringPage() {
   // Nur Admins dürfen diese Seite sehen
   if (SUPABASE_CONFIGURED) {
     const user = await getCurrentUser()
-    if (user && (user.role as string) !== 'admin') redirect('/admin')
+    if (!user || (user.role as string) !== 'admin') redirect('/admin/login')
   }
 
   const logs = await getLogs()

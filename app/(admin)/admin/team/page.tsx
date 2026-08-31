@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
 import { createSupabaseAdminClient } from '@/lib/supabase'
-import { toggleTeamMember } from '@/lib/actions/team'
+import { toggleTeamMember, deleteTeamMember } from '@/lib/actions/team'
 import DeleteButton from '@/components/admin/DeleteButton'
 import type { TeamMember } from '@/lib/types'
 import styles from '../table.module.css'
@@ -89,6 +89,14 @@ export default async function TeamPage() {
                       : `${m.name} wieder aktivieren?`}
                     className={m.is_active ? styles.btnDelete : styles.btnEdit}
                   />
+                  {m.role !== 'admin' && (
+                    <DeleteButton
+                      action={deleteTeamMember.bind(null, m.id)}
+                      label="Löschen"
+                      confirmMsg={`${m.name} wirklich endgültig löschen? Das Login-Konto wird ebenfalls entfernt — das kann nicht rückgängig gemacht werden.`}
+                      className={styles.btnDelete}
+                    />
+                  )}
                 </td>
               </tr>
             ))}

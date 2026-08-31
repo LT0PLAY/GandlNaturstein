@@ -81,6 +81,7 @@ export default async function massivproduktionKategoriePage({ params }: { params
         title={cat.name}
         label="Massivproduktion"
         heroImage={cat.image_url}
+        categoryDescription={cat.description}
         basePath="/massivproduktion"
         categories={categories}
         products={products}

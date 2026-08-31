@@ -149,3 +149,93 @@
 .categoryCheckItem.disabledPrimary {
   opacity: 0.6;
 }
+
+/* ── Dynamische Listen (Größen-/Oberflächen-Varianten) mit Plus/Minus ── */
+.variantList { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
+.variantRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.variantRowInput {
+  background: #141413;
+  border: 0.5px solid rgba(155, 174, 159,0.12);
+  padding: 11px 14px;
+  font-size: 16px; color: #dcdcd6;
+  font-family: var(--font-inter), sans-serif;
+  outline: none; transition: border-color .2s;
+  flex: 1 1 220px;
+  min-width: 0;
+}
+.variantRowInput:focus { border-color: rgba(155, 174, 159,0.4); }
+.variantRowInput::placeholder { color: var(--color-text-dim); }
+.variantRemoveBtn {
+  flex: 0 0 auto;
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(224, 96, 96, 0.08);
+  border: 0.5px solid rgba(224, 96, 96, 0.3);
+  color: #E06060;
+  font-size: 16px; line-height: 1;
+  cursor: pointer;
+  transition: background .2s;
+}
+.variantRemoveBtn:hover { background: rgba(224, 96, 96, 0.16); }
+.variantAddBtn {
+  align-self: flex-start;
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(155, 174, 159, 0.06);
+  border: 0.5px solid rgba(155, 174, 159, 0.3);
+  color: var(--color-sage);
+  font-family: var(--font-inter), sans-serif;
+  font-size: 14px; letter-spacing: .04em;
+  padding: 9px 16px;
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+}
+.variantAddBtn:hover { background: rgba(155, 174, 159, 0.12); border-color: rgba(155, 174, 159, 0.5); }
+.variantAddBtn:disabled { opacity: .4; cursor: not-allowed; }
+.variantEmptyHint {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 14px; color: var(--color-text-dim);
+  margin: 0 0 10px;
+}
+
+@media (max-width: 860px) {
+  .variantRow { flex-wrap: wrap; }
+  .variantRowInput { flex: 1 1 100%; }
+}
+
+/* ── Pro-Größe Oberflächen-Auswahl (VariantsEditor) ── */
+.sizeRowWrap {
+  border-bottom: 0.5px solid rgba(155,174,159,0.08);
+  padding-bottom: 14px;
+  margin-bottom: 4px;
+}
+.sizeRowWrap .sizeRow { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+.sizeSurfacePicker {
+  margin: 10px 0 0;
+  padding: 12px 14px;
+  background: rgba(155, 174, 159, 0.03);
+  border: 0.5px solid rgba(155, 174, 159, 0.1);
+}
+.sizeSurfacePickerLabel {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 12px; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--color-text-muted);
+  margin: 0 0 8px;
+}
+.sizeSurfacePickerLabel span {
+  text-transform: none; letter-spacing: 0; color: var(--color-text-dim);
+}
+.sizeSurfaceCheckList {
+  display: flex; flex-wrap: wrap; gap: 8px 16px;
+}
+.sizeSurfaceCheckItem {
+  display: flex; align-items: center; gap: 7px;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 14px; color: var(--color-text);
+  cursor: pointer;
+}
+.sizeSurfaceCheckItem input { accent-color: #9bae9f; width: 15px; height: 15px; cursor: pointer; }

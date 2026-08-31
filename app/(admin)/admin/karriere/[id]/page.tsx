@@ -19,7 +19,7 @@ export default async function EditJobPage({
 }) {
   if (SUPABASE_CONFIGURED) {
     const user = await getCurrentUser()
-    if (user && (user.role as string) !== 'admin') redirect('/admin')
+    if (!user || (user.role as string) !== 'admin') redirect('/admin/login')
   }
 
   const { id } = await params

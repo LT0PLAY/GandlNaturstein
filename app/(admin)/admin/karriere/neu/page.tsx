@@ -13,7 +13,7 @@ const SUPABASE_CONFIGURED =
 export default async function NeueStellePage() {
   if (SUPABASE_CONFIGURED) {
     const user = await getCurrentUser()
-    if (user && (user.role as string) !== 'admin') redirect('/admin')
+    if (!user || (user.role as string) !== 'admin') redirect('/admin/login')
   }
 
   return (

@@ -4,6 +4,7 @@ import { useActionState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import ImageUploader from '@/components/admin/ImageUploader'
 import type { Popup } from '@/lib/types'
+import { POPUP_LAYOUT_LABELS } from '@/lib/types'
 import type { PopupActionState } from '@/lib/actions/popups'
 import styles from '../form.module.css'
 
@@ -52,13 +53,30 @@ export default function PopupForm({ action, popup }: Props) {
         </div>
       </div>
 
+      <p className={styles.sectionLabel}>Format</p>
+      <div className={styles.formGrid}>
+        <div className={`${styles.field} ${styles.fullWidth}`}>
+          <label>Anzeigeformat</label>
+          <select name="layout" defaultValue={popup?.layout ?? 'standard'}>
+            {Object.entries(POPUP_LAYOUT_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </select>
+          <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', marginTop: '4px' }}>
+            Beim Poster-Format füllt das Bild die komplette Fläche im Hochformat (wie ein DIN-A5-Flyer) —
+            Name und Info-Text erscheinen als Einblendung am unteren Rand darüber. Am besten ein Bild im
+            Hochformat mit Verhältnis 148×210 (z. B. 1000×1414px) hochladen.
+          </p>
+        </div>
+      </div>
+
       <p className={styles.sectionLabel}>Bild <span style={{ fontWeight: 400, color: 'var(--color-text-muted)' }}>(optional)</span></p>
       <div className={styles.formGrid}>
         <div className={`${styles.field} ${styles.fullWidth}`}>
           <ImageUploader
             field="image"
             label="Popup-Bild"
-            hint="JPG, PNG, WebP · optional"
+            hint="JPG, PNG, WebP · optional — empfohlene Größe hängt vom gewählten Format oben ab"
             currentUrl={popup?.image_url ?? undefined}
           />
         </div>

@@ -81,6 +81,7 @@ export default async function sonderanfertigungKategoriePage({ params }: { param
         title={cat.name}
         label="Sonderanfertigung"
         heroImage={cat.image_url}
+        categoryDescription={cat.description}
         basePath="/sonderanfertigung"
         categories={categories}
         products={products}

@@ -63,6 +63,8 @@ export async function submitBasketInquiry(data: {
     sourceType?: 'product' | 'restposten' | 'guide'
     /** Gewählte Größenvariante, falls das Produkt mehrere Größen anbietet */
     size?: string | null
+    /** Gewählte Oberflächen-Variante, falls das Produkt mehrere Oberflächen anbietet */
+    surface?: string | null
   }>
   consent: boolean | string
   website?: string  // Honeypot – muss leer bleiben
@@ -87,7 +89,13 @@ export async function submitBasketInquiry(data: {
   }
 
   const itemsText = data.items
-    .map((it) => `– ${SOURCE_LABEL[it.sourceType ?? 'product'] ?? ''}${it.productName}${it.size ? ` (Größe: ${it.size})` : ''}: ${it.quantity} ${UNIT_LABELS[normalizeUnit(it.unit)].short}`)
+    .map((it) => {
+      const variant = [
+        it.size ? `Größe: ${it.size}` : null,
+        it.surface ? `Oberfläche: ${it.surface}` : null,
+      ].filter(Boolean).join(', ')
+      return `– ${SOURCE_LABEL[it.sourceType ?? 'product'] ?? ''}${it.productName}${variant ? ` (${variant})` : ''}: ${it.quantity} ${UNIT_LABELS[normalizeUnit(it.unit)].short}`
+    })
     .join('\n')
 
   const message = `Anfrage-Korb:\n${itemsText}${data.message ? `\n\nKommentar: ${data.message}` : ''}`

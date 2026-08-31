@@ -1,0 +1,79 @@
+/* Titelbild (Hero-Banner) für feste Seiten ohne Kategorie-Filter — Partner,
+   Restposten, Ausstellungsguide, Karriere, Referenzen. Optisch an das
+   Kategorie-Titelbild angelehnt, aber ohne die überlagerte Filterleiste. */
+
+.heroWrap {
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: -120px;
+  margin-bottom: 48px;
+  background: #0A0806;
+}
+
+.heroBanner {
+  position: relative;
+  width: 100%;
+  height: clamp(360px, 40vh, 480px);
+  overflow: hidden;
+  background: #100E08;
+}
+
+.heroImg { width: 100%; height: 100%; object-fit: cover; }
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to right, rgba(6,5,3,0.82) 0%, rgba(6,5,3,0.5) 30%, rgba(6,5,3,0.12) 55%, rgba(6,5,3,0) 75%);
+  display: flex;
+  align-items: flex-end;
+  padding: 150px 5vw 48px;
+}
+
+.heroInner { max-width: 640px; }
+
+.heroLabel {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 13px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--color-sage); margin: 0 0 10px;
+  display: flex; align-items: center; gap: 10px;
+}
+.heroLabel::before { content: ''; display: inline-block; width: 22px; height: 1px; background: var(--color-sage); }
+
+.heroTitle {
+  font-family: var(--font-bebas), sans-serif;
+  font-size: clamp(38px, 5.5vw, 68px);
+  color: #fff;
+  letter-spacing: .03em;
+  line-height: .95;
+  margin: 0 0 10px;
+}
+
+.heroSubtitle {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 15px;
+  color: rgba(240,235,227,0.75);
+  letter-spacing: .02em;
+  margin: 0;
+  max-width: 560px;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .heroBanner { height: clamp(300px, 34vh, 380px); }
+  .heroOverlay {
+    padding: 110px 24px 36px;
+    background:
+      linear-gradient(to top, rgba(6,5,3,0.8) 0%, rgba(6,5,3,0.42) 24%, rgba(6,5,3,0.1) 48%, rgba(6,5,3,0) 68%);
+    align-items: flex-end;
+  }
+  .heroInner { max-width: 100%; }
+}
+
+@media (max-width: 560px) {
+  .heroBanner { height: clamp(280px, 36vh, 340px); }
+  .heroTitle { font-size: clamp(30px, 9vw, 42px); }
+  .heroOverlay { padding-bottom: 30px; }
+}

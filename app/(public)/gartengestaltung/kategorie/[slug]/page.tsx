@@ -81,6 +81,7 @@ export default async function gartengestaltungKategoriePage({ params }: { params
         title={cat.name}
         label="Gartengestaltung"
         heroImage={cat.image_url}
+        categoryDescription={cat.description}
         basePath="/gartengestaltung"
         categories={categories}
         products={products}

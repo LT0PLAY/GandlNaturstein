@@ -33,22 +33,36 @@ function readImageUrls(formData: FormData, field: string): string[] {
 }
 
 // ── Größenvarianten aus FormData lesen (bis zu MAX_SIZES Zeilen) ────────────
-const MAX_SIZES = 6
+const MAX_SIZES = 8
 
-function readSizes(formData: FormData): Array<{ label: string; price: number | null; article_number: string | null }> {
-  const sizes: Array<{ label: string; price: number | null; article_number: string | null }> = []
+function readSizes(formData: FormData): Array<{ label: string; price: number | null; article_number: string | null; surfaces: string[] }> {
+  const sizes: Array<{ label: string; price: number | null; article_number: string | null; surfaces: string[] }> = []
   for (let i = 0; i < MAX_SIZES; i++) {
     const label = (formData.get(`size_label_${i}`) as string || '').trim()
     if (!label) continue
     const priceRaw = formData.get(`size_price_${i}`) as string
     const articleRaw = (formData.get(`size_article_${i}`) as string || '').trim()
+    const surfaces = formData.getAll(`size_surfaces_${i}`).map((v) => String(v)).filter(Boolean)
     sizes.push({
       label,
       price: priceRaw ? Number(priceRaw) : null,
       article_number: articleRaw || null,
+      surfaces,
     })
   }
   return sizes
+}
+
+// ── Oberflächen-Varianten aus FormData lesen (bis zu MAX_SURFACES Zeilen) ───
+const MAX_SURFACES = 8
+
+function readSurfaces(formData: FormData): string[] {
+  const surfaces: string[] = []
+  for (let i = 0; i < MAX_SURFACES; i++) {
+    const label = (formData.get(`surface_label_${i}`) as string || '').trim()
+    if (label) surfaces.push(label)
+  }
+  return surfaces
 }
 
 // ── Mehrfachkategorien aus FormData lesen (Checkboxen "category_ids") ───────
@@ -129,12 +143,13 @@ export async function createProduct(
     bereich:     formData.get('bereich')     as string || null,
     category_id: formData.get('category_id') as string || null,
     material:    formData.get('material')    as string || null,
-    surface:     formData.get('surface')     as string || null,
+    surface:     readSurfaces(formData)[0] ?? null,
+    surfaces:    readSurfaces(formData),
     format:      formData.get('format')      as string || null,
     origin:      formData.get('origin')      as string || null,
     einsatzbereich: formData.get('einsatzbereich') as string || null,
     farbe:          formData.get('farbe')          as string || null,
-    unit:        (['stueck','laufmeter','qm','gewicht'].includes(formData.get('unit') as string) ? formData.get('unit') : 'qm') as string,
+    unit:        (['stueck','laufmeter','qm','gewicht','groesse'].includes(formData.get('unit') as string) ? formData.get('unit') : 'qm') as string,
     is_active:   formData.get('is_active') === 'true',
     show_price:  formData.get('show_price') === 'true',
     price:       formData.get('price') ? Number(formData.get('price')) : null,
@@ -180,12 +195,13 @@ export async function updateProduct(id: string, _prevState: ProductActionState, 
     bereich:        formData.get('bereich')     as string || null,
     category_id:    formData.get('category_id') as string || null,
     material:       formData.get('material')    as string || null,
-    surface:        formData.get('surface')     as string || null,
+    surface:        readSurfaces(formData)[0] ?? null,
+    surfaces:       readSurfaces(formData),
     format:         formData.get('format')      as string || null,
     origin:         formData.get('origin')      as string || null,
     einsatzbereich: formData.get('einsatzbereich') as string || null,
     farbe:          formData.get('farbe')          as string || null,
-    unit:           (['stueck','laufmeter','qm','gewicht'].includes(formData.get('unit') as string) ? formData.get('unit') : 'qm') as string,
+    unit:           (['stueck','laufmeter','qm','gewicht','groesse'].includes(formData.get('unit') as string) ? formData.get('unit') : 'qm') as string,
     is_active:      formData.get('is_active') === 'true',
     show_price:     formData.get('show_price') === 'true',
     price:          formData.get('price') ? Number(formData.get('price')) : null,

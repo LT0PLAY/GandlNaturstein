@@ -1,6 +1,8 @@
 export const dynamic = 'force-dynamic'
 
 import { createSupabaseAdminClient } from '@/lib/supabase'
+import { getPageHeroImage } from '@/lib/actions/pageHeroes'
+import PageHero from '@/components/public/PageHero'
 import type { Partner } from '@/lib/types'
 
 export const metadata = {
@@ -21,28 +23,41 @@ async function getPartners(): Promise<Partner[]> {
 }
 
 export default async function UnserePartnerPage() {
-  const partners = await getPartners()
+  const [partners, heroImage] = await Promise.all([getPartners(), getPageHeroImage('partner')])
 
   return (
+    <>
+      {heroImage && (
+        <PageHero
+          label="// Zusammenarbeit"
+          title="Unsere Partner"
+          subtitle="Verlässliche Partnerschaften, Zertifikate und Auszeichnungen, auf die wir bei Gandl Natursteine bauen."
+          image={heroImage}
+        />
+      )}
     <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '64px 24px 100px' }}>
-      <p style={{
-        fontFamily: 'var(--font-inter)', fontSize: '13px', letterSpacing: '.14em',
-        textTransform: 'uppercase', color: 'var(--color-sage)', marginBottom: '14px',
-      }}>
-        // Zusammenarbeit
-      </p>
-      <h1 style={{
-        fontFamily: 'var(--font-bebas)', fontSize: 'clamp(40px, 6vw, 64px)', color: '#dcdcd6',
-        letterSpacing: '.02em', lineHeight: '.95', marginBottom: '20px',
-      }}>
-        Unsere Partner
-      </h1>
-      <p style={{
-        fontFamily: 'var(--font-inter)', fontSize: '16px', color: '#9caea1',
-        lineHeight: 1.8, marginBottom: '48px', maxWidth: '620px',
-      }}>
-        Verlässliche Partnerschaften, Zertifikate und Auszeichnungen, auf die wir bei Gandl Natursteine bauen.
-      </p>
+      {!heroImage && (
+        <>
+          <p style={{
+            fontFamily: 'var(--font-inter)', fontSize: '13px', letterSpacing: '.14em',
+            textTransform: 'uppercase', color: 'var(--color-sage)', marginBottom: '14px',
+          }}>
+            // Zusammenarbeit
+          </p>
+          <h1 style={{
+            fontFamily: 'var(--font-bebas)', fontSize: 'clamp(40px, 6vw, 64px)', color: '#dcdcd6',
+            letterSpacing: '.02em', lineHeight: '.95', marginBottom: '20px',
+          }}>
+            Unsere Partner
+          </h1>
+          <p style={{
+            fontFamily: 'var(--font-inter)', fontSize: '16px', color: '#9caea1',
+            lineHeight: 1.8, marginBottom: '48px', maxWidth: '620px',
+          }}>
+            Verlässliche Partnerschaften, Zertifikate und Auszeichnungen, auf die wir bei Gandl Natursteine bauen.
+          </p>
+        </>
+      )}
 
       {partners.length === 0 ? (
         <p style={{ color: '#9caea1', fontFamily: 'var(--font-inter)' }}>
@@ -105,5 +120,6 @@ export default async function UnserePartnerPage() {
         </div>
       )}
     </div>
+    </>
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useBasket } from './BasketContext'
 import type { Product, ProductSize } from '@/lib/types'
 import { UNIT_LABELS } from '@/lib/types'
@@ -24,6 +24,22 @@ export default function ProductDetail({ product, backHref, backLabel }: {
   const [selectedSizeIdx, setSelectedSizeIdx] = useState<number>(0)
   const selectedSize = hasSizes ? sizes[selectedSizeIdx] : null
 
+  const allSurfaces: string[] = (product as any).surfaces ?? []
+  // Ist für die gewählte Größe eine Teilmenge der Oberflächen hinterlegt, gilt nur diese —
+  // sonst stehen alle am Produkt angelegten Oberflächen zur Wahl.
+  const sizeSurfaces = hasSizes ? (selectedSize as any)?.surfaces as string[] | undefined : undefined
+  const surfaces = sizeSurfaces && sizeSurfaces.length > 0 ? sizeSurfaces : allSurfaces
+  const hasSurfaces = surfaces.length > 0
+  const [selectedSurfaceIdx, setSelectedSurfaceIdx] = useState<number>(0)
+  const selectedSurface = hasSurfaces ? surfaces[selectedSurfaceIdx] : null
+
+  // Beim Wechsel der Größe kann sich die Liste der passenden Oberflächen ändern —
+  // Auswahl zurücksetzen, damit nicht versehentlich eine nicht mehr gültige
+  // Oberfläche „hängen bleibt".
+  useEffect(() => {
+    setSelectedSurfaceIdx(0)
+  }, [selectedSizeIdx])
+
   const inBasket = hasItem(product.id)
 
   // Bei Größenvarianten: eigener Preis der gewählten Größe, sonst der normale Produktpreis.
@@ -43,6 +59,7 @@ export default function ProductDetail({ product, backHref, backLabel }: {
       show_price:   product.show_price ?? false,
       unit:         (product as any).unit ?? 'qm',
       size:         hasSizes ? selectedSize?.label ?? null : null,
+      surface:      hasSurfaces ? selectedSurface ?? null : null,
     })
   }
 
@@ -89,7 +106,7 @@ export default function ProductDetail({ product, backHref, backLabel }: {
             {product.material && (
               <><dt>Material</dt><dd>{product.material}</dd></>
             )}
-            {product.surface && (
+            {product.surface && !hasSurfaces && (
               <><dt>Oberfläche</dt><dd>{product.surface}</dd></>
             )}
             {product.format && (
@@ -122,6 +139,27 @@ export default function ProductDetail({ product, backHref, backLabel }: {
                     {s.label}
                     {product.show_price && s.price != null ? ` — ${Number(s.price).toLocaleString('de-DE', { minimumFractionDigits: 2 })} €` : ''}
                   </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {hasSurfaces && (
+            <div style={{ margin: '20px 0' }}>
+              <label style={{ display: 'block', fontSize: '13px', letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--color-text-dim)', marginBottom: '8px' }}>
+                Oberfläche wählen
+              </label>
+              <select
+                value={selectedSurfaceIdx}
+                onChange={(e) => setSelectedSurfaceIdx(Number(e.target.value))}
+                style={{
+                  width: '100%', height: '46px', padding: '0 14px',
+                  background: 'rgba(155,174,159,0.04)', border: '0.5px solid rgba(155,174,159,0.2)',
+                  color: '#efece4', fontFamily: 'var(--font-inter), sans-serif', fontSize: '15px',
+                }}
+              >
+                {surfaces.map((s, i) => (
+                  <option key={i} value={i}>{s}</option>
                 ))}
               </select>
             </div>

@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { createSupabaseAdminClient } from '@/lib/supabase'
 
 export async function login(formData: FormData) {
   const email    = formData.get('email')    as string
@@ -33,10 +34,25 @@ export async function requestPasswordReset(email: string) {
   return { error: null, success: true }
 }
 
-export async function updatePassword(password: string) {
+export async function updatePassword(password: string, activateInvite = false) {
   const supabase = await createSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
   const { error } = await supabase.auth.updateUser({ password })
   if (error) return { error: error.message, success: false }
+
+  // Neu eingeladene Mitarbeiter starten inaktiv ("erst aktiv nach Passwort-Setzen") —
+  // sobald die Einladung akzeptiert (Passwort gesetzt) wurde, hier freischalten.
+  // Bewusst NUR bei echten Einladungs-Links (activateInvite=true von der Seite gesetzt),
+  // damit ein bewusst deaktivierter Mitarbeiter sich nicht über "Passwort vergessen"
+  // selbst wieder aktivieren kann.
+  if (activateInvite && user) {
+    await createSupabaseAdminClient()
+      .from('team_members')
+      .update({ is_active: true })
+      .eq('user_id', user.id)
+      .eq('is_active', false)
+  }
+
   return { error: null, success: true }
 }
 
@@ -52,5 +68,8 @@ export async function getCurrentUser() {
     .eq('user_id', user.id)
     .single()
 
-  return member ?? { id: user.id, name: user.email, email: user.email, role: 'admin' }
+  // WICHTIG: kein Fallback auf "role: admin" mehr, wenn kein team_members-Eintrag
+  // gefunden wird (z.B. weil das Konto zwischenzeitlich gelöscht wurde) — das hätte
+  // sonst versehentlich vollen Admin-Zugriff gewährt. Kein Team-Eintrag = kein Zugriff.
+  return member ?? null
 }
