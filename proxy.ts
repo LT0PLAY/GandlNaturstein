@@ -9,6 +9,15 @@ const SUPABASE_CONFIGURED =
 export async function proxy(request: NextRequest) {
   const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
   const isLoginPage  = request.nextUrl.pathname === '/admin/login'
+  // Seiten, die auch OHNE bestehende Session erreichbar sein müssen: Einladungs-
+  // und Reset-Links bauen ihre Session erst im Browser aus dem URL-Token auf —
+  // die Middleware läuft server-seitig VOR diesem Schritt und sieht noch keine
+  // Cookie-Session. Diese Seiten dürfen deshalb nicht wie normale Admin-Seiten
+  // hinter dem Login-Zwang liegen.
+  const isPublicAuthPage =
+    isLoginPage ||
+    request.nextUrl.pathname === '/admin/passwort-neu-setzen' ||
+    request.nextUrl.pathname === '/admin/login/passwort-vergessen'
 
   // ── DEV-MODUS: Supabase noch nicht konfiguriert → Admin frei zugänglich ──
   if (!SUPABASE_CONFIGURED) {
@@ -40,7 +49,7 @@ export async function proxy(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user && isAdminRoute && !isLoginPage) {
+  if (!user && isAdminRoute && !isPublicAuthPage) {
     const loginUrl = new URL('/admin/login', request.url)
     loginUrl.searchParams.set('redirect', request.nextUrl.pathname)
     return NextResponse.redirect(loginUrl)
