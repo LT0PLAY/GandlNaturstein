@@ -27,16 +27,35 @@ export default function PasswortNeuSetzenPage() {
 
   useEffect(() => {
     setIsInvite(readLinkType() === 'invite')
-
-    // Der Link liefert entweder ein "code"-Query-Param (PKCE) oder ein
-    // #access_token-Fragment (impliziter Flow) — der Supabase-Browser-Client
-    // erkennt das beim ersten getSession()-Aufruf automatisch und legt eine
-    // Cookie-Session an, die die Server Action danach lesen kann.
     const supabase = createSupabaseBrowserClient()
-    supabase.auth.getSession().then(({ data }) => {
+
+    async function establishSession() {
+      // Falls im Browser bereits eine ANDERE Session bestand (z.B. weil man als
+      // Admin eingeloggt war, als der Einladungs-/Reset-Link geöffnet wurde),
+      // darf diese alte Session NICHT versehentlich übernommen werden. Deshalb
+      // wird ein im URL-Fragment mitgelieferter Token (#access_token/#refresh_token
+      // — der klassische Supabase-Verify-Redirect) IMMER explizit gesetzt, statt
+      // einfach "die aktuelle Session" per getSession() abzufragen — das schließt
+      // die Race Condition mit einer evtl. schon bestehenden fremden Session aus.
+      const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''))
+      const access_token  = hash.get('access_token')
+      const refresh_token = hash.get('refresh_token')
+
+      if (access_token && refresh_token) {
+        const { error } = await supabase.auth.setSession({ access_token, refresh_token })
+        setLinkValid(!error)
+        setChecking(false)
+        return
+      }
+
+      // PKCE-Flow (?code=...): supabase-js tauscht den Code automatisch beim
+      // ersten getSession()-Aufruf gegen eine neue Session ein.
+      const { data } = await supabase.auth.getSession()
       setLinkValid(!!data.session)
       setChecking(false)
-    })
+    }
+
+    establishSession()
   }, [])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
