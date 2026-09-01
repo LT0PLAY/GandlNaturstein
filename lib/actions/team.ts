@@ -4,17 +4,14 @@ import { revalidatePath } from 'next/cache'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { logChange } from '@/lib/utils/changelog'
-import { sendBrandedEmail } from '@/lib/email/resend'
-import { inviteEmailHtml } from '@/lib/email/templates'
 import type { TeamRole } from '@/lib/types'
 
 export type TeamActionState = {
   error:   string | null
   success: boolean
-  /** Nur gesetzt, wenn der Einladungslink NICHT automatisch per Mail verschickt werden
-   *  konnte (z.B. weil RESEND_API_KEY fehlt) — der Admin kann ihn dann manuell teilen. */
+  /** Link zum manuellen Weiterleiten an den Mitarbeiter — E-Mail-Versand ist
+   *  bewusst deaktiviert, der Admin teilt den Link persönlich (WhatsApp, o.ä.). */
   inviteLink?:    string | null
-  emailWarning?:  string | null
 }
 
 // ── Hilfsfunktion: Prüft ob aktueller User Admin ist ──────────────
@@ -87,25 +84,43 @@ export async function createTeamMember(
   })
   revalidatePath('/admin/team')
 
-  // Eigene, Gandl-gebrandete E-Mail statt der Standard-Supabase-Mail verschicken.
-  const emailResult = await sendBrandedEmail({
-    to:      email,
-    subject: 'Einladung ins Gandl Natursteine Admin-Team',
-    html:    inviteEmailHtml({ name, role, actionLink }),
+  // Kein automatischer E-Mail-Versand (bewusst) — der Link wird dem Admin hier
+  // zum manuellen Weiterleiten angezeigt.
+  return { error: null, success: true, inviteLink: actionLink }
+}
+
+// ── Neuen Link zum Passwort-Setzen erzeugen (für bereits registrierte
+//    Mitarbeiter, die ihr Passwort verloren haben) ──────────────────
+export async function generateNewPasswordLink(id: string): Promise<TeamActionState> {
+  const auth = await requireAdmin()
+  if (!auth.ok) return { error: auth.error, success: false }
+
+  const supabase = createSupabaseAdminClient()
+  const { data: member } = await supabase
+    .from('team_members').select('email').eq('id', id).single()
+  if (!member?.email) return { error: 'Mitarbeiter nicht gefunden.', success: false }
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+
+  const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
+    type:  'recovery',
+    email: member.email,
+    options: { redirectTo: `${siteUrl}/admin/passwort-neu-setzen` },
+  })
+  if (linkError) return { error: linkError.message, success: false }
+
+  const hashedToken = (linkData as any)?.properties?.hashed_token as string | undefined
+  if (!hashedToken) return { error: 'Link konnte nicht erzeugt werden.', success: false }
+
+  const actionLink = `${siteUrl}/auth/confirm?token_hash=${hashedToken}&type=recovery&next=${encodeURIComponent('/admin/passwort-neu-setzen')}`
+
+  await logChange({
+    action: 'update', entity_type: 'team', entity_id: id,
+    entity_name: member.email,
+    new_value: { action: 'password_link_generated' },
   })
 
-  if (emailResult.sent) {
-    return { error: null, success: true }
-  }
-
-  // Kein Mailversand konfiguriert (oder fehlgeschlagen) — Link zum manuellen Teilen zurückgeben,
-  // damit die Einladung trotzdem nutzbar ist.
-  return {
-    error:        null,
-    success:      true,
-    inviteLink:   actionLink,
-    emailWarning: emailResult.error ?? 'E-Mail konnte nicht verschickt werden.',
-  }
+  return { error: null, success: true, inviteLink: actionLink }
 }
 
 // ── Mitarbeiter endgültig löschen ───────────────────────────────────

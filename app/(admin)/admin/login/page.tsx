@@ -61,12 +61,7 @@ export default function LoginPage() {
         </form>
 
         <p className={styles.hint}>
-          <a href="/admin/login/passwort-vergessen" style={{ color: 'var(--color-gold)', textDecoration: 'none' }}>
-            Passwort vergessen?
-          </a>
-        </p>
-        <p className={styles.hint} style={{ marginTop: '8px' }}>
-          Kein Zugang? Wende dich an den Administrator.
+          Passwort vergessen? Wende dich an den Administrator.
         </p>
       </div>
     </div>

@@ -41,9 +41,10 @@ export default async function TeamMemberEditPage({
       }}>
         <p style={{ fontFamily: 'var(--font-inter)', fontSize: '15px', color: 'var(--color-text-muted)', marginBottom: '12px' }}>
           <strong style={{ color: 'var(--color-text)' }}>Passwort zurücksetzen</strong><br />
-          Schickt eine Reset-E-Mail an <strong>{member.email}</strong>.
+          Erzeugt einen neuen Link zum Passwort-Setzen für <strong>{member.email}</strong>, den du
+          persönlich weitergibst (kein automatischer Mailversand).
         </p>
-        <PasswordResetButton email={member.email} />
+        <PasswordResetButton memberId={member.id} />
       </div>
     </div>
   )

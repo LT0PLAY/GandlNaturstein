@@ -9,7 +9,6 @@ const initial = {
   error: null as string | null,
   success: false,
   inviteLink: null as string | null | undefined,
-  emailWarning: null as string | null | undefined,
 }
 
 export default function NewTeamMemberForm() {
@@ -60,9 +59,9 @@ export default function NewTeamMemberForm() {
           <p style={{ fontFamily: 'var(--font-inter)', fontSize: '15px', color: 'var(--color-text)', marginBottom: '8px' }}>
             ✓ Mitarbeiter wurde angelegt.
           </p>
-          <p style={{ fontFamily: 'var(--font-inter)', fontSize: '14px', color: '#e2b87c', marginBottom: '14px' }}>
-            Die Einladungs-E-Mail konnte nicht automatisch verschickt werden{state.emailWarning ? ` (${state.emailWarning})` : ''}.
-            Bitte teile den folgenden Link manuell mit der Person — z.B. per WhatsApp oder E-Mail:
+          <p style={{ fontFamily: 'var(--font-inter)', fontSize: '14px', color: 'var(--color-text-muted)', marginBottom: '14px' }}>
+            Bitte teile den folgenden Link persönlich mit der Person — z.B. per WhatsApp oder E-Mail
+            (nur einmal gültig, zeitnah verwenden):
           </p>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
             <input

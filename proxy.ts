@@ -16,8 +16,7 @@ export async function proxy(request: NextRequest) {
   // hinter dem Login-Zwang liegen.
   const isPublicAuthPage =
     isLoginPage ||
-    request.nextUrl.pathname === '/admin/passwort-neu-setzen' ||
-    request.nextUrl.pathname === '/admin/login/passwort-vergessen'
+    request.nextUrl.pathname === '/admin/passwort-neu-setzen'
 
   // ── DEV-MODUS: Supabase noch nicht konfiguriert → Admin frei zugänglich ──
   if (!SUPABASE_CONFIGURED) {
