@@ -67,7 +67,7 @@
   transform: translateX(-50%);
   /* Zieht das Titelbild bis ganz nach oben — es darf hinter der fixierten,
      halbtransparenten Navbar erscheinen, statt einen grauen Abstand zu lassen. */
-  margin-top: -120px;
+  margin-top: -72px;
   margin-bottom: 28px;
   background: #0A0806;
 }
