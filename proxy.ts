@@ -107,10 +107,10 @@ export async function proxy(request: NextRequest) {
   return supabaseResponse
 }
 
-// Middleware braucht hier die echte Node.js-Laufzeit (nicht Edge), weil
-// lib/customerSession.ts Node's `crypto`-Modul (HMAC-Signaturprüfung) nutzt.
-export const runtime = 'nodejs'
-
+// Hinweis: In Next.js 16 heißt diese Datei "Proxy" (proxy.ts) und läuft dort
+// IMMER auf Node.js-Laufzeit — ein explizites `runtime = 'nodejs'` ist hier
+// nicht mehr nötig/erlaubt. lib/customerSession.ts kann Node's `crypto`-Modul
+// deshalb trotzdem gefahrlos verwenden.
 export const config = {
   matcher: ['/admin/:path*', '/kundenbereich/:path*'],
 }
