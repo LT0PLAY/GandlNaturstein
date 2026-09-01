@@ -4,7 +4,9 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getCurrentUser } from '@/lib/actions/auth'
 import { getCustomerAccess, getCustomerDocuments, deleteCustomerDocument } from '@/lib/actions/customerAccess'
+import { getPageHeroImage } from '@/lib/actions/pageHeroes'
 import DeleteButton from '@/components/admin/DeleteButton'
+import PageHeroSettings from '@/components/admin/PageHeroSettings'
 import CredentialsForm from './CredentialsForm'
 import styles from '../table.module.css'
 
@@ -18,7 +20,7 @@ export default async function AdminKundenbereichPage() {
     if (!user || (user.role as string) !== 'admin') redirect('/admin/login')
   }
 
-  const [access, documents] = await Promise.all([getCustomerAccess(), getCustomerDocuments()])
+  const [access, documents, heroImage] = await Promise.all([getCustomerAccess(), getCustomerDocuments(), getPageHeroImage('kundenbereich')])
 
   return (
     <div>
@@ -34,6 +36,8 @@ export default async function AdminKundenbereichPage() {
         Login für euren Geschäftskunden. Teile Benutzername und Passwort nach dem Speichern selbst mit —
         aus Sicherheitsgründen wird das Passwort danach nicht mehr angezeigt.
       </p>
+
+      <PageHeroSettings pageKey="kundenbereich" title="Kundenbereich" currentImageUrl={heroImage} />
 
       {/* ── Zugangsdaten ── */}
       <div style={{ border: '0.5px solid rgba(155,174,159,0.18)', background: 'var(--color-bg-card)', padding: '28px', marginBottom: '48px', maxWidth: '480px' }}>

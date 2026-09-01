@@ -17,7 +17,7 @@ export type ChangeAction = 'create' | 'update' | 'delete'
 
 // ── Titelbilder für feste Seiten (Partner, Restposten, Ausstellungsguide,
 // Karriere, Referenzen) — analog zum Kategorie-Titelbild, aber pro Seite. ──
-export type PageHeroKey = 'partner' | 'restposten' | 'guide' | 'karriere' | 'referenzen'
+export type PageHeroKey = 'partner' | 'restposten' | 'guide' | 'karriere' | 'referenzen' | 'kundenbereich'
 
 export interface PageHero {
   page_key:   PageHeroKey
@@ -26,11 +26,12 @@ export interface PageHero {
 }
 
 export const PAGE_HERO_LABELS: Record<PageHeroKey, string> = {
-  partner:    'Unsere Partner',
-  restposten: 'Aktuelle Restposten',
-  guide:      'Ausstellungsguide',
-  karriere:   'Karriere',
-  referenzen: 'Referenzen',
+  partner:       'Unsere Partner',
+  restposten:    'Aktuelle Restposten',
+  guide:         'Ausstellungsguide',
+  karriere:      'Karriere',
+  referenzen:    'Referenzen',
+  kundenbereich: 'Kundenbereich',
 }
 
 export interface Category {

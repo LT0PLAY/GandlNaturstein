@@ -7,11 +7,12 @@ import type { PageHeroKey } from '@/lib/types'
 // Pfad der öffentlichen Seite pro Key, damit revalidatePath nach dem Speichern
 // die richtige Seite neu rendert.
 const PUBLIC_PATH: Record<PageHeroKey, string> = {
-  partner:    '/unsere-partner',
-  restposten: '/restposten',
-  guide:      '/ausstellungsguide',
-  karriere:   '/karriere',
-  referenzen: '/referenzen',
+  partner:       '/unsere-partner',
+  restposten:    '/restposten',
+  guide:         '/ausstellungsguide',
+  karriere:      '/karriere',
+  referenzen:    '/referenzen',
+  kundenbereich: '/kundenbereich',
 }
 
 // ── Titelbild-URL aus FormData lesen (ImageUploader schickt hidden inputs) ──

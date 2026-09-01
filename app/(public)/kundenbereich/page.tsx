@@ -4,7 +4,9 @@ import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import type { Metadata } from 'next'
 import { getCustomerDocuments, customerLogout } from '@/lib/actions/customerAccess'
+import { getPageHeroImage } from '@/lib/actions/pageHeroes'
 import { CUSTOMER_SESSION_COOKIE, isValidCustomerSessionToken } from '@/lib/customerSession'
+import PageHero from '@/components/public/PageHero'
 import styles from '@/app/(public)/category.module.css'
 
 export const metadata: Metadata = {
@@ -19,30 +21,48 @@ export default async function KundenbereichPage() {
   const token = cookieStore.get(CUSTOMER_SESSION_COOKIE)?.value
   if (!isValidCustomerSessionToken(token)) redirect('/kundenbereich/login')
 
-  const documents = await getCustomerDocuments()
+  const [documents, heroImage] = await Promise.all([getCustomerDocuments(), getPageHeroImage('kundenbereich')])
+
+  const logoutButton = (
+    <form action={customerLogout}>
+      <button
+        type="submit"
+        style={{
+          fontFamily: 'var(--font-inter)', fontSize: '13px', letterSpacing: '.06em',
+          padding: '0 18px', height: '38px', border: '0.5px solid rgba(155,174,159,0.4)',
+          background: 'transparent', color: 'var(--color-gold)', cursor: 'pointer',
+        }}
+      >
+        Abmelden
+      </button>
+    </form>
+  )
 
   return (
     <div className={styles.pageBg}>
+      {heroImage && (
+        <PageHero
+          label="// Privatbereich"
+          title="Kundenbereich"
+          subtitle="Ihre persönlichen Unterlagen zum Ansehen und Herunterladen."
+          image={heroImage}
+        />
+      )}
       <section className={styles.page}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px', marginBottom: '8px' }}>
-          <div className={styles.hero}>
-            <p className={styles.label}>// Privatbereich</p>
-            <h1 className={styles.title}>Kundenbereich</h1>
-            <p className={styles.subtitle}>Ihre persönlichen Unterlagen zum Ansehen und Herunterladen.</p>
+        {heroImage ? (
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '32px' }}>
+            {logoutButton}
           </div>
-          <form action={customerLogout}>
-            <button
-              type="submit"
-              style={{
-                fontFamily: 'var(--font-inter)', fontSize: '13px', letterSpacing: '.06em',
-                padding: '0 18px', height: '38px', border: '0.5px solid rgba(155,174,159,0.4)',
-                background: 'transparent', color: 'var(--color-gold)', cursor: 'pointer',
-              }}
-            >
-              Abmelden
-            </button>
-          </form>
-        </div>
+        ) : (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px', marginBottom: '8px' }}>
+            <div className={styles.hero}>
+              <p className={styles.label}>// Privatbereich</p>
+              <h1 className={styles.title}>Kundenbereich</h1>
+              <p className={styles.subtitle}>Ihre persönlichen Unterlagen zum Ansehen und Herunterladen.</p>
+            </div>
+            {logoutButton}
+          </div>
+        )}
 
         {documents.length === 0 ? (
           <div className={styles.empty}>
