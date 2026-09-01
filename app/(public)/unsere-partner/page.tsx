@@ -4,6 +4,7 @@ import { createSupabaseAdminClient } from '@/lib/supabase'
 import { getPageHeroImage } from '@/lib/actions/pageHeroes'
 import PageHero from '@/components/public/PageHero'
 import type { Partner } from '@/lib/types'
+import styles from './partner.module.css'
 
 export const metadata = {
   title: 'Unsere Partner – Gandl Natursteine',
@@ -66,10 +67,7 @@ export default async function UnserePartnerPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
           {partners.map((p) => (
-            <div key={p.id} style={{
-              display: 'flex', alignItems: 'center', gap: '32px', flexWrap: 'wrap',
-              padding: '28px 0', borderBottom: '0.5px solid rgba(155, 174, 159, 0.12)',
-            }}>
+            <div key={p.id} className={styles.partnerRow}>
               <div style={{
                 width: '140px', height: '90px', flexShrink: 0, display: 'flex',
                 alignItems: 'center', justifyContent: 'center',
@@ -81,7 +79,7 @@ export default async function UnserePartnerPage() {
                   : <span style={{ color: '#999', fontSize: '12px', fontFamily: 'var(--font-inter)' }}>{p.name}</span>}
               </div>
 
-              <div style={{ flex: 1, minWidth: '220px' }}>
+              <div className={styles.partnerInfo}>
                 <p style={{
                   fontFamily: 'var(--font-bebas)', fontSize: '24px', color: '#dcdcd6', letterSpacing: '.02em', marginBottom: '4px',
                 }}>
@@ -96,7 +94,7 @@ export default async function UnserePartnerPage() {
               </div>
 
               {p.pdfs?.length > 0 && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', maxWidth: '420px' }}>
+                <div className={styles.partnerPdfs}>
                   {p.pdfs.map((pdf, i) => (
                     <a
                       key={i}

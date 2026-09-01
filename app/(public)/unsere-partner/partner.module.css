@@ -1,0 +1,43 @@
+.partnerRow {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  padding: 28px 0;
+  border-bottom: 0.5px solid rgba(155, 174, 159, 0.12);
+}
+
+.partnerInfo {
+  flex: 1;
+  min-width: 220px;
+}
+
+.partnerPdfs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-width: 420px;
+}
+
+/* Handy: Logo, Name/Website und PDFs untereinander und mittig zentriert
+   statt linksbündig in einer Reihe. */
+@media (max-width: 640px) {
+  .partnerRow {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+  }
+  .partnerInfo {
+    min-width: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .partnerPdfs {
+    justify-content: center;
+    width: 100%;
+    max-width: none;
+  }
+}
