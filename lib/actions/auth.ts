@@ -11,10 +11,23 @@ export async function login(formData: FormData) {
   const password = formData.get('password') as string
 
   const supabase = await createSupabaseServerClient()
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
-  if (error) {
+  if (error || !data.user) {
     return { error: 'E-Mail oder Passwort falsch.', success: false }
+  }
+
+  // Deaktivierte Mitarbeiter dürfen sich trotz gültigem Supabase-Passwort nicht
+  // einloggen — team_members.is_active ist die eigentliche Zugriffs-Schranke.
+  const { data: member } = await supabase
+    .from('team_members')
+    .select('is_active')
+    .eq('user_id', data.user.id)
+    .maybeSingle()
+
+  if (!member || !member.is_active) {
+    await supabase.auth.signOut()
+    return { error: 'Dieses Konto wurde deaktiviert. Wende dich an den Administrator.', success: false }
   }
 
   redirect('/admin')

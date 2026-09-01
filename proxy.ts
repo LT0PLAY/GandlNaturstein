@@ -55,6 +55,25 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
 
+  // Ein gültiger Supabase-Login reicht allein nicht — deaktivierte Mitarbeiter
+  // (team_members.is_active = false) müssen auch dann ausgesperrt bleiben, wenn
+  // ihre Browser-Session noch besteht (z.B. weil sie schon eingeloggt waren,
+  // bevor ein Admin sie deaktiviert hat).
+  if (user && isAdminRoute && !isPublicAuthPage) {
+    const { data: member } = await supabase
+      .from('team_members')
+      .select('is_active')
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    if (!member || !member.is_active) {
+      await supabase.auth.signOut()
+      const loginUrl = new URL('/admin/login', request.url)
+      loginUrl.searchParams.set('redirect', request.nextUrl.pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+  }
+
   if (user && isLoginPage) {
     return NextResponse.redirect(new URL('/admin', request.url))
   }
