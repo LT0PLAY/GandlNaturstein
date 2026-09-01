@@ -27,17 +27,17 @@ export default async function AdminKundenbereichPage() {
       <div className={styles.pageHeader}>
         <div>
           <p className={styles.pageLabel}>// Admin</p>
-          <h1 className={styles.pageTitle}>Kundenbereich</h1>
+          <h1 className={styles.pageTitle}>BtoB</h1>
         </div>
       </div>
 
       <p style={{ fontFamily: 'var(--font-inter)', fontSize: '14px', color: 'var(--color-text-muted)', lineHeight: 1.7, marginBottom: '32px', maxWidth: '640px' }}>
-        Hier legst du den Zugang für den privaten Kundenbereich fest (<code>/btob</code>) — ein einzelner
+        Hier legst du den Zugang für den privaten BtoB-Bereich fest (<code>/btob</code>) — ein einzelner
         Login für euren Geschäftskunden. Teile Benutzername und Passwort nach dem Speichern selbst mit —
         aus Sicherheitsgründen wird das Passwort danach nicht mehr angezeigt.
       </p>
 
-      <PageHeroSettings pageKey="kundenbereich" title="Kundenbereich" currentImageUrl={heroImage} />
+      <PageHeroSettings pageKey="kundenbereich" title="BtoB" currentImageUrl={heroImage} />
 
       {/* ── Zugangsdaten ── */}
       <div style={{ border: '0.5px solid rgba(155,174,159,0.18)', background: 'var(--color-bg-card)', padding: '28px', marginBottom: '48px', maxWidth: '480px' }}>
@@ -52,15 +52,15 @@ export default async function AdminKundenbereichPage() {
         <h2 className={styles.pageTitle} style={{ fontSize: '28px' }}>
           Dokumente <span className={styles.count}>{documents.length}</span>
         </h2>
-        <Link href="/admin/kundenbereich/neu" className={styles.btnPrimary}>
+        <Link href="/admin/btob/neu" className={styles.btnPrimary}>
           + Neues Dokument
         </Link>
       </div>
 
       {documents.length === 0 ? (
         <div className={styles.empty}>
-          <p>Noch keine Dokumente für den Kundenbereich hochgeladen.</p>
-          <Link href="/admin/kundenbereich/neu" className={styles.btnPrimary}>
+          <p>Noch keine Dokumente für den BtoB-Bereich hochgeladen.</p>
+          <Link href="/admin/btob/neu" className={styles.btnPrimary}>
             Erstes Dokument anlegen
           </Link>
         </div>
@@ -87,7 +87,7 @@ export default async function AdminKundenbereichPage() {
                   </td>
                   <td className={styles.tdActionsCell}>
                     <div className={styles.btnGroup}>
-                      <Link href={`/admin/kundenbereich/${d.id}`} className={styles.btnEdit}>
+                      <Link href={`/admin/btob/${d.id}`} className={styles.btnEdit}>
                         Bearbeiten
                       </Link>
                       <DeleteButton

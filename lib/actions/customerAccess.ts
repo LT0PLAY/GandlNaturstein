@@ -66,7 +66,7 @@ export async function setCustomerCredentials(
   if (error) return { error: error.message, success: false }
 
   await logChange({ action: existing ? 'update' : 'create', entity_type: 'customer_access', entity_id: 'default', entity_name: username, new_value: { username, password_changed: !!password } })
-  revalidatePath('/admin/kundenbereich')
+  revalidatePath('/admin/btob')
   return { error: null, success: true }
 }
 
@@ -157,7 +157,7 @@ export async function createCustomerDocument(
   if (error) return { error: error.message, success: false, id: null }
 
   await logChange({ action: 'create', entity_type: 'customer_document', entity_id: doc.id, entity_name: data.title, new_value: data })
-  revalidatePath('/admin/kundenbereich')
+  revalidatePath('/admin/btob')
   revalidatePath('/btob')
   return { error: null, success: true, id: doc.id }
 }
@@ -178,7 +178,7 @@ export async function updateCustomerDocument(
   if (error) return { error: error.message, success: false, id }
 
   await logChange({ action: 'update', entity_type: 'customer_document', entity_id: id, entity_name: data.title, old_value: existing, new_value: data })
-  revalidatePath('/admin/kundenbereich')
+  revalidatePath('/admin/btob')
   revalidatePath('/btob')
   return { error: null, success: true, id }
 }
@@ -191,7 +191,7 @@ export async function deleteCustomerDocument(id: string) {
   if (error) return { error: error.message, success: false }
 
   await logChange({ action: 'delete', entity_type: 'customer_document', entity_id: id, entity_name: doc?.title, new_value: { status: 'deleted' } })
-  revalidatePath('/admin/kundenbereich')
+  revalidatePath('/admin/btob')
   revalidatePath('/btob')
   return { error: null, success: true }
 }

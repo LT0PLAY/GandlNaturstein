@@ -12,7 +12,7 @@ const BASE_LINKS = [
   { label: 'Anfragen',     href: '/admin/anfragen',    icon: '◻', roles: ['admin', 'editor', 'viewer'] },
   { label: 'Popups',       href: '/admin/popups',      icon: '❖', roles: ['admin', 'editor'] },
   { label: 'Karriere',     href: '/admin/karriere',    icon: '◈', roles: ['admin'] },
-  { label: 'Kundenbereich', href: '/admin/kundenbereich', icon: '⚿', roles: ['admin'] },
+  { label: 'BtoB', href: '/admin/btob', icon: '⚿', roles: ['admin'] },
   { label: 'Papierkorb',   href: '/admin/papierkorb',  icon: '⊗', roles: ['admin'] },
   { label: 'Team',         href: '/admin/team',        icon: '◎', roles: ['admin'] },
   { label: 'Monitoring',   href: '/admin/monitoring',  icon: '◉', roles: ['admin'] },

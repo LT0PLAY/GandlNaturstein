@@ -20,7 +20,7 @@ export default function DocumentForm({ action, doc }: Props) {
   const router = useRouter()
 
   useEffect(() => {
-    if (state.success) router.push('/admin/kundenbereich')
+    if (state.success) router.push('/admin/btob')
   }, [state.success, router])
 
   return (
@@ -71,7 +71,7 @@ export default function DocumentForm({ action, doc }: Props) {
         <button type="submit" className={styles.btnPrimary}>
           {doc ? 'Speichern' : 'Dokument anlegen'}
         </button>
-        <a href="/admin/kundenbereich" className={styles.btnCancel}>Abbrechen</a>
+        <a href="/admin/btob" className={styles.btnCancel}>Abbrechen</a>
       </div>
     </form>
   )

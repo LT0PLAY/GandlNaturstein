@@ -30,7 +30,7 @@ export default async function EditDocumentPage({
     <div>
       <div className={styles.pageHeader}>
         <div>
-          <p className={styles.pageLabel}>// Kundenbereich</p>
+          <p className={styles.pageLabel}>// BtoB</p>
           <h1 className={styles.pageTitle}>Dokument bearbeiten</h1>
         </div>
       </div>
