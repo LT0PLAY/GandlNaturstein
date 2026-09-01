@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default async function KundenbereichLoginPage() {
   const cookieStore = await cookies()
   const token = cookieStore.get(CUSTOMER_SESSION_COOKIE)?.value
-  if (isValidCustomerSessionToken(token)) redirect('/kundenbereich')
+  if (isValidCustomerSessionToken(token)) redirect('/btob')
 
   return (
     <div style={{

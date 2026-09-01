@@ -19,7 +19,7 @@ export default async function KundenbereichPage() {
   // hier ist eine zweite, serverseitige Absicherung direkt in der Seite.
   const cookieStore = await cookies()
   const token = cookieStore.get(CUSTOMER_SESSION_COOKIE)?.value
-  if (!isValidCustomerSessionToken(token)) redirect('/kundenbereich/login')
+  if (!isValidCustomerSessionToken(token)) redirect('/btob/login')
 
   const [documents, heroImage] = await Promise.all([getCustomerDocuments(), getPageHeroImage('kundenbereich')])
 

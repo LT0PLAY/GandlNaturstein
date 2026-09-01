@@ -12,7 +12,7 @@ const PUBLIC_PATH: Record<PageHeroKey, string> = {
   guide:         '/ausstellungsguide',
   karriere:      '/karriere',
   referenzen:    '/referenzen',
-  kundenbereich: '/kundenbereich',
+  kundenbereich: '/btob',
 }
 
 // ── Titelbild-URL aus FormData lesen (ImageUploader schickt hidden inputs) ──

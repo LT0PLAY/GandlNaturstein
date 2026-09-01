@@ -32,7 +32,7 @@ export default async function AdminKundenbereichPage() {
       </div>
 
       <p style={{ fontFamily: 'var(--font-inter)', fontSize: '14px', color: 'var(--color-text-muted)', lineHeight: 1.7, marginBottom: '32px', maxWidth: '640px' }}>
-        Hier legst du den Zugang für den privaten Kundenbereich fest (<code>/kundenbereich</code>) — ein einzelner
+        Hier legst du den Zugang für den privaten Kundenbereich fest (<code>/btob</code>) — ein einzelner
         Login für euren Geschäftskunden. Teile Benutzername und Passwort nach dem Speichern selbst mit —
         aus Sicherheitsgründen wird das Passwort danach nicht mehr angezeigt.
       </p>

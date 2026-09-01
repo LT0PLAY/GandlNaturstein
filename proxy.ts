@@ -10,25 +10,25 @@ const SUPABASE_CONFIGURED =
 export async function proxy(request: NextRequest) {
   // ── Kundenbereich: eigener, simpler Cookie-Login — komplett getrennt vom
   // Mitarbeiter-Login (Supabase Auth) weiter unten in dieser Funktion. ──
-  const isKundenbereichRoute = request.nextUrl.pathname.startsWith('/kundenbereich')
-  const isKundenbereichLoginPage = request.nextUrl.pathname === '/kundenbereich/login'
+  const isKundenbereichRoute = request.nextUrl.pathname.startsWith('/btob')
+  const isKundenbereichLoginPage = request.nextUrl.pathname === '/btob/login'
   if (isKundenbereichRoute) {
     try {
       const token = request.cookies.get(CUSTOMER_SESSION_COOKIE)?.value
       const hasValidSession = isValidCustomerSessionToken(token)
 
       if (!hasValidSession && !isKundenbereichLoginPage) {
-        return NextResponse.redirect(new URL('/kundenbereich/login', request.url))
+        return NextResponse.redirect(new URL('/btob/login', request.url))
       }
       if (hasValidSession && isKundenbereichLoginPage) {
-        return NextResponse.redirect(new URL('/kundenbereich', request.url))
+        return NextResponse.redirect(new URL('/btob', request.url))
       }
       return NextResponse.next()
     } catch {
       // Fail-closed: z.B. wenn SUPABASE_SERVICE_ROLE_KEY (Signier-Geheimnis)
       // fehlt — dann lieber zur Login-Seite als den privaten Bereich zu zeigen.
       if (!isKundenbereichLoginPage) {
-        return NextResponse.redirect(new URL('/kundenbereich/login', request.url))
+        return NextResponse.redirect(new URL('/btob/login', request.url))
       }
       return NextResponse.next()
     }
@@ -112,5 +112,5 @@ export async function proxy(request: NextRequest) {
 // nicht mehr nötig/erlaubt. lib/customerSession.ts kann Node's `crypto`-Modul
 // deshalb trotzdem gefahrlos verwenden.
 export const config = {
-  matcher: ['/admin/:path*', '/kundenbereich/:path*'],
+  matcher: ['/admin/:path*', '/btob/:path*'],
 }

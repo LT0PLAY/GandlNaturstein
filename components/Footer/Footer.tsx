@@ -15,7 +15,7 @@ const LINKS_UNTERNEHMEN = [
   { label: 'Über uns',      href: '/ueber-uns'     },
   { label: 'Karriere',      href: '/karriere'      },
   { label: 'Weitere Infos', href: '/weitere-infos' },
-  { label: 'Kundenbereich', href: '/kundenbereich' },
+  { label: 'Kundenbereich', href: '/btob' },
 ]
 
 const LINKS_RECHTLICH = [

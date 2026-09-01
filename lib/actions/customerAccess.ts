@@ -105,13 +105,13 @@ export async function customerLogin(
     maxAge: SESSION_MAX_AGE_SECONDS,
   })
 
-  redirect('/kundenbereich')
+  redirect('/btob')
 }
 
 export async function customerLogout() {
   const cookieStore = await cookies()
   cookieStore.delete(CUSTOMER_SESSION_COOKIE)
-  redirect('/kundenbereich/login')
+  redirect('/btob/login')
 }
 
 // ============================================================
@@ -158,7 +158,7 @@ export async function createCustomerDocument(
 
   await logChange({ action: 'create', entity_type: 'customer_document', entity_id: doc.id, entity_name: data.title, new_value: data })
   revalidatePath('/admin/kundenbereich')
-  revalidatePath('/kundenbereich')
+  revalidatePath('/btob')
   return { error: null, success: true, id: doc.id }
 }
 
@@ -179,7 +179,7 @@ export async function updateCustomerDocument(
 
   await logChange({ action: 'update', entity_type: 'customer_document', entity_id: id, entity_name: data.title, old_value: existing, new_value: data })
   revalidatePath('/admin/kundenbereich')
-  revalidatePath('/kundenbereich')
+  revalidatePath('/btob')
   return { error: null, success: true, id }
 }
 
@@ -192,6 +192,6 @@ export async function deleteCustomerDocument(id: string) {
 
   await logChange({ action: 'delete', entity_type: 'customer_document', entity_id: id, entity_name: doc?.title, new_value: { status: 'deleted' } })
   revalidatePath('/admin/kundenbereich')
-  revalidatePath('/kundenbereich')
+  revalidatePath('/btob')
   return { error: null, success: true }
 }
