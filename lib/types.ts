@@ -361,3 +361,18 @@ export interface PaginatedResponse<T> {
   per_page:   number
   has_more:   boolean
 }
+
+// ============================================================
+// KUNDENBEREICH (privater Login-Bereich für Geschäftskunden)
+// ============================================================
+
+export interface CustomerDocument {
+  id:         string
+  title:      string
+  info_text:  string | null
+  thumbnail:  string | null
+  pdf_url:    string
+  sort_order: number
+  created_at: string
+  updated_at: string
+}

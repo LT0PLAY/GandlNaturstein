@@ -1,12 +1,39 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { CUSTOMER_SESSION_COOKIE, isValidCustomerSessionToken } from '@/lib/customerSession'
 
 const SUPABASE_CONFIGURED =
   process.env.NEXT_PUBLIC_SUPABASE_URL &&
   !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder')
 
 export async function proxy(request: NextRequest) {
+  // ── Kundenbereich: eigener, simpler Cookie-Login — komplett getrennt vom
+  // Mitarbeiter-Login (Supabase Auth) weiter unten in dieser Funktion. ──
+  const isKundenbereichRoute = request.nextUrl.pathname.startsWith('/kundenbereich')
+  const isKundenbereichLoginPage = request.nextUrl.pathname === '/kundenbereich/login'
+  if (isKundenbereichRoute) {
+    try {
+      const token = request.cookies.get(CUSTOMER_SESSION_COOKIE)?.value
+      const hasValidSession = isValidCustomerSessionToken(token)
+
+      if (!hasValidSession && !isKundenbereichLoginPage) {
+        return NextResponse.redirect(new URL('/kundenbereich/login', request.url))
+      }
+      if (hasValidSession && isKundenbereichLoginPage) {
+        return NextResponse.redirect(new URL('/kundenbereich', request.url))
+      }
+      return NextResponse.next()
+    } catch {
+      // Fail-closed: z.B. wenn SUPABASE_SERVICE_ROLE_KEY (Signier-Geheimnis)
+      // fehlt — dann lieber zur Login-Seite als den privaten Bereich zu zeigen.
+      if (!isKundenbereichLoginPage) {
+        return NextResponse.redirect(new URL('/kundenbereich/login', request.url))
+      }
+      return NextResponse.next()
+    }
+  }
+
   const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
   const isLoginPage  = request.nextUrl.pathname === '/admin/login'
   // Seiten, die auch OHNE bestehende Session erreichbar sein müssen: Einladungs-
@@ -80,6 +107,10 @@ export async function proxy(request: NextRequest) {
   return supabaseResponse
 }
 
+// Middleware braucht hier die echte Node.js-Laufzeit (nicht Edge), weil
+// lib/customerSession.ts Node's `crypto`-Modul (HMAC-Signaturprüfung) nutzt.
+export const runtime = 'nodejs'
+
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/:path*', '/kundenbereich/:path*'],
 }
