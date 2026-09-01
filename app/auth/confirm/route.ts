@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
 import type { EmailOtpType } from '@supabase/supabase-js'
-import { createSupabaseServerClient } from '@/lib/supabase-server'
 
 // Zentrale Bestätigungsroute für Einladungs- und Passwort-Reset-Links.
 //
@@ -13,8 +13,11 @@ import { createSupabaseServerClient } from '@/lib/supabase-server'
 // den es bei einem per E-Mail verschickten Link nie gibt). Diese Route umgeht
 // das komplett: sie verifiziert den Link SERVERSEITIG per token_hash (verifyOtp)
 // und setzt die Session direkt als Cookie, bevor die Zielseite überhaupt lädt.
-// Das schließt außerdem jede Race Condition mit einer im Browser evtl. schon
-// bestehenden Fremd-Session aus.
+//
+// WICHTIG: Die Cookies müssen direkt auf das zurückgegebene NextResponse-Objekt
+// geschrieben werden (nicht über next/headers cookies()) — sonst gehen sie bei
+// einem NextResponse.redirect() verloren und die Zielseite sieht "Auth session
+// missing!", weil dort keine Session ankommt.
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
   const token_hash = searchParams.get('token_hash')
@@ -22,10 +25,28 @@ export async function GET(request: NextRequest) {
   const next = searchParams.get('next') ?? '/admin/passwort-neu-setzen'
 
   if (token_hash && type) {
-    const supabase = await createSupabaseServerClient()
+    let response = NextResponse.redirect(`${origin}${next}`)
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+      {
+        cookies: {
+          getAll() { return request.cookies.getAll() },
+          setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
+            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+            response = NextResponse.redirect(`${origin}${next}`)
+            cookiesToSet.forEach(({ name, value, options }) =>
+              response.cookies.set(name, value, options as any)
+            )
+          },
+        },
+      }
+    )
+
     const { error } = await supabase.auth.verifyOtp({ type, token_hash })
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`)
+      return response
     }
   }
 
