@@ -7,7 +7,7 @@ import LoginForm from './LoginForm'
 import { CUSTOMER_SESSION_COOKIE, isValidCustomerSessionToken } from '@/lib/customerSession'
 
 export const metadata: Metadata = {
-  title: 'Kundenbereich Login – Gandl Natursteine',
+  title: 'BtoB Login – Gandl Natursteine',
   robots: { index: false, follow: false },
 }
 
@@ -36,7 +36,7 @@ export default async function KundenbereichLoginPage() {
           fontFamily: 'var(--font-bebas)', fontSize: '38px', color: '#dcdcd6',
           letterSpacing: '.02em', marginBottom: '8px', lineHeight: 1,
         }}>
-          Kundenbereich
+          BtoB Login
         </h1>
         <p style={{
           fontFamily: 'var(--font-inter)', fontSize: '14px', color: '#9caea1',
