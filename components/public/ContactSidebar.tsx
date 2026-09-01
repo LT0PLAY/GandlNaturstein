@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import MaterialCalculator from './MaterialCalculator'
 import styles from './ContactSidebar.module.css'
 
 const PHONE_DISPLAY = '08143-99740'
@@ -46,9 +47,9 @@ function mapsUrl(address: string) {
 }
 
 export default function ContactSidebar() {
-  const [openPanel, setOpenPanel] = useState<'phone' | 'hours' | 'maps' | null>(null)
+  const [openPanel, setOpenPanel] = useState<'phone' | 'hours' | 'maps' | 'calculator' | null>(null)
 
-  function toggle(panel: 'phone' | 'hours' | 'maps') {
+  function toggle(panel: 'phone' | 'hours' | 'maps' | 'calculator') {
     setOpenPanel((current) => (current === panel ? null : panel))
   }
 
@@ -75,6 +76,43 @@ export default function ContactSidebar() {
             <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.39 1.26 4.81L2 22l5.42-1.36a9.9 9.9 0 0 0 4.62 1.14h.01c5.46 0 9.9-4.45 9.9-9.9C21.95 6.45 17.5 2 12.04 2Zm5.8 14.06c-.24.68-1.4 1.3-1.93 1.35-.5.05-1.03.28-3.5-.73-2.97-1.23-4.85-4.19-5-4.38-.15-.2-1.19-1.58-1.19-3.01 0-1.44.75-2.14 1.02-2.43.27-.29.58-.36.77-.36.2 0 .39 0 .56.01.18.01.42-.07.65.5.24.58.82 2 .89 2.15.07.15.11.32.02.51-.1.2-.14.32-.28.5-.14.17-.29.38-.42.51-.14.14-.28.29-.12.57.16.28.71 1.18 1.53 1.91 1.05.94 1.94 1.23 2.22 1.37.28.14.44.12.6-.07.17-.2.71-.83.9-1.11.19-.28.38-.24.63-.14.26.1 1.63.77 1.91.91.28.14.47.21.53.33.07.12.07.68-.17 1.36Z"/>
           </svg>
         </a>
+
+        {/* Material-Kalkulator */}
+        <div className={styles.popoverWrap}>
+          <button
+            type="button"
+            className={styles.icon}
+            aria-label="Material-Kalkulator öffnen"
+            onClick={() => toggle('calculator')}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <rect x="4" y="2" width="16" height="20" rx="2"/>
+              <line x1="8" y1="6" x2="16" y2="6"/>
+              <line x1="7.5" y1="10.5" x2="7.5" y2="10.5" strokeWidth="2.4" strokeLinecap="round"/>
+              <line x1="12" y1="10.5" x2="12" y2="10.5" strokeWidth="2.4" strokeLinecap="round"/>
+              <line x1="16.5" y1="10.5" x2="16.5" y2="10.5" strokeWidth="2.4" strokeLinecap="round"/>
+              <line x1="7.5" y1="14.5" x2="7.5" y2="14.5" strokeWidth="2.4" strokeLinecap="round"/>
+              <line x1="12" y1="14.5" x2="12" y2="14.5" strokeWidth="2.4" strokeLinecap="round"/>
+              <line x1="16.5" y1="14.5" x2="16.5" y2="14.5" strokeWidth="2.4" strokeLinecap="round"/>
+              <line x1="7.5" y1="18.5" x2="7.5" y2="18.5" strokeWidth="2.4" strokeLinecap="round"/>
+              <line x1="12" y1="18.5" x2="16.5" y2="18.5" strokeWidth="2.4" strokeLinecap="round"/>
+            </svg>
+          </button>
+          {openPanel === 'calculator' && (
+            <div className={`${styles.popover} ${styles.popoverWide}`}>
+              <button
+                type="button"
+                className={styles.popoverClose}
+                onClick={() => setOpenPanel(null)}
+                aria-label="Schließen"
+              >
+                ✕
+              </button>
+              <p className={styles.popoverTitle}>Material-Kalkulator</p>
+              <MaterialCalculator />
+            </div>
+          )}
+        </div>
 
         {/* Telefon */}
         <div className={styles.popoverWrap}>
