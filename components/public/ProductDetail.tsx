@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useBasket } from './BasketContext'
 import type { Product, ProductSize } from '@/lib/types'
-import { UNIT_LABELS } from '@/lib/types'
+import { UNIT_LABELS, PRICE_DISCLAIMER } from '@/lib/types'
 import styles from './ProductDetail.module.css'
 
 export default function ProductDetail({ product, backHref, backLabel }: {
@@ -168,9 +168,14 @@ export default function ProductDetail({ product, backHref, backLabel }: {
           <div className={styles.divider} />
 
           {(product as any).show_price && activePrice != null ? (
-            <p className={styles.priceNote} style={{ fontSize: '22px', color: '#9bae9f', letterSpacing: '.04em' }}>
-              ab {Number(activePrice).toLocaleString('de-DE', { minimumFractionDigits: 2 })} € / {UNIT_LABELS[((product as any).unit ?? 'qm') as keyof typeof UNIT_LABELS].short}
-            </p>
+            <>
+              <p className={styles.priceNote} style={{ fontSize: '22px', color: '#9bae9f', letterSpacing: '.04em' }}>
+                ab {Number(activePrice).toLocaleString('de-DE', { minimumFractionDigits: 2 })} € / {UNIT_LABELS[((product as any).unit ?? 'qm') as keyof typeof UNIT_LABELS].short}
+              </p>
+              <p style={{ fontSize: '12px', color: 'var(--color-text-dim)', letterSpacing: '.03em', marginTop: '2px' }}>
+                {PRICE_DISCLAIMER}
+              </p>
+            </>
           ) : (
             <p className={styles.priceNote}>
               Kein Online-Shop — wir erstellen ein individuelles Angebot.

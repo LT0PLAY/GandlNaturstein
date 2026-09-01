@@ -4,6 +4,7 @@ import { createSupabaseAdminClient } from '@/lib/supabase'
 import { getPageHeroImage } from '@/lib/actions/pageHeroes'
 import PageHero from '@/components/public/PageHero'
 import type { Restposten } from '@/lib/types'
+import { PRICE_DISCLAIMER } from '@/lib/types'
 import RestpostenAddButton from './RestpostenAddButton'
 
 export const metadata = {
@@ -66,6 +67,15 @@ export default async function RestpostenPage() {
           Aktuell sind keine Restposten verfügbar.
         </p>
       ) : (
+        <>
+        {items.some((r) => r.price != null) && (
+          <p style={{
+            fontFamily: 'var(--font-inter)', fontSize: '12px', color: 'var(--color-text-dim)',
+            letterSpacing: '.03em', marginBottom: '16px',
+          }}>
+            Alle Preisangaben {PRICE_DISCLAIMER}.
+          </p>
+        )}
         <div style={{
           display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2px',
         }}>
@@ -116,6 +126,7 @@ export default async function RestpostenPage() {
             </div>
           ))}
         </div>
+        </>
       )}
     </div>
     </>

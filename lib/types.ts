@@ -159,6 +159,11 @@ export const UNIT_LABELS: Record<ProductUnit, { short: string; long: string }> =
   groesse:   { short: 'Stk.',  long: 'Größe / Maße' },
 }
 
+/** Einheitlicher Hinweistext, der überall dort erscheint, wo dem Kunden ein
+ *  Preis angezeigt wird — einmal als Zusatzhinweis, nicht bei jeder Zahl
+ *  wiederholt (z.B. "0,42 € netto ab Lager zzgl. Verpackung"). */
+export const PRICE_DISCLAIMER = 'netto ab Lager zzgl. Verpackung'
+
 /** Wandelt einen (evtl. veralteten, z.B. 'm2' aus altem localStorage-Korb) Wert
  *  in eine gültige ProductUnit um – Fallback: 'qm'. */
 export function normalizeUnit(u: unknown): ProductUnit {

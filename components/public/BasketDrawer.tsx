@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useBasket } from './BasketContext'
-import { UNIT_LABELS } from '@/lib/types'
+import { UNIT_LABELS, PRICE_DISCLAIMER } from '@/lib/types'
 import styles from './BasketDrawer.module.css'
 
 export default function BasketDrawer() {
@@ -88,10 +88,15 @@ export default function BasketDrawer() {
                 const allHavePrices = items.every((it) => it.show_price && it.price != null)
                 if (!hasPrices) return null
                 return (
-                  <div className={styles.totalRow}>
-                    <span>{allHavePrices ? 'Geschätzte Gesamtsumme' : 'Geschätzte Teilsumme'}</span>
-                    <strong>ab {total.toLocaleString('de-DE', { minimumFractionDigits: 2 })} €</strong>
-                  </div>
+                  <>
+                    <div className={styles.totalRow}>
+                      <span>{allHavePrices ? 'Geschätzte Gesamtsumme' : 'Geschätzte Teilsumme'}</span>
+                      <strong>ab {total.toLocaleString('de-DE', { minimumFractionDigits: 2 })} €</strong>
+                    </div>
+                    <p style={{ fontSize: '11px', color: 'var(--color-text-dim)', letterSpacing: '.03em', textAlign: 'right', marginTop: '-4px' }}>
+                      {PRICE_DISCLAIMER}
+                    </p>
+                  </>
                 )
               })()}
               {/* Führt direkt zum Kontaktformular – der Korb wird dort automatisch übernommen */}
