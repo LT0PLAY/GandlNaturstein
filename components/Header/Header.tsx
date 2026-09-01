@@ -6,7 +6,7 @@ import clsx from 'clsx'
 import styles from './Header.module.css'
 
 const NAV_ITEMS = [
-  { label: 'Massivproduktion',   href: '/massivproduktion'  },
+  { label: 'Eigenproduktion',   href: '/eigenproduktion'  },
   { label: 'Sonderanfertigung',  href: '/sonderanfertigung' },
   { label: 'Gartengestaltung',   href: '/gartengestaltung'  },
   { label: 'Extras',             href: '/extras'            },

@@ -7,7 +7,7 @@ import DeleteButton from '@/components/admin/DeleteButton'
 import styles from '../table.module.css'
 
 function getPublicUrl(p: any): string {
-  const bereich = p.bereich ?? p.category?.type ?? 'massivproduktion'
+  const bereich = p.bereich ?? p.category?.type ?? 'eigenproduktion'
   return `/${bereich}/${p.slug}`
 }
 

@@ -71,7 +71,7 @@ export default function KategorieForm({ category, action, isPending }: Props) {
             required
             defaultValue={category?.name}
             placeholder={
-              bereich === 'massivproduktion'
+              bereich === 'eigenproduktion'
                 ? 'z.B. Jura Kalkstein, Kirchheimer Muschelkalk'
                 : bereich === 'sonderanfertigung'
                 ? 'z.B. Infinity Keramik, Naturstein'

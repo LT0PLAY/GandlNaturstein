@@ -8,7 +8,7 @@ interface BereichCard {
   sub: string
   lines: string[]
   href: string
-  video: string   // z.B. /videos/bereiche/massivproduktion.mp4
+  video: string   // z.B. /videos/bereiche/eigenproduktion.mp4
   gradient: string
   icon: React.ReactNode
 }
@@ -69,11 +69,11 @@ function IconLeaf() {
 
 const CARDS: BereichCard[] = [
   {
-    title:    'MASSIVPRODUKTION',
+    title:    'EIGENPRODUKTION',
     sub:      'EIGENES MATERIAL',
     lines:    ['JURA KALKSTEIN', '& MUSCHELKALK'],
-    href:     '/massivproduktion',
-    video:    '/videos/bereiche/massivproduktion.mp4',
+    href:     '/eigenproduktion',
+    video:    '/videos/bereiche/eigenproduktion.mp4',
     gradient: 'linear-gradient(160deg, #1C1610 0%, #0E0C08 55%, #181410 100%)',
     icon:     <IconFactory />,
   },

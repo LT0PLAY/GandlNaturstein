@@ -4,7 +4,7 @@ import OekostromBadge from '@/components/public/OekostromBadge'
 import styles from './Footer.module.css'
 
 const LINKS_BEREICHE = [
-  { label: 'Massivproduktion',  href: '/massivproduktion'  },
+  { label: 'Eigenproduktion',  href: '/eigenproduktion'  },
   { label: 'Sonderanfertigung', href: '/sonderanfertigung' },
   { label: 'Gartengestaltung',  href: '/gartengestaltung'  },
   { label: 'Extras',            href: '/extras'            },

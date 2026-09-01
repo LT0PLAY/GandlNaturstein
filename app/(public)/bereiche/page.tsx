@@ -9,11 +9,11 @@ export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title:       'Unsere Bereiche – Alle Kategorien | Gandl Natursteine',
-  description: 'Alle Kategorien von Gandl Natursteine auf einen Blick: Massivproduktion, Sonderanfertigung, Gartengestaltung und Extras.',
+  description: 'Alle Kategorien von Gandl Natursteine auf einen Blick: Eigenproduktion, Sonderanfertigung, Gartengestaltung und Extras.',
   alternates:  { canonical: 'https://gandl-natursteine.de/bereiche' },
 }
 
-const BEREICH_ORDER: CategoryBereich[] = ['massivproduktion', 'sonderanfertigung', 'gartengestaltung', 'extras']
+const BEREICH_ORDER: CategoryBereich[] = ['eigenproduktion', 'sonderanfertigung', 'gartengestaltung', 'extras']
 
 async function getData() {
   try {

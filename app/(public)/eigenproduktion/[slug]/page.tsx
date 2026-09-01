@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title:       `${p.name} | ${SITE_NAME}`,
     description: desc,
-    alternates:  { canonical: canonical(`/massivproduktion/${slug}`) },
+    alternates:  { canonical: canonical(`/eigenproduktion/${slug}`) },
     openGraph: {
       title:  `${p.name} – ${SITE_NAME}`,
       description: desc,
@@ -24,15 +24,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
-export default async function massivproduktionProduktPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function eigenproduktionProduktPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const product = await getProductBySlug(slug)
   if (!product) notFound()
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd(product, `/massivproduktion/${slug}`)) }} />
-      <ProductDetail product={product!} backHref="/massivproduktion" backLabel="Zurück massivproduktion" />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd(product, `/eigenproduktion/${slug}`)) }} />
+      <ProductDetail product={product!} backHref="/eigenproduktion" backLabel="Zurück eigenproduktion" />
     </>
   )
 }

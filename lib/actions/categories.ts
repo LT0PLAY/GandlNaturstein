@@ -28,7 +28,7 @@ function readImageUrl(formData: FormData, field: string): string | null {
 
 function revalidateAllBereiche() {
   revalidatePath('/admin/kategorien')
-  revalidatePath('/massivproduktion')
+  revalidatePath('/eigenproduktion')
   revalidatePath('/sonderanfertigung')
   revalidatePath('/gartengestaltung')
   revalidatePath('/extras')

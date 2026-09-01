@@ -3,7 +3,7 @@
 // ============================================================
 
 /** Hauptbereich (früher CategoryType) */
-export type CategoryBereich  = 'massivproduktion' | 'sonderanfertigung' | 'gartengestaltung' | 'extras'
+export type CategoryBereich  = 'eigenproduktion' | 'sonderanfertigung' | 'gartengestaltung' | 'extras'
 /** Alias – type-Feld in der DB entspricht jetzt dem Bereich */
 export type CategoryType     = CategoryBereich
 
@@ -37,7 +37,7 @@ export interface Category {
   id:          string
   name:        string
   slug:        string
-  /** Hauptbereich: massivproduktion | sonderanfertigung | gartengestaltung | extras */
+  /** Hauptbereich: eigenproduktion | sonderanfertigung | gartengestaltung | extras */
   type:        CategoryBereich
   /** Titelbild / Hero-Banner der Kategorie */
   image_url:   string | null
@@ -48,7 +48,7 @@ export interface Category {
 
 // Bereich-Labels für UI
 export const BEREICH_LABELS: Record<CategoryBereich, string> = {
-  massivproduktion:  'Massivproduktion',
+  eigenproduktion:  'Eigenproduktion',
   sonderanfertigung: 'Sonderanfertigung',
   gartengestaltung:  'Gartengestaltung',
   extras:            'Extras',

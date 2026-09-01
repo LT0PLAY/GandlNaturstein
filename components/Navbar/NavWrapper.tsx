@@ -24,9 +24,9 @@ export default async function NavWrapper() {
       .order('sort_order')
 
     if (data) {
-      const BEREICH_ORDER: CategoryBereich[] = ['massivproduktion', 'sonderanfertigung', 'gartengestaltung']
+      const BEREICH_ORDER: CategoryBereich[] = ['eigenproduktion', 'sonderanfertigung', 'gartengestaltung']
       const LABELS: Record<CategoryBereich, string> = {
-        massivproduktion:  'Massivproduktion',
+        eigenproduktion:  'Eigenproduktion',
         sonderanfertigung: 'Sonderanfertigung',
         gartengestaltung:  'Gartengestaltung',
         extras:            'Extras',

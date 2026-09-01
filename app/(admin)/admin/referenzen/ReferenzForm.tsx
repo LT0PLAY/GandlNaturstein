@@ -79,8 +79,8 @@ export default function ReferenzForm({ action, reference, products }: Props) {
           <label>Kategorie-Tags <span>(kommagetrennt)</span></label>
           <input name="category_tags" type="text"
             defaultValue={reference?.category_tags?.join(', ') ?? ''}
-            placeholder="Massivproduktion, Außenbereich, Terrassenplatten" />
-          <p className={styles.hint}>Werden klein als Labels angezeigt, z. B. „Massivproduktion / Außenbereich"</p>
+            placeholder="Eigenproduktion, Außenbereich, Terrassenplatten" />
+          <p className={styles.hint}>Werden klein als Labels angezeigt, z. B. „Eigenproduktion / Außenbereich"</p>
         </div>
         <div className={`${styles.field} ${styles.fullWidth}`}>
           <label>Beschreibung <span>(„Die Vision")</span></label>

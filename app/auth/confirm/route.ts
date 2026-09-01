@@ -24,8 +24,13 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get('type') as EmailOtpType | null
   const next = searchParams.get('next') ?? '/admin/passwort-neu-setzen'
 
+  // "type" (invite vs. recovery) an die Zielseite weiterreichen — die Seite
+  // braucht das, um einen frisch eingeladenen Mitarbeiter nach dem
+  // Passwort-Setzen automatisch zu aktivieren (nur bei "invite").
+  const nextWithType = type ? `${next}${next.includes('?') ? '&' : '?'}type=${type}` : next
+
   if (token_hash && type) {
-    let response = NextResponse.redirect(`${origin}${next}`)
+    let response = NextResponse.redirect(`${origin}${nextWithType}`)
 
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -35,7 +40,7 @@ export async function GET(request: NextRequest) {
           getAll() { return request.cookies.getAll() },
           setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
             cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-            response = NextResponse.redirect(`${origin}${next}`)
+            response = NextResponse.redirect(`${origin}${nextWithType}`)
             cookiesToSet.forEach(({ name, value, options }) =>
               response.cookies.set(name, value, options as any)
             )

@@ -13,7 +13,7 @@ export interface SearchResult {
   material:       string | null
   surface:        string | null
   description:    string | null
-  /** Hauptbereich (massivproduktion, gartengestaltung, ...) — bestimmt die URL */
+  /** Hauptbereich (eigenproduktion, gartengestaltung, ...) — bestimmt die URL */
   categoryType:   CategoryBereich
   categoryName:   string | null
 }
@@ -113,7 +113,7 @@ export async function searchProducts(query: string): Promise<SearchResult[]> {
     material:       p.material,
     surface:        p.surface,
     description:    p.description,
-    categoryType:   (p.bereich ?? p.category?.type ?? 'massivproduktion') as CategoryBereich,
+    categoryType:   (p.bereich ?? p.category?.type ?? 'eigenproduktion') as CategoryBereich,
     categoryName:   p.category?.name ?? null,
   }))
 

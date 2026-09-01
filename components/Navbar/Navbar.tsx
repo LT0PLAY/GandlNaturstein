@@ -51,7 +51,7 @@ function IconLeafSmall() {
   )
 }
 const BEREICH_ICONS: Record<string, React.ReactNode> = {
-  massivproduktion:  <IconFactorySmall />,
+  eigenproduktion:  <IconFactorySmall />,
   sonderanfertigung: <IconToolsSmall />,
   gartengestaltung:  <IconLeafSmall />,
 }

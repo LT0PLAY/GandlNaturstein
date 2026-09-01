@@ -95,7 +95,7 @@ async function syncProductCategories(
 
 export type ProductActionState = { error: string | null; success: boolean; id: string | null }
 
-const ALL_BEREICHE = ['massivproduktion', 'sonderanfertigung', 'gartengestaltung', 'extras'] as const
+const ALL_BEREICHE = ['eigenproduktion', 'sonderanfertigung', 'gartengestaltung', 'extras'] as const
 
 /** Alle öffentlichen Produkt-Listingseiten + Detailseite + Sitemap invalidieren */
 function revalidatePublicProductPaths(slug?: string) {

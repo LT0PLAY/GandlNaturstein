@@ -7,12 +7,12 @@ import styles from '@/app/(public)/category.module.css'
 
 interface Props {
   categories: Category[]
-  basePath: string  // z.B. '/massivproduktion', '/extras'
+  basePath: string  // z.B. '/eigenproduktion', '/extras'
 }
 
 export default function CategoryFilter({ categories, basePath }: Props) {
   const pathname  = usePathname()
-  // /massivproduktion/kategorie/pflaster → 'pflaster', /massivproduktion → ''
+  // /eigenproduktion/kategorie/pflaster → 'pflaster', /eigenproduktion → ''
   const activeSlug = pathname.startsWith(`${basePath}/kategorie/`)
     ? pathname.slice(`${basePath}/kategorie/`.length)
     : ''

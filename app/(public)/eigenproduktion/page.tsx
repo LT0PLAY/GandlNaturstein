@@ -7,17 +7,17 @@ import type { Product, Category } from '@/lib/types'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title:       'Massivproduktion – Jura Kalkstein & Muschelkalk | Gandl Natursteine',
-  description: 'Natursteine aus eigener Massivproduktion: Jura Kalkstein, Muschelkalk und mehr. Gandl Natursteine, Inning am Ammersee.',
-  alternates:  { canonical: 'https://gandl-natursteine.de/massivproduktion' },
+  title:       'Eigenproduktion – Jura Kalkstein & Muschelkalk | Gandl Natursteine',
+  description: 'Natursteine aus eigener Eigenproduktion: Jura Kalkstein, Muschelkalk und mehr. Gandl Natursteine, Inning am Ammersee.',
+  alternates:  { canonical: 'https://gandl-natursteine.de/eigenproduktion' },
 }
 
 async function getData() {
   try {
     const supabase = createSupabaseAdminClient()
     const [productIds, { data: categories }] = await Promise.all([
-      getProductIdsForBereich('massivproduktion'),
-      supabase.from('categories').select('*').eq('type', 'massivproduktion').order('sort_order'),
+      getProductIdsForBereich('eigenproduktion'),
+      supabase.from('categories').select('*').eq('type', 'eigenproduktion').order('sort_order'),
     ])
 
     if (productIds.length === 0) return { products: [], categories: (categories as Category[]) ?? [] }
@@ -35,14 +35,14 @@ async function getData() {
   }
 }
 
-export default async function MassivproduktionPage() {
+export default async function EigenproduktionPage() {
   const { products, categories } = await getData()
   return (
     <BereichPage
-      title="Massivproduktion"
-      label="Massivproduktion"
+      title="Eigenproduktion"
+      label="Eigenproduktion"
       subtitle="Jura Kalkstein · Kirchheimer Muschelkalk · und mehr"
-      basePath="/massivproduktion"
+      basePath="/eigenproduktion"
       categories={categories}
       products={products}
     />

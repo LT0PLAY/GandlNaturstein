@@ -6,5 +6,5 @@ export function getProductUrl(opts: {
   bereich: CategoryBereich | null | undefined
 }): string {
   const { slug, bereich } = opts
-  return `/${bereich ?? 'massivproduktion'}/${slug}`
+  return `/${bereich ?? 'eigenproduktion'}/${slug}`
 }

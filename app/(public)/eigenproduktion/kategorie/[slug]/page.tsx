@@ -11,12 +11,12 @@ export const dynamic = 'force-dynamic'
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const { data: cat } = await createSupabaseAdminClient()
-    .from('categories').select('name, description').eq('slug', slug).eq('type', 'massivproduktion').single()
+    .from('categories').select('name, description').eq('slug', slug).eq('type', 'eigenproduktion').single()
   if (!cat) return { title: 'Kategorie nicht gefunden' }
   return {
     title:       `${cat.name} | ${SITE_NAME}`,
     description: cat.description ?? `${cat.name} – ${SITE_NAME}, Inning am Ammersee.`,
-    alternates:  { canonical: canonical(`/massivproduktion/kategorie/${slug}`) },
+    alternates:  { canonical: canonical(`/eigenproduktion/kategorie/${slug}`) },
     openGraph: {
       title:       `${cat.name} | ${SITE_NAME}`,
       description: cat.description ?? `${cat.name}.`,
@@ -29,8 +29,8 @@ async function getData(kategorieSlug: string) {
   try {
     const supabase = createSupabaseAdminClient()
     const [{ data: cat }, { data: categories }] = await Promise.all([
-      supabase.from('categories').select('id').eq('slug', kategorieSlug).eq('type', 'massivproduktion').maybeSingle(),
-      supabase.from('categories').select('*').eq('type', 'massivproduktion').order('sort_order'),
+      supabase.from('categories').select('id').eq('slug', kategorieSlug).eq('type', 'eigenproduktion').maybeSingle(),
+      supabase.from('categories').select('*').eq('type', 'eigenproduktion').order('sort_order'),
     ])
     if (!cat) return { products: [], categories: (categories as Category[]) ?? [] }
 
@@ -56,11 +56,11 @@ async function getData(kategorieSlug: string) {
   } catch { return { products: [], categories: [] } }
 }
 
-export default async function massivproduktionKategoriePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function eigenproduktionKategoriePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const supabase = createSupabaseAdminClient()
   const { data: cat } = await supabase
-    .from('categories').select('*').eq('slug', slug).eq('type', 'massivproduktion').single()
+    .from('categories').select('*').eq('slug', slug).eq('type', 'eigenproduktion').single()
   if (!cat) notFound()
 
   const { products, categories } = await getData(slug)
@@ -70,7 +70,7 @@ export default async function massivproduktionKategoriePage({ params }: { params
     '@type':     'CollectionPage',
     name:        cat.name,
     description: cat.description ?? cat.name,
-    url:         `${SITE_URL}/massivproduktion/kategorie/${slug}`,
+    url:         `${SITE_URL}/eigenproduktion/kategorie/${slug}`,
     provider:    { '@type': 'Organization', name: SITE_NAME },
   }
 
@@ -79,10 +79,10 @@ export default async function massivproduktionKategoriePage({ params }: { params
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <BereichPage
         title={cat.name}
-        label="Massivproduktion"
+        label="Eigenproduktion"
         heroImage={cat.image_url}
         categoryDescription={cat.description}
-        basePath="/massivproduktion"
+        basePath="/eigenproduktion"
         categories={categories}
         products={products}
       />

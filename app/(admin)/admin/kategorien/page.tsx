@@ -41,7 +41,7 @@ export default async function KategorienPage() {
     grouped[cat.type].push(cat)
   }
 
-  const BEREICH_ORDER = ['massivproduktion', 'sonderanfertigung', 'gartengestaltung', 'extras']
+  const BEREICH_ORDER = ['eigenproduktion', 'sonderanfertigung', 'gartengestaltung', 'extras']
 
   return (
     <div>

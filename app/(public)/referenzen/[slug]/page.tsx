@@ -69,7 +69,7 @@ export default async function ReferenzDetailPage({
   const jsonLd = referenceJsonLd(ref!)
 
   function productHref(p: any): string {
-    const bereich = p.bereich ?? p.category?.type ?? 'massivproduktion'
+    const bereich = p.bereich ?? p.category?.type ?? 'eigenproduktion'
     return `/${bereich}/${p.slug}`
   }
 

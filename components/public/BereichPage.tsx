@@ -15,7 +15,7 @@ interface Props {
   /** Freitext-Info zur Kategorie (Beschreibung + Verwendungsgebiet), aus dem Admin gepflegt.
    *  Wird über den „ⓘ Produktinformation"-Button im Titelbild angezeigt. */
   categoryDescription?: string | null
-  basePath:    string          // z.B. '/massivproduktion'
+  basePath:    string          // z.B. '/eigenproduktion'
   categories:  Category[]      // für den Kategorie-Filter (Chips)
   products:    Product[]
 }

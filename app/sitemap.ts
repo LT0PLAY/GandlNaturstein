@@ -48,7 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Produkt-URLs — Bereich bestimmt den Pfad
   const productUrls: MetadataRoute.Sitemap = (products ?? []).map((p: any) => {
-    const bereich = p.bereich ?? p.category?.type ?? 'massivproduktion'
+    const bereich = p.bereich ?? p.category?.type ?? 'eigenproduktion'
     return {
       url:          `${BASE}/${bereich}/${p.slug}`,
       lastModified: new Date(p.updated_at),
@@ -76,7 +76,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Statische Seiten
   const staticUrls: MetadataRoute.Sitemap = [
     url('/',                   1.0, 'weekly'),
-    url('/massivproduktion',   0.9, 'daily'),
+    url('/eigenproduktion',   0.9, 'daily'),
     url('/sonderanfertigung',  0.8, 'weekly'),
     url('/gartengestaltung',   0.8, 'weekly'),
     url('/extras',             0.7, 'weekly'),

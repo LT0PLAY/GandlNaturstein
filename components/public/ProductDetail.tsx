@@ -53,7 +53,7 @@ export default function ProductDetail({ product, backHref, backLabel }: {
       productId:    product.id,
       productName:  product.name,
       productSlug:  product.slug,
-      categoryType: ((product as any).bereich ?? product.category?.type ?? 'massivproduktion'),
+      categoryType: ((product as any).bereich ?? product.category?.type ?? 'eigenproduktion'),
       thumbnail:    product.thumbnail,
       price:        product.show_price ? activePrice : null,
       show_price:   product.show_price ?? false,

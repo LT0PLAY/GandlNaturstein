@@ -8,7 +8,7 @@ import type { Product, Category } from '@/lib/types'
 import styles from '../../form.module.css'
 
 function getPublicUrl(product: Product): string {
-  const bereich = (product as any).bereich ?? product.category?.type ?? 'massivproduktion'
+  const bereich = (product as any).bereich ?? product.category?.type ?? 'eigenproduktion'
   return `/${bereich}/${product.slug}`
 }
 
