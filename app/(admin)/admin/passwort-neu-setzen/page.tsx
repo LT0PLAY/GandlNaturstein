@@ -27,35 +27,23 @@ export default function PasswortNeuSetzenPage() {
 
   useEffect(() => {
     setIsInvite(readLinkType() === 'invite')
-    const supabase = createSupabaseBrowserClient()
 
-    async function establishSession() {
-      // Falls im Browser bereits eine ANDERE Session bestand (z.B. weil man als
-      // Admin eingeloggt war, als der Einladungs-/Reset-Link geöffnet wurde),
-      // darf diese alte Session NICHT versehentlich übernommen werden. Deshalb
-      // wird ein im URL-Fragment mitgelieferter Token (#access_token/#refresh_token
-      // — der klassische Supabase-Verify-Redirect) IMMER explizit gesetzt, statt
-      // einfach "die aktuelle Session" per getSession() abzufragen — das schließt
-      // die Race Condition mit einer evtl. schon bestehenden fremden Session aus.
-      const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''))
-      const access_token  = hash.get('access_token')
-      const refresh_token = hash.get('refresh_token')
-
-      if (access_token && refresh_token) {
-        const { error } = await supabase.auth.setSession({ access_token, refresh_token })
-        setLinkValid(!error)
-        setChecking(false)
-        return
-      }
-
-      // PKCE-Flow (?code=...): supabase-js tauscht den Code automatisch beim
-      // ersten getSession()-Aufruf gegen eine neue Session ein.
-      const { data } = await supabase.auth.getSession()
-      setLinkValid(!!data.session)
+    // Die Session wird inzwischen bereits SERVERSEITIG gesetzt, bevor diese
+    // Seite überhaupt lädt (siehe app/auth/confirm/route.ts) — hier muss nur
+    // noch geprüft werden, ob die Cookie-Session tatsächlich vorhanden ist.
+    // Ein ?invalid=1 in der URL (von der Confirm-Route bei ungültigem/
+    // abgelaufenem Link) wird direkt als ungültig behandelt.
+    if (new URLSearchParams(window.location.search).get('invalid') === '1') {
+      setLinkValid(false)
       setChecking(false)
+      return
     }
 
-    establishSession()
+    const supabase = createSupabaseBrowserClient()
+    supabase.auth.getSession().then(({ data }) => {
+      setLinkValid(!!data.session)
+      setChecking(false)
+    })
   }, [])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
