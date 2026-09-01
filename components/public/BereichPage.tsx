@@ -20,10 +20,18 @@ interface Props {
   products:    Product[]
 }
 
+// Werte werden getrimmt verglichen — im Admin eingetippte Leerzeichen am
+// Anfang/Ende (z.B. "Jura Kalkstein " statt "Jura Kalkstein") sollen nicht zu
+// zwei optisch identischen, aber technisch unterschiedlichen Filter-Optionen
+// führen, bei denen dann nur ein Teil der passenden Produkte gefunden wird.
+function normalize(v: string | null | undefined): string {
+  return (v ?? '').trim()
+}
+
 function uniqueValues(products: Product[], field: keyof Product): string[] {
   const set = new Set<string>()
   for (const p of products) {
-    const v = p[field] as unknown as string | null
+    const v = normalize(p[field] as unknown as string | null)
     if (v) set.add(v)
   }
   return [...set].sort()
@@ -46,11 +54,11 @@ export default function BereichPage({
   const formatOptions   = useMemo(() => uniqueValues(products, 'format'), [products])
 
   const filtered = useMemo(() => products.filter((p) =>
-    (!einsatzbereich || p.einsatzbereich === einsatzbereich) &&
-    (!steinart       || p.material       === steinart) &&
-    (!farbe          || p.farbe          === farbe) &&
-    (!oberflaeche    || p.surface        === oberflaeche) &&
-    (!format         || p.format         === format)
+    (!einsatzbereich || normalize(p.einsatzbereich) === einsatzbereich) &&
+    (!steinart       || normalize(p.material)       === steinart) &&
+    (!farbe          || normalize(p.farbe)          === farbe) &&
+    (!oberflaeche    || normalize(p.surface)        === oberflaeche) &&
+    (!format         || normalize(p.format)         === format)
   ), [products, einsatzbereich, steinart, farbe, oberflaeche, format])
 
   const hasFilterOptions = einsatzOptions.length > 0 || materialOptions.length > 0 ||
