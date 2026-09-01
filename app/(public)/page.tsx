@@ -111,21 +111,7 @@ export default function HomePage() {
             }}>
               ANFRAGEN
             </Link>
-            <Link href="/eigenproduktion" style={{
-              color: 'rgba(240,235,227,0.75)',
-              fontFamily: 'var(--font-inter)',
-              fontSize: '15px',
-              letterSpacing: '.08em',
-              textTransform: 'uppercase',
-              padding: '15px 0',
-              textDecoration: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-            }}>
-              <span style={{ width: '28px', height: '0.5px', background: 'var(--color-sage-muted)', display: 'inline-block' }} />
-              Produkte entdecken
-            </Link>
+            {/* "Produkte entdecken" deaktiviert (nicht gelöscht) — auf Wunsch entfernt */}
           </div>
         </div>
 
