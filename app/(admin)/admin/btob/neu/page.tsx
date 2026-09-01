@@ -20,7 +20,7 @@ export default async function NeuesDokumentPage() {
     <div>
       <div className={styles.pageHeader}>
         <div>
-          <p className={styles.pageLabel}>// BtoB</p>
+          <p className={styles.pageLabel}>// BtoB Login</p>
           <h1 className={styles.pageTitle}>Neues Dokument</h1>
         </div>
       </div>

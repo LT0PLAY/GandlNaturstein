@@ -27,7 +27,7 @@ export default async function AdminKundenbereichPage() {
       <div className={styles.pageHeader}>
         <div>
           <p className={styles.pageLabel}>// Admin</p>
-          <h1 className={styles.pageTitle}>BtoB</h1>
+          <h1 className={styles.pageTitle}>BtoB Login</h1>
         </div>
       </div>
 
@@ -37,7 +37,7 @@ export default async function AdminKundenbereichPage() {
         aus Sicherheitsgründen wird das Passwort danach nicht mehr angezeigt.
       </p>
 
-      <PageHeroSettings pageKey="kundenbereich" title="BtoB" currentImageUrl={heroImage} />
+      <PageHeroSettings pageKey="kundenbereich" title="BtoB Login" currentImageUrl={heroImage} />
 
       {/* ── Zugangsdaten ── */}
       <div style={{ border: '0.5px solid rgba(155,174,159,0.18)', background: 'var(--color-bg-card)', padding: '28px', marginBottom: '48px', maxWidth: '480px' }}>

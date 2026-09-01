@@ -10,7 +10,7 @@ import PageHero from '@/components/public/PageHero'
 import styles from '@/app/(public)/category.module.css'
 
 export const metadata: Metadata = {
-  title: 'BtoB – Gandl Natursteine',
+  title: 'BtoB Login – Gandl Natursteine',
   robots: { index: false, follow: false },
 }
 
@@ -43,7 +43,7 @@ export default async function KundenbereichPage() {
       {heroImage && (
         <PageHero
           label="// Privatbereich"
-          title="BtoB"
+          title="BtoB Login"
           subtitle="Ihre persönlichen Unterlagen zum Ansehen und Herunterladen."
           image={heroImage}
         />
@@ -57,7 +57,7 @@ export default async function KundenbereichPage() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px', marginBottom: '8px' }}>
             <div className={styles.hero}>
               <p className={styles.label}>// Privatbereich</p>
-              <h1 className={styles.title}>BtoB</h1>
+              <h1 className={styles.title}>BtoB Login</h1>
               <p className={styles.subtitle}>Ihre persönlichen Unterlagen zum Ansehen und Herunterladen.</p>
             </div>
             {logoutButton}
