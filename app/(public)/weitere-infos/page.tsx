@@ -129,7 +129,7 @@ export default function WeitereInfosPage() {
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
           {[
             { label: 'AGB', href: '/agb' },
-            { label: 'Versand & Zahlung', href: '/versand-zahlung' },
+            // Versand & Zahlung: deaktiviert (nicht gelöscht) - Seite bleibt unter /versand-zahlung bestehen
             { label: 'Widerrufsrecht', href: '/widerrufsrecht' },
             { label: 'Datenschutz', href: '/datenschutz' },
             { label: 'Impressum', href: '/impressum' },

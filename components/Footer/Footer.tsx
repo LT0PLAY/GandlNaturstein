@@ -22,7 +22,7 @@ const LINKS_RECHTLICH = [
   { label: 'Datenschutz',      href: '/datenschutz'    },
   { label: 'AGB',              href: '/agb'            },
   { label: 'Widerrufsrecht',   href: '/widerrufsrecht' },
-  { label: 'Versand & Zahlung', href: '/versand-zahlung' },
+  // Versand & Zahlung: deaktiviert (nicht gelöscht) - Seite bleibt unter /versand-zahlung bestehen
 ]
 
 export default function Footer() {
