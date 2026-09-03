@@ -169,65 +169,23 @@ function PflasterCalculator() {
 }
 
 // ── Trockenmauer — Bedarfsmenge Steine ─────────────────────────────────────
-// Mittelwerte aus der Gewichtstabelle je m² Ansichtsfläche.
-const MAUER_TIEFEN = [
-  { key: '20', label: '20 cm', kalkstein: 515,   granit: 525, quarzit: 525 },
-  { key: '21', label: '21 cm', kalkstein: 540,   granit: 550, quarzit: 550 },
-  { key: '22', label: '22 cm', kalkstein: 567.5, granit: 575, quarzit: 575 },
-]
-const GESTEINSARTEN: { key: 'kalkstein' | 'granit' | 'quarzit'; label: string }[] = [
-  { key: 'kalkstein', label: 'Kalkstein / Muschelkalk' },
-  { key: 'granit',    label: 'Granit' },
-  { key: 'quarzit',   label: 'Quarzit' },
-]
+// Fester Richtwert je m² Ansichtsfläche bei ca. 20 cm Steintiefe.
+const MAUER_KG_PRO_M2 = 515
 
 function MauerCalculator() {
-  const [tiefe, setTiefe]     = useState(MAUER_TIEFEN[0].key)
-  const [gestein, setGestein] = useState<'kalkstein' | 'granit' | 'quarzit'>('kalkstein')
   const [flaeche, setFlaeche] = useState('')
   const [reserve, setReserve] = useState(true)
-
-  const t = MAUER_TIEFEN.find((x) => x.key === tiefe)!
-  const kgProM2 = t[gestein]
 
   const result = useMemo(() => {
     const f = parseFloat(flaeche.replace(',', '.'))
     if (!f || f <= 0) return null
-    const basis = kgProM2 * f
+    const basis = MAUER_KG_PRO_M2 * f
     const total = reserve ? basis * 1.12 : basis
     return { total }
-  }, [flaeche, kgProM2, reserve])
+  }, [flaeche, reserve])
 
   return (
     <>
-      <div className={styles.field}>
-        <label>Mauertiefe</label>
-        <div className={styles.chipRow}>
-          {MAUER_TIEFEN.map((x) => (
-            <button
-              key={x.key} type="button"
-              className={`${styles.chip} ${tiefe === x.key ? styles.chipActive : ''}`}
-              onClick={() => setTiefe(x.key)}
-            >
-              {x.label}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className={styles.field}>
-        <label>Gesteinsart</label>
-        <div className={styles.chipRow}>
-          {GESTEINSARTEN.map((x) => (
-            <button
-              key={x.key} type="button"
-              className={`${styles.chip} ${gestein === x.key ? styles.chipActive : ''}`}
-              onClick={() => setGestein(x.key)}
-            >
-              {x.label}
-            </button>
-          ))}
-        </div>
-      </div>
       <div className={styles.field}>
         <label>Ansichtsfläche (m²)</label>
         <input
@@ -245,7 +203,7 @@ function MauerCalculator() {
           <>
             <div className={styles.resultRow}>
               <span>Bedarf pro m²</span>
-              <span>{fmtKg(kgProM2)}</span>
+              <span>{fmtKg(MAUER_KG_PRO_M2)}</span>
             </div>
             <div className={styles.resultTotal}>
               <span>Gesamtbedarf</span>
@@ -256,7 +214,7 @@ function MauerCalculator() {
           <p className={styles.resultEmpty}>Ansichtsfläche eingeben, um den Bedarf zu berechnen.</p>
         )}
       </div>
-      <p className={styles.hint}>Bezogen auf trocken geschichtetes Mauerwerk ohne Hinterfüllung, ca. 20–22 cm Steintiefe.</p>
+      <p className={styles.hint}>Bezogen auf trocken geschichtetes Mauerwerk ohne Hinterfüllung, ca. 20 cm Steintiefe.</p>
     </>
   )
 }
