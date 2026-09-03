@@ -90,11 +90,11 @@ function KiesCalculator() {
 // ── Pflastersteine — Ergiebigkeit pro Tonne ────────────────────────────────
 // Mittelwerte aus den Praxiswerten (Rohdichte ca. 2,65 t/m³, ca. 1 cm Fuge).
 const PFLASTER_GROESSEN = [
-  { key: '4/6',   label: '4/6 cm',   m2ProT: 9.5,  lfmProT: 190  },
-  { key: '7/9',   label: '7/9 cm',   m2ProT: 5.75, lfmProT: 112.5 },
-  { key: '8/10',  label: '8/10 cm',  m2ProT: 5.0,  lfmProT: 87.5 },
-  { key: '9/11',  label: '9/11 cm',  m2ProT: 4.4,  lfmProT: 75   },
-  { key: '15/17', label: '15/17 cm', m2ProT: 2.55, lfmProT: 37.5 },
+  { key: '4/6',   label: '4/6 cm',   m2ProT: 9.5,  kgProLfm: 6  },
+  { key: '7/9',   label: '7/9 cm',   m2ProT: 5.75, kgProLfm: 16 },
+  { key: '8/10',  label: '8/10 cm',  m2ProT: 5.0,  kgProLfm: 22 },
+  { key: '9/11',  label: '9/11 cm',  m2ProT: 4.4,  kgProLfm: 28 },
+  { key: '15/17', label: '15/17 cm', m2ProT: 2.55, kgProLfm: 70 },
 ]
 
 function PflasterCalculator() {
@@ -109,9 +109,9 @@ function PflasterCalculator() {
     const f  = parseFloat(flaeche.replace(',', '.'))   || 0
     const lm = parseFloat(laufmeter.replace(',', '.'))  || 0
     if (f <= 0 && lm <= 0) return null
-    const tFlaeche = f  > 0 ? f  / g.m2ProT  : 0
-    const tLfm     = lm > 0 ? lm / g.lfmProT : 0
-    const basis = (tFlaeche + tLfm) * 1000
+    const kgFlaeche = f  > 0 ? (f / g.m2ProT) * 1000 : 0
+    const kgLfm     = lm > 0 ? lm * g.kgProLfm        : 0
+    const basis = kgFlaeche + kgLfm
     const total = reserve ? basis * 1.08 : basis
     return { total }
   }, [flaeche, laufmeter, g, reserve])
