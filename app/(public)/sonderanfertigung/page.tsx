@@ -39,7 +39,7 @@ export default async function SonderanfertigungPage() {
     <BereichPage
       title="Sonderanfertigung"
       label="Sonderanfertigung"
-      subtitle="Maßarbeit · Skulpturen · Restaurierung"
+      subtitle="Maßarbeit"
       basePath="/sonderanfertigung"
       categories={categories}
       products={products}
