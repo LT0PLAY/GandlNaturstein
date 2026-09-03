@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import styles from './ueber-uns.module.css'
 
 export const metadata: Metadata = {
   title:       'Über uns – Gandl Natursteine',
@@ -12,11 +13,7 @@ export default function UeberUnsPage() {
   return (
     <>
       {/* ── Hero ── */}
-      <section style={{
-        padding: '100px 40px 72px',
-        borderBottom: '0.5px solid rgba(155, 174, 159,0.08)',
-        textAlign: 'center',
-      }}>
+      <section className={styles.hero}>
         <h1 style={{
           fontFamily: 'var(--font-bebas)',
           fontSize: 'clamp(56px, 9vw, 96px)',
@@ -37,18 +34,12 @@ export default function UeberUnsPage() {
       </section>
 
       {/* ── Geschichte ── */}
-      <section style={{
-        display: 'grid',
-        gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)',
-        gap: '1px',
-        background: 'rgba(155, 174, 159,0.06)',
-        maxWidth: '1200px', margin: '0 auto',
-      }}>
+      <section className={styles.geschichteGrid}>
         {[
           { year: '1987', headline: 'Die Gründung', text: 'Gegründet von Familie Gandl mit dem Ziel, hochwertige Natursteine für private und gewerbliche Projekte zugänglich zu machen. Vom ersten Tag an stand Qualität über Quantität.' },
           { year: 'Heute', headline: 'Erfahrung & Vertrauen', text: 'Über drei Jahrzehnte Erfahrung, Hunderte realisierter Projekte und eine stetige Entwicklung des Sortiments — immer mit dem Anspruch, das Beste aus dem Naturstein herauszuholen.' },
         ].map((item) => (
-          <div key={item.year} style={{ padding: '52px 48px' }}>
+          <div key={item.year} className={styles.geschichteItem}>
             <p style={{
               fontFamily: 'var(--font-bebas)', fontSize: '16px',
               letterSpacing: '.18em', color: 'var(--color-gold)', marginBottom: '12px',
@@ -67,7 +58,7 @@ export default function UeberUnsPage() {
       </section>
 
       {/* ── Werte ── */}
-      <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '72px 40px' }}>
+      <section className={styles.werteSection}>
         <p style={{
           fontFamily: 'var(--font-inter)', fontSize: '16px',
           letterSpacing: '.18em', textTransform: 'uppercase',
@@ -79,20 +70,13 @@ export default function UeberUnsPage() {
           color: '#dcdcd6', letterSpacing: '.04em', marginBottom: '48px',
         }}>Was uns antreibt</h2>
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '32px',
-        }}>
+        <div className={styles.werteGrid}>
           {[
             { title: 'Handwerk', text: 'Jeder Schnitt, jede Oberfläche — von erfahrenen Fachkräften mit dem Anspruch, dass das Ergebnis überdauert.' },
             { title: 'Materialkenntnis', text: 'Wir kennen jeden Stein, den wir verkaufen. Von bayerischem Jura-Kalkstein bis zum feinen Marmor — die Herkunft und Eigenschaften spielen immer eine Rolle.' },
             { title: 'Verlässlichkeit', text: 'Termintreue, klare Kommunikation und persönliche Beratung — dafür stehen wir seit 1987.' },
           ].map((v) => (
-            <div key={v.title} style={{
-              borderTop: '0.5px solid rgba(155, 174, 159,0.2)',
-              paddingTop: '28px',
-            }}>
+            <div key={v.title} className={styles.werteItem}>
               <h3 style={{
                 fontFamily: 'var(--font-bebas)',
                 fontSize: '26px', letterSpacing: '.06em',
@@ -108,12 +92,7 @@ export default function UeberUnsPage() {
       </section>
 
       {/* ── Standort ── */}
-      <section style={{
-        background: '#080806',
-        borderTop: '0.5px solid rgba(155, 174, 159,0.08)',
-        padding: '72px 40px',
-        textAlign: 'center',
-      }}>
+      <section className={styles.standort}>
         <p style={{
           fontFamily: 'var(--font-inter)', fontSize: '16px',
           letterSpacing: '.18em', textTransform: 'uppercase',
@@ -133,36 +112,21 @@ export default function UeberUnsPage() {
         }}>
           Mo – Fr 8 – 12 / 13 – 17 Uhr · Sa 9 – 12 Uhr
         </p>
-        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link href="/kontakt" style={{
+        <div className={styles.ctaRow}>
+          <Link href="/kontakt" className={styles.ctaBtn} style={{
             background: '#9bae9f',
             color: '#0D0D0C',
-            fontFamily: 'var(--font-bebas)', fontSize: '16px',
-            letterSpacing: '.14em', padding: '15px 44px',
-            textDecoration: 'none', display: 'inline-block',
           }}>
             Kontakt aufnehmen
           </Link>
-          <Link href="/karriere" style={{
+          <Link href="/karriere" className={styles.ctaBtn} style={{
             border: '1px solid rgba(155, 174, 159,0.55)',
             color: '#dcdcd6',
-            fontFamily: 'var(--font-bebas)', fontSize: '16px',
-            letterSpacing: '.14em', padding: '15px 44px',
-            textDecoration: 'none', display: 'inline-block',
           }}>
             Karriere bei Gandl
           </Link>
         </div>
       </section>
-
-      <style>{`
-        @media (max-width: 700px) {
-          section[style*="grid-template-columns: minmax(0,1fr) minmax(0,1fr)"] {
-            grid-template-columns: 1fr !important;
-          }
-          section[style*="repeat(3, 1fr)"] > div { padding: 0; }
-        }
-      `}</style>
     </>
   )
 }
