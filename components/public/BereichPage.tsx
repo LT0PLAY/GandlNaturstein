@@ -146,72 +146,133 @@ export default function BereichPage({
 
           {categories.length > 0 && (
             <>
-              <p className={styles.sectionSubLabel}>Kategorien</p>
-              <div className={styles.categoriesGrid}>
-                {categories.map((cat) => (
-                  <Link key={cat.id} href={`${basePath}/kategorie/${cat.slug}`} className={styles.categoryCard}>
-                    {cat.image_url ? (
-                      <img src={cat.image_url} alt={cat.name} className={styles.categoryCardImg} />
-                    ) : (
-                      <div className={styles.categoryCardPlaceholder} />
-                    )}
-                    <div className={styles.categoryCardOverlay}>
-                      <span className={styles.categoryCardTitle}>{cat.name}</span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-              <p className={styles.sectionSubLabel}>Alle Produkte</p>
-            </>
-          )}
-
-          {hasFilterOptions && (
-            <div className={`${styles.filterBar} ${styles.filterBarStandalone}`}>
-              {filterBarContent}
+            <p className={styles.sectionSubLabel}>Kategorien</p>
+            <div className={styles.categoriesGrid}>
+              {categories.map((cat) => (
+                <Link key={cat.id} href={`${basePath}/kategorie/${cat.slug}`} className={styles.categoryCard}>
+                  {cat.image_url ? (
+                    <img src={cat.image_url} alt={cat.name} className={styles.categoryCardImg} />
+                  ) : (
+                    <div className={styles.categoryCardPlaceholder} />
+                  )}
+                  <div className={styles.categoryCardOverlay}>
+                    <span className={styles.categoryCardTitle}>{cat.name}</span>
+                  </div>
+                </Link>
+              ))}
             </div>
+            </>
           )}
         </>
       )}
 
-      {filtered.length === 0 ? (
-        <div className={styles.empty}>
-          <p>Keine Produkte gefunden.</p>
-        </div>
+      {/* Auf den Bereichs-Übersichtsseiten (Kategorie-Karten vorhanden) liegt die
+          Gesamtproduktliste hinter einem Dropdown — standardmäßig immer zu, damit
+          der Kunde nach den Kategorie-Karten nicht sofort von allen Produkten
+          erschlagen wird. Auf reinen Kategorie-Seiten (Titelbild) bleibt die Liste
+          wie gehabt direkt sichtbar. */}
+      {!heroImage && categories.length > 0 ? (
+        <details className={styles.allProductsDetails}>
+          <summary className={styles.allProductsSummary}>
+            Alle Produkte anzeigen
+            <span className={styles.allProductsCount}>({filtered.length})</span>
+          </summary>
+          <div className={styles.allProductsContent}>
+            {hasFilterOptions && (
+              <div className={`${styles.filterBar} ${styles.filterBarStandalone}`}>
+                {filterBarContent}
+              </div>
+            )}
+            {filtered.length === 0 ? (
+              <div className={styles.empty}>
+                <p>Keine Produkte gefunden.</p>
+              </div>
+            ) : (
+              <div className={styles.grid}>
+                {filtered.map((product) => (
+                  <Link
+                    key={product.id}
+                    href={`${basePath}/${product.slug}`}
+                    className={styles.card}
+                    style={{ textDecoration: 'none', display: 'block' }}
+                  >
+                    <div className={styles.cardImage}>
+                      <ProductCardImage
+                        images={product.images ?? []}
+                        thumbnail={product.thumbnail}
+                        alt={product.name}
+                        altMap={product.image_alts}
+                        className={styles.img}
+                        placeholderClassName={styles.imgPlaceholder}
+                        placeholderLabel={product.material ?? label}
+                      />
+                      {(product.category as any)?.name && (
+                        <span className={styles.categoryBadge}>{(product.category as any).name}</span>
+                      )}
+                      {product.icon_url && (
+                        <img src={product.icon_url} alt="" className={styles.iconOverlay} />
+                      )}
+                    </div>
+                    <div className={styles.cardBody}>
+                      <p className={styles.cardMaterial}>{product.material}</p>
+                      <h3 className={styles.cardTitle}>{product.name}</h3>
+                      <p className={styles.cardSurface}>{product.surface}</p>
+                      <span className={styles.cardCta}>Details & Anfrage →</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        </details>
       ) : (
-        <div className={styles.grid}>
-          {filtered.map((product) => (
-            <Link
-              key={product.id}
-              href={`${basePath}/${product.slug}`}
-              className={styles.card}
-              style={{ textDecoration: 'none', display: 'block' }}
-            >
-              <div className={styles.cardImage}>
-                <ProductCardImage
-                  images={product.images ?? []}
-                  thumbnail={product.thumbnail}
-                  alt={product.name}
-                  altMap={product.image_alts}
-                  className={styles.img}
-                  placeholderClassName={styles.imgPlaceholder}
-                  placeholderLabel={product.material ?? label}
-                />
-                {(product.category as any)?.name && (
-                  <span className={styles.categoryBadge}>{(product.category as any).name}</span>
-                )}
-                {product.icon_url && (
-                  <img src={product.icon_url} alt="" className={styles.iconOverlay} />
-                )}
-              </div>
-              <div className={styles.cardBody}>
-                <p className={styles.cardMaterial}>{product.material}</p>
-                <h3 className={styles.cardTitle}>{product.name}</h3>
-                <p className={styles.cardSurface}>{product.surface}</p>
-                <span className={styles.cardCta}>Details & Anfrage →</span>
-              </div>
-            </Link>
-          ))}
-        </div>
+        <>
+          {!heroImage && hasFilterOptions && (
+            <div className={`${styles.filterBar} ${styles.filterBarStandalone}`}>
+              {filterBarContent}
+            </div>
+          )}
+          {filtered.length === 0 ? (
+            <div className={styles.empty}>
+              <p>Keine Produkte gefunden.</p>
+            </div>
+          ) : (
+            <div className={styles.grid}>
+              {filtered.map((product) => (
+                <Link
+                  key={product.id}
+                  href={`${basePath}/${product.slug}`}
+                  className={styles.card}
+                  style={{ textDecoration: 'none', display: 'block' }}
+                >
+                  <div className={styles.cardImage}>
+                    <ProductCardImage
+                      images={product.images ?? []}
+                      thumbnail={product.thumbnail}
+                      alt={product.name}
+                      altMap={product.image_alts}
+                      className={styles.img}
+                      placeholderClassName={styles.imgPlaceholder}
+                      placeholderLabel={product.material ?? label}
+                    />
+                    {(product.category as any)?.name && (
+                      <span className={styles.categoryBadge}>{(product.category as any).name}</span>
+                    )}
+                    {product.icon_url && (
+                      <img src={product.icon_url} alt="" className={styles.iconOverlay} />
+                    )}
+                  </div>
+                  <div className={styles.cardBody}>
+                    <p className={styles.cardMaterial}>{product.material}</p>
+                    <h3 className={styles.cardTitle}>{product.name}</h3>
+                    <p className={styles.cardSurface}>{product.surface}</p>
+                    <span className={styles.cardCta}>Details & Anfrage →</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </section>
 

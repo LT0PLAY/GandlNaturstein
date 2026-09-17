@@ -243,6 +243,55 @@
   margin: 0 0 14px;
 }
 
+/* ── "Alle Produkte"-Dropdown auf den Bereichs-Übersichtsseiten — steht
+   standardmäßig immer zu (native <details>, kein eigener open-State nötig),
+   damit der Kunde nach den Kategorie-Karten nicht sofort mit der kompletten
+   Produktliste konfrontiert wird. Verhalten ist auf Handy wie Desktop gleich. ── */
+.allProductsDetails { margin-bottom: 40px; display: flex; flex-direction: column; align-items: center; }
+.allProductsSummary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 14px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #efece4;
+  background: rgba(155, 174, 159,0.12);
+  border: 0.5px solid rgba(155, 174, 159,0.4);
+  cursor: pointer;
+  list-style: none;
+  padding: 12px 22px;
+  user-select: none;
+  transition: background .15s, border-color .15s;
+}
+.allProductsSummary:hover {
+  background: rgba(155, 174, 159,0.22);
+  border-color: rgba(155, 174, 159,0.6);
+}
+.allProductsSummary::-webkit-details-marker { display: none; }
+.allProductsSummary::marker { content: ''; }
+.allProductsSummary::before {
+  content: '+';
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--color-sage);
+  font-size: 15px;
+  font-weight: 600;
+}
+.allProductsDetails[open] .allProductsSummary::before { content: '−'; }
+.allProductsCount {
+  color: var(--color-sage);
+  letter-spacing: .04em;
+  text-transform: none;
+}
+.allProductsContent { margin-top: 24px; width: 100%; }
+
 /* ── /bereiche Übersichtsseite ── */
 .bereichGroup { margin-bottom: 48px; }
 .bereichGroupTitle {
