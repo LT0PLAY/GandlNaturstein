@@ -201,7 +201,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
 
         {/* ── Einheit + Preis ── */}
         <div className={styles.field}>
-          <label>Einheit</label>
+          <label>Einheit *</label>
           <select
             name="unit"
             required
