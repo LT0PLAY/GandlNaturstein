@@ -503,3 +503,11 @@
   .mobileMenu          { display: flex; }
   .inner               { padding: 14px 20px; }
 }
+
+/* TopBar schrumpft ab hier auf min-height: 34px (siehe TopBar.module.css) —
+   die fix positionierte Navbar muss ihren top-Offset mitziehen, sonst bleibt
+   eine Lücke zwischen TopBar und Navbar stehen. Nur im nicht-gescrollten
+   Zustand — .scrolled soll weiterhin ganz oben (top: 0) andocken. */
+@media (max-width: 560px) {
+  .navbar:not(.scrolled) { top: 34px; }
+}
