@@ -4,7 +4,7 @@ import { getProductIdsForCategory } from '@/lib/queries/products'
 import BereichPage from '@/components/public/BereichPage'
 import type { Metadata } from 'next'
 import type { Product, Category } from '@/lib/types'
-import { canonical, SITE_NAME, SITE_URL } from '@/lib/seo'
+import { canonical, jsonLdScript, SITE_NAME, SITE_URL } from '@/lib/seo'
 
 export const dynamic = 'force-dynamic'
 
@@ -76,7 +76,7 @@ export default async function sonderanfertigungKategoriePage({ params }: { param
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
       <BereichPage
         title={cat.name}
         label="Sonderanfertigung"

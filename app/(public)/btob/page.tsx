@@ -6,6 +6,7 @@ import type { Metadata } from 'next'
 import { getCustomerDocuments, customerLogout } from '@/lib/actions/customerAccess'
 import { getPageHeroImage } from '@/lib/actions/pageHeroes'
 import { CUSTOMER_SESSION_COOKIE, isValidCustomerSessionToken } from '@/lib/customerSession'
+import { createSupabaseAdminClient } from '@/lib/supabase'
 import PageHero from '@/components/public/PageHero'
 import styles from '@/app/(public)/category.module.css'
 
@@ -19,7 +20,9 @@ export default async function KundenbereichPage() {
   // hier ist eine zweite, serverseitige Absicherung direkt in der Seite.
   const cookieStore = await cookies()
   const token = cookieStore.get(CUSTOMER_SESSION_COOKIE)?.value
-  if (!isValidCustomerSessionToken(token)) redirect('/btob/login')
+  const { data: access } = await createSupabaseAdminClient()
+    .from('customer_access').select('password_hash').eq('id', 'default').maybeSingle()
+  if (!isValidCustomerSessionToken(token, access?.password_hash)) redirect('/btob/login')
 
   const [documents, heroImage] = await Promise.all([getCustomerDocuments(), getPageHeroImage('kundenbereich')])
 

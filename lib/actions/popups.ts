@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { logChange } from '@/lib/utils/changelog'
+import { requireTeamMember } from '@/lib/actions/authGuard'
 import type { Popup } from '@/lib/types'
 
 // ── Bild-URL aus FormData lesen (ImageUploader schickt hidden inputs) ──
@@ -46,6 +47,9 @@ export async function createPopup(
   _prev: PopupActionState,
   formData: FormData
 ): Promise<PopupActionState> {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false, id: null }
+
   const supabase = createSupabaseAdminClient()
   const data = parseFormData(formData)
   if (!data.title) return { error: 'Name ist Pflichtfeld.', success: false, id: null }
@@ -65,6 +69,9 @@ export async function updatePopup(
   _prev: PopupActionState,
   formData: FormData
 ): Promise<PopupActionState> {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false, id }
+
   const supabase = createSupabaseAdminClient()
   const { data: existing } = await supabase.from('popups').select('*').eq('id', id).single()
   const data = parseFormData(formData)
@@ -82,6 +89,9 @@ export async function updatePopup(
 
 // Schnell-Umschalten aus der Liste heraus (ohne das Formular zu öffnen).
 export async function togglePopupActive(id: string, nextActive: boolean) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: popup } = await supabase.from('popups').select('title').eq('id', id).single()
   const { error } = await supabase.from('popups').update({ is_active: nextActive, updated_at: new Date().toISOString() }).eq('id', id)
@@ -95,6 +105,9 @@ export async function togglePopupActive(id: string, nextActive: boolean) {
 }
 
 export async function deletePopup(id: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: popup } = await supabase.from('popups').select('title').eq('id', id).single()
   const { error } = await supabase.from('popups').delete().eq('id', id)

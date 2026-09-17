@@ -4,7 +4,7 @@ import { createSupabaseAdminClient } from '@/lib/supabase'
 import { getPageHeroImage } from '@/lib/actions/pageHeroes'
 import PageHero from '@/components/public/PageHero'
 import type { JobListing } from '@/lib/types'
-import { canonical, jobJsonLd, SITE_NAME, SITE_URL } from '@/lib/seo'
+import { canonical, jsonLdScript, jobJsonLd, SITE_NAME, SITE_URL } from '@/lib/seo'
 
 export const dynamic = 'force-dynamic'
 
@@ -160,7 +160,7 @@ export default async function KarrierePage() {
         <script
           key={job.id}
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jobJsonLd(job)) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdScript(jobJsonLd(job)) }}
         />
       ))}
 

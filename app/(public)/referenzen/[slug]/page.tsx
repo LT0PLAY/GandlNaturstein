@@ -6,7 +6,7 @@ import type { Metadata } from 'next'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import type { Reference } from '@/lib/types'
 import SideCarousel from '@/components/public/SideCarousel'
-import { canonical, referenceJsonLd, SITE_NAME } from '@/lib/seo'
+import { canonical, jsonLdScript, referenceJsonLd, SITE_NAME } from '@/lib/seo'
 
 async function getRef(slug: string): Promise<Reference | null> {
   const supabase = createSupabaseAdminClient()
@@ -90,7 +90,7 @@ export default async function ReferenzDetailPage({
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
       {/* ── HERO: Vollbild mit Cover ── */}
       <section style={{
         position: 'relative',

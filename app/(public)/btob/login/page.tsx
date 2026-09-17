@@ -5,6 +5,7 @@ import { cookies } from 'next/headers'
 import type { Metadata } from 'next'
 import LoginForm from './LoginForm'
 import { CUSTOMER_SESSION_COOKIE, isValidCustomerSessionToken } from '@/lib/customerSession'
+import { createSupabaseAdminClient } from '@/lib/supabase'
 
 export const metadata: Metadata = {
   title: 'BtoB Login – Gandl Natursteine',
@@ -14,7 +15,9 @@ export const metadata: Metadata = {
 export default async function KundenbereichLoginPage() {
   const cookieStore = await cookies()
   const token = cookieStore.get(CUSTOMER_SESSION_COOKIE)?.value
-  if (isValidCustomerSessionToken(token)) redirect('/btob')
+  const { data: access } = await createSupabaseAdminClient()
+    .from('customer_access').select('password_hash').eq('id', 'default').maybeSingle()
+  if (isValidCustomerSessionToken(token, access?.password_hash)) redirect('/btob')
 
   return (
     <div style={{

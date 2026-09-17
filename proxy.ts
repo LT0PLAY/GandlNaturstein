@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { CUSTOMER_SESSION_COOKIE, isValidCustomerSessionToken } from '@/lib/customerSession'
+import { createSupabaseAdminClient } from '@/lib/supabase'
 
 const SUPABASE_CONFIGURED =
   process.env.NEXT_PUBLIC_SUPABASE_URL &&
@@ -15,7 +16,15 @@ export async function proxy(request: NextRequest) {
   if (isKundenbereichRoute) {
     try {
       const token = request.cookies.get(CUSTOMER_SESSION_COOKIE)?.value
-      const hasValidSession = isValidCustomerSessionToken(token)
+      let hasValidSession = false
+      if (token) {
+        // Aktuellen Passwort-Hash laden — das Token ist daran gebunden, damit ein
+        // Passwortwechsel bestehende Sessions sofort ungültig macht (siehe
+        // customerSession.ts: credentialFingerprint).
+        const { data: access } = await createSupabaseAdminClient()
+          .from('customer_access').select('password_hash').eq('id', 'default').maybeSingle()
+        hasValidSession = isValidCustomerSessionToken(token, access?.password_hash)
+      }
 
       if (!hasValidSession && !isKundenbereichLoginPage) {
         return NextResponse.redirect(new URL('/btob/login', request.url))
@@ -45,8 +54,19 @@ export async function proxy(request: NextRequest) {
     isLoginPage ||
     request.nextUrl.pathname === '/admin/passwort-neu-setzen'
 
-  // ── DEV-MODUS: Supabase noch nicht konfiguriert → Admin frei zugänglich ──
+  // ── Supabase nicht konfiguriert ──
+  // Lokale Entwicklung (NODE_ENV=development, kein Supabase-Projekt verbunden):
+  // Admin frei zugänglich, aus Komfort. In Produktion (Vercel setzt NODE_ENV=
+  // production auch für Preview-Deployments) wäre das dagegen eine offene Tür —
+  // z.B. wenn NEXT_PUBLIC_SUPABASE_URL aus Versehen leer/falsch gesetzt ist.
+  // Deshalb dort "fail closed": lieber Login-Zwang als ungeschützter Admin-Bereich.
   if (!SUPABASE_CONFIGURED) {
+    if (process.env.NODE_ENV === 'production') {
+      if (!isPublicAuthPage) {
+        return NextResponse.redirect(new URL('/admin/login', request.url))
+      }
+      return NextResponse.next()
+    }
     if (isLoginPage) {
       return NextResponse.redirect(new URL('/admin', request.url))
     }

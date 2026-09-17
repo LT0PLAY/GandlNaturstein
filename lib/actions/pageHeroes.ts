@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createSupabaseAdminClient } from '@/lib/supabase'
+import { requireTeamMember } from '@/lib/actions/authGuard'
 import type { PageHeroKey } from '@/lib/types'
 
 // Pfad der öffentlichen Seite pro Key, damit revalidatePath nach dem Speichern
@@ -40,6 +41,9 @@ export async function getPageHeroImage(pageKey: PageHeroKey): Promise<string | n
 }
 
 export async function savePageHero(pageKey: PageHeroKey, formData: FormData) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const imageUrl = readImageUrl(formData, 'image')
   if (!imageUrl) return { error: 'Bitte zuerst ein Bild hochladen.', success: false }
 
@@ -55,6 +59,9 @@ export async function savePageHero(pageKey: PageHeroKey, formData: FormData) {
 }
 
 export async function removePageHero(pageKey: PageHeroKey) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const { error } = await supabase
     .from('page_heroes')

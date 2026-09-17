@@ -6,10 +6,12 @@ import { cookies } from 'next/headers'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { logChange } from '@/lib/utils/changelog'
 import { getCurrentUser } from '@/lib/actions/auth'
+import { requireTeamMember } from '@/lib/actions/authGuard'
 import {
   CUSTOMER_SESSION_COOKIE,
   SESSION_MAX_AGE_SECONDS,
   createCustomerSessionToken,
+  isValidCustomerSessionToken,
   hashPassword,
   generateSalt,
   verifyPassword,
@@ -22,12 +24,31 @@ async function requireAdmin() {
   if (!user || (user.role as string) !== 'admin') redirect('/admin')
 }
 
+// Dokumente dürfen von zwei Seiten gelesen werden: dem eingeloggten Kunden
+// (eigene Session-Cookie, /btob) UND jedem eingeloggten Mitarbeiter (/admin/btob).
+// Ohne eine der beiden Sessions: kein Zugriff — auch nicht bei direktem Aufruf
+// dieser Server Action (siehe requireTeamMember-Kommentar in authGuard.ts).
+async function hasCustomerOrTeamAccess(): Promise<boolean> {
+  const cookieStore = await cookies()
+  const token = cookieStore.get(CUSTOMER_SESSION_COOKIE)?.value
+  if (token) {
+    const supabase = createSupabaseAdminClient()
+    const { data: access } = await supabase
+      .from('customer_access').select('password_hash').eq('id', 'default').maybeSingle()
+    if (isValidCustomerSessionToken(token, access?.password_hash)) return true
+  }
+
+  const auth = await requireTeamMember()
+  return auth.ok
+}
+
 // ============================================================
 // ZUGANGSDATEN (Admin legt Benutzername/Passwort für den Kunden fest)
 // ============================================================
 
 export async function getCustomerAccess() {
   if (!SUPABASE_CONFIGURED) return null
+  if (SUPABASE_CONFIGURED) await requireAdmin()
   const supabase = createSupabaseAdminClient()
   const { data } = await supabase.from('customer_access').select('id, username, updated_at').eq('id', 'default').maybeSingle()
   return data
@@ -76,6 +97,11 @@ export async function setCustomerCredentials(
 
 export type CustomerLoginState = { error: string | null }
 
+// Brute-Force-Schutz: nach zu vielen falschen Versuchen in Folge wird der
+// (einzige, gemeinsame) Zugang vorübergehend gesperrt — siehe Migration 029.
+const MAX_FAILED_ATTEMPTS = 10
+const LOCKOUT_MINUTES = 15
+
 export async function customerLogin(
   _prev: CustomerLoginState,
   formData: FormData
@@ -88,16 +114,31 @@ export async function customerLogin(
   const supabase = createSupabaseAdminClient()
   const { data: access } = await supabase
     .from('customer_access')
-    .select('username, password_hash, password_salt')
+    .select('username, password_hash, password_salt, failed_attempts, locked_until')
     .eq('id', 'default')
     .maybeSingle()
 
-  if (!access || access.username !== username || !verifyPassword(password, access.password_salt, access.password_hash)) {
+  if (!access) return { error: 'Benutzername oder Passwort falsch.' }
+
+  if (access.locked_until && new Date(access.locked_until).getTime() > Date.now()) {
+    return { error: `Zu viele Fehlversuche. Bitte in ${LOCKOUT_MINUTES} Minuten erneut versuchen.` }
+  }
+
+  const passwordOk = access.username === username && verifyPassword(password, access.password_salt, access.password_hash)
+
+  if (!passwordOk) {
+    const attempts = (access.failed_attempts ?? 0) + 1
+    const lockedUntil = attempts >= MAX_FAILED_ATTEMPTS
+      ? new Date(Date.now() + LOCKOUT_MINUTES * 60 * 1000).toISOString()
+      : null
+    await supabase.from('customer_access').update({ failed_attempts: attempts, locked_until: lockedUntil }).eq('id', 'default')
     return { error: 'Benutzername oder Passwort falsch.' }
   }
 
+  await supabase.from('customer_access').update({ failed_attempts: 0, locked_until: null }).eq('id', 'default')
+
   const cookieStore = await cookies()
-  cookieStore.set(CUSTOMER_SESSION_COOKIE, createCustomerSessionToken(), {
+  cookieStore.set(CUSTOMER_SESSION_COOKIE, createCustomerSessionToken(access.password_hash), {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
@@ -120,12 +161,16 @@ export async function customerLogout() {
 
 export async function getCustomerDocuments() {
   if (!SUPABASE_CONFIGURED) return []
+  if (!(await hasCustomerOrTeamAccess())) return []
+
   const supabase = createSupabaseAdminClient()
   const { data } = await supabase.from('customer_documents').select('*').order('sort_order').order('created_at', { ascending: false })
   return data ?? []
 }
 
 export async function getCustomerDocument(id: string) {
+  if (!(await hasCustomerOrTeamAccess())) return null
+
   const supabase = createSupabaseAdminClient()
   const { data } = await supabase.from('customer_documents').select('*').eq('id', id).maybeSingle()
   return data

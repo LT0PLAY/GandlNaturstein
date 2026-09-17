@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { logChange } from '@/lib/utils/changelog'
+import { requireTeamMember } from '@/lib/actions/authGuard'
 
 function readImageUrls(formData: FormData, field: string, existing?: string[]): string[] {
   const count = Number(formData.get(`${field}_count`) ?? 0)
@@ -62,6 +63,9 @@ export async function createGuideEntry(
   _prev: GuideActionState,
   formData: FormData
 ): Promise<GuideActionState> {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false, id: null }
+
   const supabase = createSupabaseAdminClient()
   let data = parseFormData(formData)
   data = await fillFromProduct(supabase, data)
@@ -85,6 +89,9 @@ export async function updateGuideEntry(
   _prev: GuideActionState,
   formData: FormData
 ): Promise<GuideActionState> {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false, id }
+
   const supabase = createSupabaseAdminClient()
   const { data: existing } = await supabase.from('guide_entries').select('*').eq('id', id).single()
   const existingImages = (existing?.images as string[]) ?? []
@@ -105,6 +112,9 @@ export async function updateGuideEntry(
 
 // ── MOVE TO TRASH (Soft-Delete) ───────────────────────────────────────────────
 export async function deleteGuideEntry(id: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: item } = await supabase.from('guide_entries').select('number, name').eq('id', id).single()
   const { error } = await supabase.from('guide_entries')
@@ -121,6 +131,9 @@ export async function deleteGuideEntry(id: string) {
 
 // ── RESTORE ──────────────────────────────────────────────────────────────────
 export async function restoreGuideEntry(id: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: item } = await supabase.from('guide_entries').select('number, name').eq('id', id).single()
   const { error } = await supabase.from('guide_entries').update({ deleted_at: null }).eq('id', id)
@@ -134,6 +147,9 @@ export async function restoreGuideEntry(id: string) {
 
 // ── PERMANENT DELETE ──────────────────────────────────────────────────────────
 export async function permanentDeleteGuideEntry(id: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: item } = await supabase.from('guide_entries').select('number, name').eq('id', id).single()
   const { error } = await supabase.from('guide_entries').delete().eq('id', id)
@@ -145,6 +161,9 @@ export async function permanentDeleteGuideEntry(id: string) {
 }
 
 export async function removeGuideImage(id: string, imageUrl: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: item } = await supabase.from('guide_entries').select('images').eq('id', id).single()
   const images = ((item?.images as string[]) ?? []).filter((u) => u !== imageUrl)

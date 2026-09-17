@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { logChange } from '@/lib/utils/changelog'
+import { requireTeamMember } from '@/lib/actions/authGuard'
 
 function readImageUrls(formData: FormData, field: string, existing?: string[]): string[] {
   const count = Number(formData.get(`${field}_count`) ?? 0)
@@ -33,6 +34,9 @@ export async function createRestposten(
   _prev: RestpostenActionState,
   formData: FormData
 ): Promise<RestpostenActionState> {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false, id: null }
+
   const supabase = createSupabaseAdminClient()
   const data = parseFormData(formData)
   if (!data.title) return { error: 'Titel ist Pflichtfeld.', success: false, id: null }
@@ -51,6 +55,9 @@ export async function updateRestposten(
   _prev: RestpostenActionState,
   formData: FormData
 ): Promise<RestpostenActionState> {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false, id }
+
   const supabase = createSupabaseAdminClient()
   const { data: existing } = await supabase.from('restposten').select('*').eq('id', id).single()
   const existingImages = (existing?.images as string[]) ?? []
@@ -67,6 +74,9 @@ export async function updateRestposten(
 
 // ── MOVE TO TRASH (Soft-Delete) ───────────────────────────────────────────────
 export async function deleteRestposten(id: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: item } = await supabase.from('restposten').select('title').eq('id', id).single()
   const { error } = await supabase.from('restposten')
@@ -83,6 +93,9 @@ export async function deleteRestposten(id: string) {
 
 // ── RESTORE ──────────────────────────────────────────────────────────────────
 export async function restoreRestposten(id: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: item } = await supabase.from('restposten').select('title').eq('id', id).single()
   const { error } = await supabase.from('restposten').update({ deleted_at: null }).eq('id', id)
@@ -96,6 +109,9 @@ export async function restoreRestposten(id: string) {
 
 // ── PERMANENT DELETE ──────────────────────────────────────────────────────────
 export async function permanentDeleteRestposten(id: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: item } = await supabase.from('restposten').select('title').eq('id', id).single()
   const { error } = await supabase.from('restposten').delete().eq('id', id)
@@ -107,6 +123,9 @@ export async function permanentDeleteRestposten(id: string) {
 }
 
 export async function removeRestpostenImage(id: string, imageUrl: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: item } = await supabase.from('restposten').select('images').eq('id', id).single()
   const images = ((item?.images as string[]) ?? []).filter((u) => u !== imageUrl)

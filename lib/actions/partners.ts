@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { logChange } from '@/lib/utils/changelog'
+import { requireTeamMember } from '@/lib/actions/authGuard'
 
 /** Ergänzt fehlendes https:// bei URLs, die der Nutzer ohne Protokoll eingegeben hat. */
 function normalizeUrl(raw: string): string {
@@ -40,6 +41,9 @@ export async function createPartner(
   _prev: PartnerActionState,
   formData: FormData
 ): Promise<PartnerActionState> {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false, id: null }
+
   const supabase = createSupabaseAdminClient()
   const data = parseFormData(formData)
   if (!data.name) return { error: 'Name ist Pflichtfeld.', success: false, id: null }
@@ -58,6 +62,9 @@ export async function updatePartner(
   _prev: PartnerActionState,
   formData: FormData
 ): Promise<PartnerActionState> {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false, id }
+
   const supabase = createSupabaseAdminClient()
   const { data: existing } = await supabase.from('partners').select('*').eq('id', id).single()
   const data = parseFormData(formData)
@@ -73,6 +80,9 @@ export async function updatePartner(
 
 // ── MOVE TO TRASH (Soft-Delete) ───────────────────────────────────────────────
 export async function deletePartner(id: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: partner } = await supabase.from('partners').select('name').eq('id', id).single()
   const { error } = await supabase.from('partners')
@@ -89,6 +99,9 @@ export async function deletePartner(id: string) {
 
 // ── RESTORE ──────────────────────────────────────────────────────────────────
 export async function restorePartner(id: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: partner } = await supabase.from('partners').select('name').eq('id', id).single()
   const { error } = await supabase.from('partners').update({ deleted_at: null }).eq('id', id)
@@ -102,6 +115,9 @@ export async function restorePartner(id: string) {
 
 // ── PERMANENT DELETE ──────────────────────────────────────────────────────────
 export async function permanentDeletePartner(id: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: partner } = await supabase.from('partners').select('name').eq('id', id).single()
   const { error } = await supabase.from('partners').delete().eq('id', id)

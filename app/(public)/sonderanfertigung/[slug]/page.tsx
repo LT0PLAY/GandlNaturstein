@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 import { notFound } from 'next/navigation'
 import { getProductBySlug } from '@/lib/queries/products'
 import ProductDetail from '@/components/public/ProductDetail'
-import { canonical, productJsonLd, SITE_NAME } from '@/lib/seo'
+import { canonical, jsonLdScript, productJsonLd, SITE_NAME } from '@/lib/seo'
 import type { Metadata } from 'next'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -31,7 +31,7 @@ export default async function SonderanfertigungProduktPage({ params }: { params:
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd(product, `/sonderanfertigung/${slug}`)) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(productJsonLd(product, `/sonderanfertigung/${slug}`)) }} />
       <ProductDetail product={product!} backHref="/sonderanfertigung" backLabel="Zurück Sonderanfertigung" />
     </>
   )

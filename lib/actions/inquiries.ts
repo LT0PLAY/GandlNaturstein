@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { logChange } from '@/lib/utils/changelog'
+import { requireTeamMember } from '@/lib/actions/authGuard'
 import type { InquiryFormData, ApiResponse, Inquiry } from '@/lib/types'
 import { UNIT_LABELS, normalizeUnit } from '@/lib/types'
 
@@ -123,6 +124,9 @@ export async function submitBasketInquiry(data: {
 
 // Alle Anfragen abrufen (Admin)
 export async function getInquiries(status?: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { data: [], error: auth.error }
+
   const supabase = createSupabaseAdminClient()
 
   let query = supabase
@@ -143,6 +147,9 @@ export async function updateInquiryStatus(
   status: string,
   internal_note?: string
 ) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const { error } = await supabase
     .from('inquiries')

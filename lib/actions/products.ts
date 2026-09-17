@@ -2,20 +2,8 @@
 
 import { revalidatePath } from 'next/cache'
 import { createSupabaseAdminClient } from '@/lib/supabase'
-import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { logChange } from '@/lib/utils/changelog'
-
-// ── Hilfsfunktion: Aktuellen Team-Member holen ──────────────────────────────
-async function getCurrentMemberId(): Promise<string | null> {
-  try {
-    const serverClient = await createSupabaseServerClient()
-    const { data: { user } } = await serverClient.auth.getUser()
-    if (!user) return null
-    const { data: member } = await serverClient
-      .from('team_members').select('id').eq('user_id', user.id).single()
-    return member?.id ?? null
-  } catch { return null }
-}
+import { requireTeamMember, requireAdminMember } from '@/lib/actions/authGuard'
 
 // ── URLs aus FormData lesen (ImageUploader schickt hidden inputs) ────────────
 function readImageUrls(formData: FormData, field: string): string[] {
@@ -124,6 +112,9 @@ export async function createProduct(
   _prevState: ProductActionState,
   formData: FormData
 ): Promise<ProductActionState> {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false, id: null }
+
   const supabase = createSupabaseAdminClient()
 
   const name = formData.get('name') as string
@@ -179,6 +170,9 @@ export async function createProduct(
 
 // ── UPDATE ───────────────────────────────────────────────────────────────────
 export async function updateProduct(id: string, _prevState: ProductActionState, formData: FormData): Promise<ProductActionState> {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false, id }
+
   const supabase = createSupabaseAdminClient()
   const { data: existing } = await supabase.from('products').select('*').eq('id', id).single()
 
@@ -232,13 +226,15 @@ export async function updateProduct(id: string, _prevState: ProductActionState, 
 
 // ── Direkt in Papierkorb verschieben (ohne Genehmigungsschritt) ──────────────
 export async function moveProductToTrash(id: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
-  const memberId = await getCurrentMemberId()
 
   const { data: product } = await supabase.from('products').select('name').eq('id', id).single()
   const { error } = await supabase.from('products').update({
     deleted_at:          new Date().toISOString(),
-    deleted_by:          memberId,
+    deleted_by:          auth.memberId,
     delete_pending:      false,
     delete_requested_by: null,
     delete_requested_at: null,
@@ -262,13 +258,15 @@ export async function moveProductToTrash(id: string) {
 
 // ── SOFT DELETE: Editor stellt Löschantrag ───────────────────────────────────
 export async function requestDeleteProduct(id: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase   = createSupabaseAdminClient()
-  const memberId   = await getCurrentMemberId()
 
   const { data: product } = await supabase.from('products').select('name').eq('id', id).single()
   const { error } = await supabase.from('products').update({
     delete_pending:        true,
-    delete_requested_by:   memberId,
+    delete_requested_by:   auth.memberId,
     delete_requested_at:   new Date().toISOString(),
   }).eq('id', id)
 
@@ -279,7 +277,7 @@ export async function requestDeleteProduct(id: string) {
     entity_type: 'product',
     entity_id:   id,
     entity_name: product?.name,
-    new_value:   { status: 'delete_requested', requested_by: memberId },
+    new_value:   { status: 'delete_requested', requested_by: auth.memberId },
   })
   revalidatePath('/admin/produkte')
   revalidatePath('/admin/papierkorb')
@@ -288,13 +286,15 @@ export async function requestDeleteProduct(id: string) {
 
 // ── Admin: Löschantrag genehmigen → Papierkorb ───────────────────────────────
 export async function approveDeleteProduct(id: string) {
+  const auth = await requireAdminMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
-  const memberId = await getCurrentMemberId()
 
   const { data: product } = await supabase.from('products').select('name').eq('id', id).single()
   const { error } = await supabase.from('products').update({
     deleted_at:          new Date().toISOString(),
-    deleted_by:          memberId,
+    deleted_by:          auth.memberId,
     delete_pending:      false,
     delete_requested_by: null,
     delete_requested_at: null,
@@ -308,7 +308,7 @@ export async function approveDeleteProduct(id: string) {
     entity_type: 'product',
     entity_id:   id,
     entity_name: product?.name,
-    new_value:   { status: 'moved_to_trash', approved_by: memberId },
+    new_value:   { status: 'moved_to_trash', approved_by: auth.memberId },
   })
   revalidatePath('/admin/produkte')
   revalidatePath('/admin/papierkorb')
@@ -318,6 +318,9 @@ export async function approveDeleteProduct(id: string) {
 
 // ── Admin: Löschantrag ablehnen ──────────────────────────────────────────────
 export async function rejectDeleteProduct(id: string) {
+  const auth = await requireAdminMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
 
   const { data: product } = await supabase.from('products').select('name').eq('id', id).single()
@@ -343,6 +346,9 @@ export async function rejectDeleteProduct(id: string) {
 
 // ── Admin: Aus Papierkorb wiederherstellen ────────────────────────────────────
 export async function restoreProduct(id: string) {
+  const auth = await requireAdminMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
 
   const { data: product } = await supabase.from('products').select('name').eq('id', id).single()
@@ -369,6 +375,9 @@ export async function restoreProduct(id: string) {
 
 // ── Admin: Endgültig löschen (aus Papierkorb) ────────────────────────────────
 export async function permanentDeleteProduct(id: string) {
+  const auth = await requireAdminMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
 
   const { data: old } = await supabase.from('products').select('name').eq('id', id).single()
@@ -395,6 +404,9 @@ export async function deleteProduct(id: string) {
 
 // ── Galerie-Bilder entfernen ──────────────────────────────────────────────────
 export async function removeGalleryImage(productId: string, imageUrl: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: product } = await supabase.from('products').select('images, image_alts').eq('id', productId).single()
   const images = ((product?.images as string[]) ?? []).filter((u) => u !== imageUrl)
@@ -406,6 +418,9 @@ export async function removeGalleryImage(productId: string, imageUrl: string) {
 }
 
 export async function removeThumbnail(productId: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { success: false }
+
   const supabase = createSupabaseAdminClient()
   await supabase.from('products').update({ thumbnail: null }).eq('id', productId)
   revalidatePath(`/admin/produkte/${productId}`)
@@ -413,6 +428,9 @@ export async function removeThumbnail(productId: string) {
 }
 
 export async function removeIcon(productId: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { success: false }
+
   const supabase = createSupabaseAdminClient()
   await supabase.from('products').update({ icon_url: null }).eq('id', productId)
   revalidatePath(`/admin/produkte/${productId}`)
@@ -421,6 +439,9 @@ export async function removeIcon(productId: string) {
 
 // ── Monitoring: Abgelaufene Logs löschen (Admin-Action) ──────────────────────
 export async function purgeExpiredLogs() {
+  const auth = await requireAdminMember()
+  if (!auth.ok) return { error: auth.error, success: false, count: 0 }
+
   const supabase = createSupabaseAdminClient()
   const cutoff = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString()
 

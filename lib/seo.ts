@@ -11,6 +11,17 @@ export function canonical(path: string) {
   return `${SITE_URL}${path}`
 }
 
+/** JSON-LD sicher für <script type="application/ld+json"> serialisieren.
+ *  JSON.stringify() allein escaped "<" nicht — enthält ein Feld (z.B. ein von
+ *  einem Mitarbeiter eingetippter Produktname/-beschreibung) zufällig oder
+ *  absichtlich die Zeichenfolge "</script>", würde das den Script-Tag
+ *  vorzeitig beenden und beliebiges HTML/JS in die öffentliche Seite
+ *  einschleusen können. "<" → "<" verhindert das, ohne das JSON selbst
+ *  zu verändern (JSON-Parser lesen < identisch zu <). */
+export function jsonLdScript(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, '\\u003c')
+}
+
 /** JSON-LD für ein Produkt */
 export function productJsonLd(product: {
   name: string

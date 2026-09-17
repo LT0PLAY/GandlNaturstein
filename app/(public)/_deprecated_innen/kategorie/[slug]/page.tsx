@@ -6,7 +6,7 @@ import CategoryFilter from '@/components/public/CategoryFilter'
 import type { Metadata } from 'next'
 import type { Product, Category } from '@/lib/types'
 import styles from '../../../category.module.css'
-import { canonical, SITE_NAME, SITE_URL } from '@/lib/seo'
+import { canonical, jsonLdScript, SITE_NAME, SITE_URL } from '@/lib/seo'
 import ProductCardImage from '@/components/public/ProductCardImage'
 
 export const dynamic = 'force-dynamic'
@@ -65,7 +65,7 @@ export default async function InnenKategoriePage({ params }: { params: Promise<{
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
       <section className={styles.page}>
         <div className={styles.hero}>
           <p className={styles.label}>// Innenbereich</p>

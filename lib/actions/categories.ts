@@ -2,19 +2,9 @@
 
 import { revalidatePath } from 'next/cache'
 import { createSupabaseAdminClient } from '@/lib/supabase'
-import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { logChange } from '@/lib/utils/changelog'
+import { requireTeamMember } from '@/lib/actions/authGuard'
 import type { CategoryBereich } from '@/lib/types'
-
-async function getCurrentMemberId(): Promise<string | null> {
-  try {
-    const client = await createSupabaseServerClient()
-    const { data: { user } } = await client.auth.getUser()
-    if (!user) return null
-    const { data } = await client.from('team_members').select('id').eq('user_id', user.id).single()
-    return data?.id ?? null
-  } catch { return null }
-}
 
 // ── Titelbild-URL aus FormData lesen (ImageUploader schickt hidden inputs) ──
 function readImageUrl(formData: FormData, field: string): string | null {
@@ -36,6 +26,9 @@ function revalidateAllBereiche() {
 }
 
 export async function createCategory(formData: FormData) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const bereich  = formData.get('type') as CategoryBereich
   const imageUrl = readImageUrl(formData, 'image')
@@ -62,6 +55,9 @@ export async function createCategory(formData: FormData) {
 }
 
 export async function updateCategory(id: string, formData: FormData) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: old } = await supabase.from('categories').select('*').eq('id', id).single()
 
@@ -90,6 +86,9 @@ export async function updateCategory(id: string, formData: FormData) {
 }
 
 export async function removeCategoryImage(id: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const { error } = await supabase.from('categories').update({ image_url: null }).eq('id', id)
   if (error) return { error: error.message, success: false }
@@ -100,14 +99,16 @@ export async function removeCategoryImage(id: string) {
 
 // Soft-Delete: Kategorie in Papierkorb verschieben
 export async function deleteCategory(id: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase  = createSupabaseAdminClient()
-  const memberId  = await getCurrentMemberId()
   const { data: old } = await supabase.from('categories').select('*').eq('id', id).single()
 
   // Versuche Soft-Delete (falls Migration 008 gelaufen)
   const { error } = await supabase.from('categories').update({
     deleted_at: new Date().toISOString(),
-    deleted_by: memberId,
+    deleted_by: auth.memberId,
   }).eq('id', id)
 
   // Fallback: Spalte existiert noch nicht → hart löschen
@@ -128,6 +129,9 @@ export async function deleteCategory(id: string) {
 
 // Wiederherstellen
 export async function restoreCategory(id: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: cat } = await supabase.from('categories').select('name').eq('id', id).single()
 
@@ -149,6 +153,9 @@ export async function restoreCategory(id: string) {
 
 // Endgültig löschen (nur Admin)
 export async function permanentDeleteCategory(id: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: old } = await supabase.from('categories').select('name').eq('id', id).single()
   const { error } = await supabase.from('categories').delete().eq('id', id)

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { logChange } from '@/lib/utils/changelog'
+import { requireTeamMember, requireAdminMember } from '@/lib/actions/authGuard'
 
 function slugify(str: string) {
   return str
@@ -68,6 +69,9 @@ export async function createReference(
   _prev: ReferenceActionState,
   formData: FormData
 ): Promise<ReferenceActionState> {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false, id: null }
+
   const supabase = createSupabaseAdminClient()
   const data = parseFormData(formData)
 
@@ -90,6 +94,9 @@ export async function updateReference(
   _prev: ReferenceActionState,
   formData: FormData
 ): Promise<ReferenceActionState> {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false, id }
+
   const supabase = createSupabaseAdminClient()
   const { data: existing } = await supabase.from('project_references').select('*').eq('id', id).single()
   const existingImages = (existing?.images as string[]) ?? []
@@ -109,6 +116,9 @@ export async function updateReference(
 
 // ── MOVE TO TRASH (Soft-Delete) ───────────────────────────────────────────────
 export async function deleteReference(id: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: ref } = await supabase.from('project_references').select('title').eq('id', id).single()
   const { error } = await supabase.from('project_references')
@@ -125,6 +135,9 @@ export async function deleteReference(id: string) {
 
 // ── RESTORE ──────────────────────────────────────────────────────────────────
 export async function restoreReference(id: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: ref } = await supabase.from('project_references').select('title').eq('id', id).single()
   const { error } = await supabase.from('project_references')
@@ -140,6 +153,9 @@ export async function restoreReference(id: string) {
 
 // ── PERMANENT DELETE (nur Admin) ─────────────────────────────────────────────
 export async function permanentDeleteReference(id: string) {
+  const auth = await requireAdminMember()
+  if (!auth.ok) return { error: auth.error, success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: ref } = await supabase.from('project_references').select('title').eq('id', id).single()
   const { error } = await supabase.from('project_references').delete().eq('id', id)
@@ -154,6 +170,9 @@ export async function permanentDeleteReference(id: string) {
 
 // ── REMOVE GALLERY IMAGE ──────────────────────────────────────────────────────
 export async function removeReferenceImage(refId: string, imageUrl: string) {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { success: false }
+
   const supabase = createSupabaseAdminClient()
   const { data: ref } = await supabase.from('project_references').select('images').eq('id', refId).single()
   const images = ((ref?.images as string[]) ?? []).filter((u) => u !== imageUrl)
