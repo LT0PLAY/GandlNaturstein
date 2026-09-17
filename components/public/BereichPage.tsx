@@ -41,6 +41,7 @@ export default function BereichPage({
   title, label, subtitle, heroImage, categoryDescription, basePath, categories, products,
 }: Props) {
   const [showInfo, setShowInfo] = useState(false)
+  const [showAllProducts, setShowAllProducts] = useState(false)
   const [einsatzbereich, setEinsatzbereich] = useState('')
   const [steinart,       setSteinart]       = useState('')
   const [farbe,           setFarbe]          = useState('')
@@ -172,11 +173,22 @@ export default function BereichPage({
           erschlagen wird. Auf reinen Kategorie-Seiten (Titelbild) bleibt die Liste
           wie gehabt direkt sichtbar. */}
       {!heroImage && categories.length > 0 ? (
-        <details className={styles.allProductsDetails}>
-          <summary className={styles.allProductsSummary}>
+        // Bewusst kein natives <details>/<summary>: auf iOS Safari klappt das
+        // zu, sobald man eines der <select>-Filterfelder im geöffneten Bereich
+        // antippt (bekannter Konflikt zwischen details-Toggle und verschachtelten
+        // Formularelementen) — der Nutzer musste dann zweimal klicken. Eigener
+        // useState-Toggle umgeht das komplett.
+        <div className={styles.allProductsDetails} data-open={showAllProducts || undefined}>
+          <button
+            type="button"
+            className={styles.allProductsSummary}
+            onClick={() => setShowAllProducts((v) => !v)}
+            aria-expanded={showAllProducts}
+          >
             Alle Produkte anzeigen
             <span className={styles.allProductsCount}>({filtered.length})</span>
-          </summary>
+          </button>
+          {showAllProducts && (
           <div className={styles.allProductsContent}>
             {hasFilterOptions && (
               <div className={`${styles.filterBar} ${styles.filterBarStandalone}`}>
@@ -224,7 +236,8 @@ export default function BereichPage({
               </div>
             )}
           </div>
-        </details>
+          )}
+        </div>
       ) : (
         <>
           {!heroImage && hasFilterOptions && (

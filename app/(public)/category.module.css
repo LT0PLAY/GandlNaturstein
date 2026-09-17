@@ -244,11 +244,15 @@
 }
 
 /* ── "Alle Produkte"-Dropdown auf den Bereichs-Übersichtsseiten — steht
-   standardmäßig immer zu (native <details>, kein eigener open-State nötig),
-   damit der Kunde nach den Kategorie-Karten nicht sofort mit der kompletten
-   Produktliste konfrontiert wird. Verhalten ist auf Handy wie Desktop gleich. ── */
+   standardmäßig immer zu, damit der Kunde nach den Kategorie-Karten nicht
+   sofort mit der kompletten Produktliste konfrontiert wird. Verhalten ist
+   auf Handy wie Desktop gleich. Eigener useState-Toggle statt <details> —
+   natives <details> klappt auf iOS Safari zu, sobald eines der <select>
+   Filterfelder im geöffneten Bereich angetippt wird. ── */
 .allProductsDetails { margin-bottom: 40px; display: flex; flex-direction: column; align-items: center; }
 .allProductsSummary {
+  appearance: none;
+  -webkit-appearance: none;
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -261,7 +265,6 @@
   background: rgba(155, 174, 159,0.12);
   border: 0.5px solid rgba(155, 174, 159,0.4);
   cursor: pointer;
-  list-style: none;
   padding: 12px 22px;
   user-select: none;
   transition: background .15s, border-color .15s;
@@ -270,8 +273,6 @@
   background: rgba(155, 174, 159,0.22);
   border-color: rgba(155, 174, 159,0.6);
 }
-.allProductsSummary::-webkit-details-marker { display: none; }
-.allProductsSummary::marker { content: ''; }
 .allProductsSummary::before {
   content: '+';
   display: inline-flex;
@@ -284,7 +285,7 @@
   font-size: 15px;
   font-weight: 600;
 }
-.allProductsDetails[open] .allProductsSummary::before { content: '−'; }
+.allProductsDetails[data-open] .allProductsSummary::before { content: '−'; }
 .allProductsCount {
   color: var(--color-sage);
   letter-spacing: .04em;
