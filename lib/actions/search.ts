@@ -101,7 +101,8 @@ export async function searchProducts(query: string): Promise<SearchResult[]> {
     const categoryCondition = categoryIds.length ? [`category_id.in.(${categoryIds.join(',')})`] : []
     // "surfaces" ist ein text[] und per ilike nicht durchsuchbar — dafür gibt es
     // die generierte Textspalte surfaces_text (Migration 030).
-    const surfacesCondition = [`surfaces_text.ilike.%${t}%`]
+    // Gleiches gilt für die Größenvarianten (sizes_text, Migration 031).
+    const surfacesCondition = [`surfaces_text.ilike.%${t}%`, `sizes_text.ilike.%${t}%`]
     builder = builder.or([...fieldConditions, ...surfacesCondition, ...bereichCondition, ...categoryCondition].join(','))
   }
 

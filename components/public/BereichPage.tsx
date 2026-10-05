@@ -45,6 +45,11 @@ function splitValues(v: string | null | undefined): string[] {
   return (v ?? '').split(',').map((x) => x.trim()).filter(Boolean)
 }
 
+// Größen-/Maßvarianten eines Produkts (z. B. "2 cm", "30x60")
+function productSizes(p: Product): string[] {
+  return (p.sizes ?? []).map((sz) => normalize(sz.label)).filter(Boolean)
+}
+
 function uniqueValues(products: Product[], field: keyof Product): string[] {
   const set = new Set<string>()
   for (const p of products) {
@@ -63,6 +68,8 @@ export default function BereichPage({
   const [farbe,           setFarbe]          = useState('')
   const [oberflaeche,     setOberflaeche]    = useState('')
   const [format,          setFormat]         = useState('')
+  const [herkunft,        setHerkunft]       = useState('')
+  const [groesse,         setGroesse]        = useState('')
 
   const einsatzOptions = useMemo(() => uniqueValues(products, 'einsatzbereich'), [products])
   const materialOptions = useMemo(() => uniqueValues(products, 'material'), [products])
@@ -72,17 +79,31 @@ export default function BereichPage({
     [products],
   )
   const formatOptions   = useMemo(() => uniqueValues(products, 'format'), [products])
+  const herkunftOptions = useMemo(() => uniqueValues(products, 'origin'), [products])
+  const groesseOptions  = useMemo(
+    () => [...new Set(products.flatMap(productSizes))].sort((a, b) => a.localeCompare(b, 'de', { numeric: true })),
+    [products],
+  )
 
   const filtered = useMemo(() => products.filter((p) =>
     (!einsatzbereich || splitValues(p.einsatzbereich).includes(einsatzbereich)) &&
     (!steinart       || splitValues(p.material).includes(steinart)) &&
     (!farbe          || splitValues(p.farbe).includes(farbe)) &&
     (!oberflaeche    || productSurfaces(p).includes(oberflaeche)) &&
-    (!format         || splitValues(p.format).includes(format))
-  ), [products, einsatzbereich, steinart, farbe, oberflaeche, format])
+    (!format         || splitValues(p.format).includes(format)) &&
+    (!herkunft       || splitValues(p.origin).includes(herkunft)) &&
+    (!groesse        || productSizes(p).includes(groesse))
+  ), [products, einsatzbereich, steinart, farbe, oberflaeche, format, herkunft, groesse])
+
+  const hasActiveFilter = !!(einsatzbereich || steinart || farbe || oberflaeche || format || herkunft || groesse)
+  function resetFilters() {
+    setEinsatzbereich(''); setSteinart(''); setFarbe(''); setOberflaeche('')
+    setFormat(''); setHerkunft(''); setGroesse('')
+  }
 
   const hasFilterOptions = einsatzOptions.length > 0 || materialOptions.length > 0 ||
-    farbeOptions.length > 0 || surfaceOptions.length > 0 || formatOptions.length > 0
+    farbeOptions.length > 0 || surfaceOptions.length > 0 || formatOptions.length > 0 ||
+    herkunftOptions.length > 0 || groesseOptions.length > 0
 
   const filterBarContent = (
     <>
@@ -115,6 +136,23 @@ export default function BereichPage({
           <option value="">Format</option>
           {formatOptions.map((v) => <option key={v} value={v}>{v}</option>)}
         </select>
+      )}
+      {herkunftOptions.length > 0 && (
+        <select className={styles.filterSelect} value={herkunft} onChange={(e) => setHerkunft(e.target.value)}>
+          <option value="">Herkunft</option>
+          {herkunftOptions.map((v) => <option key={v} value={v}>{v}</option>)}
+        </select>
+      )}
+      {groesseOptions.length > 0 && (
+        <select className={styles.filterSelect} value={groesse} onChange={(e) => setGroesse(e.target.value)}>
+          <option value="">Größe</option>
+          {groesseOptions.map((v) => <option key={v} value={v}>{v}</option>)}
+        </select>
+      )}
+      {hasActiveFilter && (
+        <button type="button" className={styles.filterSelect} onClick={resetFilters}>
+          Zurücksetzen
+        </button>
       )}
       <span className={styles.filterCount}>{filtered.length} PRODUKT{filtered.length === 1 ? '' : 'E'}</span>
     </>
