@@ -87,11 +87,7 @@ export async function searchProducts(query: string): Promise<SearchResult[]> {
   // Namen der zugeordneten Kategorie vorkommen. Über alle Tokens hinweg wird
   // UND verknüpft, damit z. B. "grau 30x30" auch wirklich beide Eigenschaften
   // gemeinsam verlangt.
-  let builder = supabase
-    .from('products')
-    .select('id, name, slug, article_number, thumbnail, material, surface, surfaces, description, bereich, format, einsatzbereich, farbe, category:categories!products_category_id_fkey(name, type)')
-    .eq('is_active', true)
-
+  const tokenConditions: Array<{ base: string[]; extra: string[] }> = []
   for (const token of tokens) {
     const t = escapeForOr(token)
     const fieldConditions = SEARCHABLE_COLUMNS.map((col) => `${col}.ilike.%${t}%`)
@@ -99,14 +95,30 @@ export async function searchProducts(query: string): Promise<SearchResult[]> {
     const bereichCondition = bereiche.length ? [`bereich.in.(${bereiche.join(',')})`] : []
     const categoryIds = await matchingCategoryIds(supabase, t)
     const categoryCondition = categoryIds.length ? [`category_id.in.(${categoryIds.join(',')})`] : []
-    // "surfaces" ist ein text[] und per ilike nicht durchsuchbar — dafür gibt es
-    // die generierte Textspalte surfaces_text (Migration 030).
-    // Gleiches gilt für die Größenvarianten (sizes_text, Migration 031).
-    const surfacesCondition = [`surfaces_text.ilike.%${t}%`, `sizes_text.ilike.%${t}%`]
-    builder = builder.or([...fieldConditions, ...surfacesCondition, ...bereichCondition, ...categoryCondition].join(','))
+    tokenConditions.push({
+      base: [...fieldConditions, ...bereichCondition, ...categoryCondition],
+      // "surfaces" (text[]) und "sizes" (JSON) sind per ilike nicht durchsuchbar —
+      // dafür gibt es die generierten Textspalten surfaces_text / sizes_text
+      // (Migrationen 030 / 031).
+      extra: [`surfaces_text.ilike.%${t}%`, `sizes_text.ilike.%${t}%`],
+    })
   }
 
-  const { data, error } = await builder.limit(12)
+  function runQuery(includeTextColumns: boolean) {
+    let builder = supabase
+      .from('products')
+      .select('id, name, slug, article_number, thumbnail, material, surface, surfaces, description, bereich, format, einsatzbereich, farbe, category:categories!products_category_id_fkey(name, type)')
+      .eq('is_active', true)
+    for (const c of tokenConditions) {
+      builder = builder.or((includeTextColumns ? [...c.base, ...c.extra] : c.base).join(','))
+    }
+    return builder.limit(12)
+  }
+
+  let { data, error } = await runQuery(true)
+  // Solange die Migrationen 030/031 noch nicht eingespielt sind, fehlen die
+  // Textspalten — dann ohne sie suchen, statt gar nichts zu liefern.
+  if (error) ({ data, error } = await runQuery(false))
 
   if (error || !data) return []
 
