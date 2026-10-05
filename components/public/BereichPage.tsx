@@ -28,6 +28,15 @@ function normalize(v: string | null | undefined): string {
   return (v ?? '').trim()
 }
 
+// Alle Oberflächen eines Produkts (Varianten aus "surfaces"), mit Fallback auf
+// das alte Einzelfeld "surface" für Produkte ohne Varianten.
+function productSurfaces(p: Product): string[] {
+  const list = (p.surfaces ?? []).map(normalize).filter(Boolean)
+  if (list.length > 0) return list
+  const single = normalize(p.surface)
+  return single ? [single] : []
+}
+
 function uniqueValues(products: Product[], field: keyof Product): string[] {
   const set = new Set<string>()
   for (const p of products) {
@@ -51,14 +60,17 @@ export default function BereichPage({
   const einsatzOptions = useMemo(() => uniqueValues(products, 'einsatzbereich'), [products])
   const materialOptions = useMemo(() => uniqueValues(products, 'material'), [products])
   const farbeOptions    = useMemo(() => uniqueValues(products, 'farbe'), [products])
-  const surfaceOptions  = useMemo(() => uniqueValues(products, 'surface'), [products])
+  const surfaceOptions  = useMemo(
+    () => [...new Set(products.flatMap(productSurfaces))].sort(),
+    [products],
+  )
   const formatOptions   = useMemo(() => uniqueValues(products, 'format'), [products])
 
   const filtered = useMemo(() => products.filter((p) =>
     (!einsatzbereich || normalize(p.einsatzbereich) === einsatzbereich) &&
     (!steinart       || normalize(p.material)       === steinart) &&
     (!farbe          || normalize(p.farbe)          === farbe) &&
-    (!oberflaeche    || normalize(p.surface)        === oberflaeche) &&
+    (!oberflaeche    || productSurfaces(p).includes(oberflaeche)) &&
     (!format         || normalize(p.format)         === format)
   ), [products, einsatzbereich, steinart, farbe, oberflaeche, format])
 
@@ -228,7 +240,7 @@ export default function BereichPage({
                     <div className={styles.cardBody}>
                       <p className={styles.cardMaterial}>{product.material}</p>
                       <h3 className={styles.cardTitle}>{product.name}</h3>
-                      <p className={styles.cardSurface}>{product.surface}</p>
+                      <p className={styles.cardSurface}>{productSurfaces(product).join(' · ')}</p>
                       <span className={styles.cardCta}>Details & Anfrage →</span>
                     </div>
                   </Link>
@@ -278,7 +290,7 @@ export default function BereichPage({
                   <div className={styles.cardBody}>
                     <p className={styles.cardMaterial}>{product.material}</p>
                     <h3 className={styles.cardTitle}>{product.name}</h3>
-                    <p className={styles.cardSurface}>{product.surface}</p>
+                    <p className={styles.cardSurface}>{productSurfaces(product).join(' · ')}</p>
                     <span className={styles.cardCta}>Details & Anfrage →</span>
                   </div>
                 </Link>

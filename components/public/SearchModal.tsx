@@ -117,7 +117,9 @@ export default function SearchModal({ isOpen, onClose }: Props) {
                     <p className={styles.resultMeta}>
                       {r.categoryName ?? BEREICH_LABELS[r.categoryType] ?? r.categoryType}
                       {r.material ? ` · ${r.material}` : ''}
-                      {r.surface  ? ` · ${r.surface}`  : ''}
+                      {(r.surfaces.length > 0 ? r.surfaces.join(', ') : r.surface)
+                        ? ` · ${r.surfaces.length > 0 ? r.surfaces.join(', ') : r.surface}`
+                        : ''}
                       {r.article_number ? ` · #${r.article_number}` : ''}
                     </p>
                   </div>

@@ -12,6 +12,8 @@ export interface SearchResult {
   thumbnail:      string | null
   material:       string | null
   surface:        string | null
+  /** Alle Oberflächen-Varianten des Produkts (leer, wenn nur das Einzelfeld "surface" gepflegt ist) */
+  surfaces:       string[]
   description:    string | null
   /** Hauptbereich (eigenproduktion, gartengestaltung, ...) — bestimmt die URL */
   categoryType:   CategoryBereich
@@ -87,7 +89,7 @@ export async function searchProducts(query: string): Promise<SearchResult[]> {
   // gemeinsam verlangt.
   let builder = supabase
     .from('products')
-    .select('id, name, slug, article_number, thumbnail, material, surface, description, bereich, format, einsatzbereich, farbe, category:categories!products_category_id_fkey(name, type)')
+    .select('id, name, slug, article_number, thumbnail, material, surface, surfaces, description, bereich, format, einsatzbereich, farbe, category:categories!products_category_id_fkey(name, type)')
     .eq('is_active', true)
 
   for (const token of tokens) {
@@ -97,7 +99,10 @@ export async function searchProducts(query: string): Promise<SearchResult[]> {
     const bereichCondition = bereiche.length ? [`bereich.in.(${bereiche.join(',')})`] : []
     const categoryIds = await matchingCategoryIds(supabase, t)
     const categoryCondition = categoryIds.length ? [`category_id.in.(${categoryIds.join(',')})`] : []
-    builder = builder.or([...fieldConditions, ...bereichCondition, ...categoryCondition].join(','))
+    // "surfaces" ist ein text[] und per ilike nicht durchsuchbar — dafür gibt es
+    // die generierte Textspalte surfaces_text (Migration 030).
+    const surfacesCondition = [`surfaces_text.ilike.%${t}%`]
+    builder = builder.or([...fieldConditions, ...surfacesCondition, ...bereichCondition, ...categoryCondition].join(','))
   }
 
   const { data, error } = await builder.limit(12)
@@ -112,6 +117,7 @@ export async function searchProducts(query: string): Promise<SearchResult[]> {
     thumbnail:      p.thumbnail,
     material:       p.material,
     surface:        p.surface,
+    surfaces:       p.surfaces ?? [],
     description:    p.description,
     categoryType:   (p.bereich ?? p.category?.type ?? 'eigenproduktion') as CategoryBereich,
     categoryName:   p.category?.name ?? null,
