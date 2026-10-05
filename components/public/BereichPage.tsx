@@ -37,11 +37,18 @@ function productSurfaces(p: Product): string[] {
   return single ? [single] : []
 }
 
+// Die Admin-Felder (Farbe, Einsatzbereich, Format, Steinart) sind Freitext und
+// laut Platzhalter für mehrere, kommagetrennte Werte gedacht ("Grau, Beige").
+// Jeder Einzelwert wird deshalb als eigene Filter-Option geführt und das
+// Produkt erscheint unter jedem davon.
+function splitValues(v: string | null | undefined): string[] {
+  return (v ?? '').split(',').map((x) => x.trim()).filter(Boolean)
+}
+
 function uniqueValues(products: Product[], field: keyof Product): string[] {
   const set = new Set<string>()
   for (const p of products) {
-    const v = normalize(p[field] as unknown as string | null)
-    if (v) set.add(v)
+    for (const v of splitValues(p[field] as unknown as string | null)) set.add(v)
   }
   return [...set].sort()
 }
@@ -67,11 +74,11 @@ export default function BereichPage({
   const formatOptions   = useMemo(() => uniqueValues(products, 'format'), [products])
 
   const filtered = useMemo(() => products.filter((p) =>
-    (!einsatzbereich || normalize(p.einsatzbereich) === einsatzbereich) &&
-    (!steinart       || normalize(p.material)       === steinart) &&
-    (!farbe          || normalize(p.farbe)          === farbe) &&
+    (!einsatzbereich || splitValues(p.einsatzbereich).includes(einsatzbereich)) &&
+    (!steinart       || splitValues(p.material).includes(steinart)) &&
+    (!farbe          || splitValues(p.farbe).includes(farbe)) &&
     (!oberflaeche    || productSurfaces(p).includes(oberflaeche)) &&
-    (!format         || normalize(p.format)         === format)
+    (!format         || splitValues(p.format).includes(format))
   ), [products, einsatzbereich, steinart, farbe, oberflaeche, format])
 
   const hasFilterOptions = einsatzOptions.length > 0 || materialOptions.length > 0 ||
