@@ -51,6 +51,32 @@ function productSizes(p: Product): string[] {
   return (p.sizes ?? []).map((sz) => normalize(sz.label)).filter(Boolean)
 }
 
+// Stärke (in cm) aus einer Größen-Bezeichnung erkennen:
+//  "2 cm" → 2 · "60x60x3 cm" → 3 · "90x90x0,9 cm" → 0,9 · "20 mm" → 2
+// Bei zwei Maßen ("30x60") gibt es keine Stärke → null.
+function thicknessOf(label: string): number | null {
+  const nums = label.match(/\d+(?:[.,]\d+)?/g)
+  if (!nums) return null
+  if (nums.length !== 1 && nums.length !== 3) return null
+  let v = parseFloat(nums[nums.length - 1].replace(',', '.'))
+  if (!isFinite(v)) return null
+  if (/mm/i.test(label)) v = v / 10
+  return Math.round(v * 100) / 100
+}
+
+function formatThickness(v: number): string {
+  return `${String(v).replace('.', ',')} cm`
+}
+
+function productThicknesses(p: Product): string[] {
+  const out = new Set<string>()
+  for (const label of productSizes(p)) {
+    const t = thicknessOf(label)
+    if (t !== null) out.add(formatThickness(t))
+  }
+  return [...out]
+}
+
 // Oberflächen auf der Karte, mit deutlich sichtbarem Trenner statt Mittelpunkt
 function SurfaceList({ product }: { product: Product }) {
   const list = productSurfaces(product)
@@ -94,6 +120,7 @@ export default function BereichPage({
   const [format,          setFormat]         = useState('')
   const [herkunft,        setHerkunft]       = useState('')
   const [groesse,         setGroesse]        = useState('')
+  const [staerke,         setStaerke]        = useState('')
 
   const pathname = usePathname()
   const restoreKey = `bereich-state:${pathname}`
@@ -115,6 +142,7 @@ export default function BereichPage({
     setFormat(saved.format ?? '')
     setHerkunft(saved.herkunft ?? '')
     setGroesse(saved.groesse ?? '')
+    setStaerke(saved.staerke ?? '')
     requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, saved.scrollY ?? 0)))
   }, [restoreKey])
 
@@ -122,7 +150,7 @@ export default function BereichPage({
     try {
       sessionStorage.setItem(restoreKey, JSON.stringify({
         ts: Date.now(), scrollY: window.scrollY, showAll: showAllProducts,
-        einsatzbereich, steinart, farbe, oberflaeche, format, herkunft, groesse,
+        einsatzbereich, steinart, farbe, oberflaeche, format, herkunft, groesse, staerke,
       }))
     } catch { /* ignorieren */ }
   }
@@ -136,10 +164,29 @@ export default function BereichPage({
   )
   const formatOptions   = useMemo(() => uniqueValues(products, 'format'), [products])
   const herkunftOptions = useMemo(() => uniqueValues(products, 'origin'), [products])
-  const groesseOptions  = useMemo(
-    () => [...new Set(products.flatMap(productSizes))].sort((a, b) => a.localeCompare(b, 'de', { numeric: true })),
+  const staerkeOptions  = useMemo(
+    () => [...new Set(products.flatMap(productThicknesses))]
+      .sort((a, b) => parseFloat(a.replace(',', '.')) - parseFloat(b.replace(',', '.'))),
     [products],
   )
+  // Größen nach Stärke gruppiert (aufsteigend), innerhalb der Gruppe natürlich sortiert
+  const groesseGroups = useMemo(() => {
+    const all = [...new Set(products.flatMap(productSizes))]
+    const groups = new Map<string, string[]>()
+    for (const label of all) {
+      const t = thicknessOf(label)
+      const key = t === null ? '' : formatThickness(t)
+      groups.set(key, [...(groups.get(key) ?? []), label])
+    }
+    return [...groups.entries()]
+      .map(([key, labels]) => ({
+        key,
+        value: key === '' ? Infinity : parseFloat(key.replace(',', '.')),
+        labels: labels.sort((a, b) => a.localeCompare(b, 'de', { numeric: true })),
+      }))
+      .sort((a, b) => a.value - b.value)
+  }, [products])
+  const groesseOptions = useMemo(() => groesseGroups.flatMap((g) => g.labels), [groesseGroups])
 
   const filtered = useMemo(() => products.filter((p) =>
     (!einsatzbereich || splitValues(p.einsatzbereich).includes(einsatzbereich)) &&
@@ -148,18 +195,19 @@ export default function BereichPage({
     (!oberflaeche    || productSurfaces(p).includes(oberflaeche)) &&
     (!format         || splitValues(p.format).includes(format)) &&
     (!herkunft       || splitValues(p.origin).includes(herkunft)) &&
-    (!groesse        || productSizes(p).includes(groesse))
-  ), [products, einsatzbereich, steinart, farbe, oberflaeche, format, herkunft, groesse])
+    (!groesse        || productSizes(p).includes(groesse)) &&
+    (!staerke        || productThicknesses(p).includes(staerke))
+  ), [products, einsatzbereich, steinart, farbe, oberflaeche, format, herkunft, groesse, staerke])
 
-  const hasActiveFilter = !!(einsatzbereich || steinart || farbe || oberflaeche || format || herkunft || groesse)
+  const hasActiveFilter = !!(einsatzbereich || steinart || farbe || oberflaeche || format || herkunft || groesse || staerke)
   function resetFilters() {
     setEinsatzbereich(''); setSteinart(''); setFarbe(''); setOberflaeche('')
-    setFormat(''); setHerkunft(''); setGroesse('')
+    setFormat(''); setHerkunft(''); setGroesse(''); setStaerke('')
   }
 
   const hasFilterOptions = einsatzOptions.length > 0 || materialOptions.length > 0 ||
     farbeOptions.length > 0 || surfaceOptions.length > 0 || formatOptions.length > 0 ||
-    herkunftOptions.length > 0 || groesseOptions.length > 0
+    herkunftOptions.length > 0 || groesseOptions.length > 0 || staerkeOptions.length > 0
 
   const filterBarContent = (
     <>
@@ -199,10 +247,20 @@ export default function BereichPage({
           {herkunftOptions.map((v) => <option key={v} value={v}>{v}</option>)}
         </select>
       )}
+      {staerkeOptions.length > 0 && (
+        <select className={styles.filterSelect} value={staerke} onChange={(e) => setStaerke(e.target.value)}>
+          <option value="">Stärke</option>
+          {staerkeOptions.map((v) => <option key={v} value={v}>{v}</option>)}
+        </select>
+      )}
       {groesseOptions.length > 0 && (
         <select className={styles.filterSelect} value={groesse} onChange={(e) => setGroesse(e.target.value)}>
           <option value="">Größe</option>
-          {groesseOptions.map((v) => <option key={v} value={v}>{v}</option>)}
+          {groesseGroups.map((g) => (
+            <optgroup key={g.key || 'sonst'} label={g.key ? `Stärke ${g.key}` : 'Weitere'}>
+              {g.labels.map((v) => <option key={v} value={v}>{v}</option>)}
+            </optgroup>
+          ))}
         </select>
       )}
       {hasActiveFilter && (

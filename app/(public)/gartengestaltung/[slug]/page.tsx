@@ -32,7 +32,7 @@ export default async function gartengestaltungProduktPage({ params }: { params: 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(productJsonLd(product, `/gartengestaltung/${slug}`)) }} />
-      <ProductDetail product={product!} backHref="/gartengestaltung" backLabel="Zurück gartengestaltung" />
+      <ProductDetail product={product!} backHref="/gartengestaltung" backLabel="Zurück" />
     </>
   )
 }

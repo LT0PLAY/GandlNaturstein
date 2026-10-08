@@ -32,7 +32,7 @@ export default async function SonderanfertigungProduktPage({ params }: { params:
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(productJsonLd(product, `/sonderanfertigung/${slug}`)) }} />
-      <ProductDetail product={product!} backHref="/sonderanfertigung" backLabel="Zurück Sonderanfertigung" />
+      <ProductDetail product={product!} backHref="/sonderanfertigung" backLabel="Zurück" />
     </>
   )
 }

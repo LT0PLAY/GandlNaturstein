@@ -32,7 +32,7 @@ export default async function ExtrasProduktPage({ params }: { params: Promise<{ 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(productJsonLd(product, `/extras/${slug}`)) }} />
-      <ProductDetail product={product!} backHref="/extras" backLabel="Zurück Extras" />
+      <ProductDetail product={product!} backHref="/extras" backLabel="Zurück" />
     </>
   )
 }

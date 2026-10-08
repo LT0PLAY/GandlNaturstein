@@ -32,7 +32,7 @@ export default async function eigenproduktionProduktPage({ params }: { params: P
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(productJsonLd(product, `/eigenproduktion/${slug}`)) }} />
-      <ProductDetail product={product!} backHref="/eigenproduktion" backLabel="Zurück eigenproduktion" />
+      <ProductDetail product={product!} backHref="/eigenproduktion" backLabel="Zurück" />
     </>
   )
 }
