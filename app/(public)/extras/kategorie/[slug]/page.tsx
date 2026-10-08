@@ -82,6 +82,11 @@ export default async function extrasKategoriePage({ params }: { params: Promise<
         label="Extras"
         heroImage={cat.image_url}
         categoryDescription={cat.description}
+        heroLink={
+          cat.slug === 'pflegemittel'
+            ? { label: 'Verbrauchsrechner', href: 'https://www.romex.de/de-de/service/verbrauchsrechner/pflasterfugenmoertel' }
+            : undefined
+        }
         basePath="/extras"
         categories={categories}
         products={products}

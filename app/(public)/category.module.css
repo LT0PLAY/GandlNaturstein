@@ -338,6 +338,7 @@
   background: rgba(155, 174, 159,0.2);
   border-color: rgba(155, 174, 159,0.55);
 }
+.heroActions { display: flex; flex-wrap: wrap; gap: 12px; }
 .infoBtnIcon {
   font-size: 15px;
   color: var(--color-sage);

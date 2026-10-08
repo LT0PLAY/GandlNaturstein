@@ -16,6 +16,8 @@ interface Props {
   /** Freitext-Info zur Kategorie (Beschreibung + Verwendungsgebiet), aus dem Admin gepflegt.
    *  Wird über den „ⓘ Produktinformation"-Button im Titelbild angezeigt. */
   categoryDescription?: string | null
+  /** Optionaler externer Button neben „Produktinformation" im Titelbild (öffnet in neuem Tab) */
+  heroLink?:   { label: string; href: string }
   basePath:    string          // z.B. '/eigenproduktion'
   categories:  Category[]      // für den Kategorie-Filter (Chips)
   products:    Product[]
@@ -109,7 +111,7 @@ function uniqueValues(products: Product[], field: keyof Product): string[] {
 }
 
 export default function BereichPage({
-  title, label, subtitle, heroImage, categoryDescription, basePath, categories, products,
+  title, label, subtitle, heroImage, categoryDescription, heroLink, basePath, categories, products,
 }: Props) {
   const [showInfo, setShowInfo] = useState(false)
   const [showAllProducts, setShowAllProducts] = useState(false)
@@ -285,14 +287,28 @@ export default function BereichPage({
                 <p className={styles.heroBannerLabel}>{label}</p>
                 <h1 className={styles.heroBannerTitle}>{title}</h1>
                 {subtitle && <p className={styles.heroBannerSubtitle}>{subtitle}</p>}
-                <button
-                  type="button"
-                  className={styles.infoBtn}
-                  onClick={() => setShowInfo(true)}
-                >
-                  <span className={styles.infoBtnIcon}>ⓘ</span>
-                  Produktinformation
-                </button>
+                <div className={styles.heroActions}>
+                  <button
+                    type="button"
+                    className={styles.infoBtn}
+                    onClick={() => setShowInfo(true)}
+                  >
+                    <span className={styles.infoBtnIcon}>ⓘ</span>
+                    Produktinformation
+                  </button>
+                  {heroLink && (
+                    <a
+                      href={heroLink.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.infoBtn}
+                      style={{ textDecoration: 'none' }}
+                    >
+                      {heroLink.label}
+                      <span className={styles.infoBtnIcon}>↗</span>
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
           </div>
