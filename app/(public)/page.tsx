@@ -3,10 +3,17 @@ export const dynamic = 'force-dynamic'
 import Link from 'next/link'
 import BereicheSection from '@/components/public/BereicheSection'
 import ContactSidebar from '@/components/public/ContactSidebar'
+import type { Metadata } from 'next'
+import { canonical, jsonLdScript, localBusinessJsonLd } from '@/lib/seo'
+
+export const metadata: Metadata = {
+  alternates: { canonical: canonical('/') },
+}
 
 export default function HomePage() {
   return (
     <main>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(localBusinessJsonLd()) }} />
       <ContactSidebar />
 
       {/* ── Hero mit Hintergrundvideo ── */}

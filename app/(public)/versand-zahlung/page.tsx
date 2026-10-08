@@ -1,9 +1,10 @@
 export const dynamic = 'force-dynamic'
 
+import { canonical } from '@/lib/seo'
 import type { Metadata } from 'next'
 import styles from '../legal.module.css'
 
-export const metadata: Metadata = { title: 'Versand & Zahlung – Gandl Natursteine' }
+export const metadata: Metadata = { title: 'Versand & Zahlung – Gandl Natursteine', description: 'Versand- und Zahlungsbedingungen von Gandl Natursteine: Lieferung, Abholung und Zahlungsarten.', alternates: { canonical: canonical('/versand-zahlung') } }
 
 export default function VersandZahlungPage() {
   return (

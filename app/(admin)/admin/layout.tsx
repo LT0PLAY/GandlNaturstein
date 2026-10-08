@@ -1,4 +1,9 @@
+import type { Metadata } from 'next'
 import AdminShell from '@/components/admin/AdminShell'
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+}
 
 // Basis-Links für alle Rollen
 const BASE_LINKS = [

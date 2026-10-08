@@ -1,11 +1,13 @@
 export const dynamic = 'force-dynamic'
 
+import { canonical } from '@/lib/seo'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
   title:       'Weitere Infos – Gandl Natursteine',
   description: 'Informationen zu Lieferung, Verarbeitung, Pflege und Garantie bei Gandl Natursteine.',
+  alternates: { canonical: canonical('/weitere-infos') },
 }
 
 const INFOS = [

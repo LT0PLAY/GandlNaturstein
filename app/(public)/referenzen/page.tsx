@@ -1,5 +1,6 @@
 export const dynamic = 'force-dynamic'
 
+import { canonical } from '@/lib/seo'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { createSupabaseAdminClient } from '@/lib/supabase'
@@ -10,6 +11,7 @@ import type { Reference } from '@/lib/types'
 export const metadata: Metadata = {
   title:       'Referenzen – Gandl Natursteine',
   description: 'Realisierte Projekte von Gandl Natursteine — Terrassenplatten, Fensterbänke, Sonderanfertigungen und mehr.',
+  alternates: { canonical: canonical('/referenzen') },
 }
 
 async function getRefs(): Promise<Reference[]> {

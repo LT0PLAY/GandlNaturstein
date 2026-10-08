@@ -1,9 +1,10 @@
 export const dynamic = 'force-dynamic'
 
+import { canonical } from '@/lib/seo'
 import type { Metadata } from 'next'
 import styles from '../legal.module.css'
 
-export const metadata: Metadata = { title: 'Widerrufsrecht – Gandl Natursteine' }
+export const metadata: Metadata = { title: 'Widerrufsrecht – Gandl Natursteine', alternates: { canonical: canonical('/widerrufsrecht') } }
 
 export default function WiderrufsrechtPage() {
   return (

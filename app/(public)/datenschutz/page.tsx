@@ -1,9 +1,10 @@
 export const dynamic = 'force-dynamic'
 
+import { canonical } from '@/lib/seo'
 import type { Metadata } from 'next'
 import styles from '../legal.module.css'
 
-export const metadata: Metadata = { title: 'Datenschutz – Gandl Natursteine' }
+export const metadata: Metadata = { title: 'Datenschutz – Gandl Natursteine', alternates: { canonical: canonical('/datenschutz') } }
 
 export default function DatenschutzPage() {
   return (

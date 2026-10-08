@@ -1,8 +1,10 @@
+import { canonical } from '@/lib/seo'
 import Link from 'next/link'
 
 export const metadata = {
   title: '100% Ökostrom-Zertifikat – Gandl Natursteine',
   description: 'Gandl Natursteine bezieht 100% zertifizierten Ökostrom von den Stadtwerken Fürstenfeldbruck.',
+  alternates: { canonical: canonical('/oekostrom') },
 }
 
 export default function OekostromPage() {

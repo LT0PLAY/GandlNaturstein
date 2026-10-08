@@ -22,12 +22,49 @@ export function jsonLdScript(data: unknown): string {
   return JSON.stringify(data).replace(/</g, '\\u003c')
 }
 
+/** Haupt-URL-Pfad eines Produkts (Hauptbereich), z. B. "/eigenproduktion/steel-grey".
+ *  Ein Produkt kann über Mehrfachzuordnung in mehreren Bereichs-Listen auftauchen
+ *  und ist dann unter mehreren Pfaden erreichbar — Canonical und Sitemap zeigen
+ *  immer auf diesen einen Pfad, damit Google keine Duplikate sieht. */
+export function productPath(product: { slug: string; bereich?: string | null; category?: { type?: string | null } | null }) {
+  const bereich = product.bereich ?? product.category?.type ?? 'eigenproduktion'
+  return `/${bereich}/${product.slug}`
+}
+
+/** JSON-LD für das Unternehmen (Startseite) */
+export function localBusinessJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type':    'HomeAndConstructionBusiness',
+    name:        'Gandl Natursteine GmbH',
+    url:         SITE_URL,
+    logo:        `${SITE_URL}/gandl-logo.png`,
+    image:       `${SITE_URL}/opengraph-image.jpg`,
+    description: 'Naturstein für Außen, Innen und Sonderanfertigungen – Handwerk seit 1987.',
+    foundingDate: '1987',
+    telephone:   '+49 8143 9974-0',
+    email:       'info@gandl-natursteine.de',
+    address: {
+      '@type':         'PostalAddress',
+      streetAddress:   'Rudolf-Diesel-Ring 6',
+      postalCode:      '82266',
+      addressLocality: SITE_CITY,
+      addressCountry:  'DE',
+    },
+    openingHoursSpecification: [
+      { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday'], opens: '08:00', closes: '12:00' },
+      { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday'], opens: '13:00', closes: '17:00' },
+    ],
+  }
+}
+
 /** JSON-LD für ein Produkt */
 export function productJsonLd(product: {
   name: string
   description?: string | null
   thumbnail?: string | null
   images?: string[]
+  article_number?: string | null
   material?: string | null
   surface?: string | null
   format?: string | null
@@ -35,24 +72,30 @@ export function productJsonLd(product: {
   show_price?: boolean
   slug: string
 }, path: string) {
+  const images = [product.thumbnail, ...(product.images ?? [])].filter((u): u is string => !!u)
+  const uniqueImages = [...new Set(images)]
+  const hasPrice = !!product.show_price && product.price != null
   return {
     '@context': 'https://schema.org',
     '@type':    'Product',
     name:        product.name,
     url:         canonical(path),
     ...(product.description ? { description: product.description } : {}),
-    ...(product.thumbnail   ? { image: product.thumbnail } : {}),
+    ...(uniqueImages.length ? { image: uniqueImages } : {}),
+    ...(product.article_number ? { sku: product.article_number } : {}),
     brand: { '@type': 'Brand', name: SITE_NAME },
     ...(product.material ? { material: product.material } : {}),
-    offers: {
-      '@type':       'Offer',
-      availability:  'https://schema.org/InStock',
-      priceCurrency: 'EUR',
-      ...(product.show_price && product.price != null
-        ? { price: product.price, priceSpecification: { '@type': 'UnitPriceSpecification', price: product.price, priceCurrency: 'EUR', referenceQuantity: { '@type': 'QuantitativeValue', value: 1, unitCode: 'MTK' } } }
-        : {}),
-      seller: { '@type': 'Organization', name: SITE_NAME, address: { '@type': 'PostalAddress', addressLocality: SITE_CITY, addressCountry: 'DE' } },
-    },
+    // Ein Offer ohne Preis gilt bei Google als fehlerhaft — daher nur mit Preis ausgeben.
+    ...(hasPrice ? {
+      offers: {
+        '@type':       'Offer',
+        url:           canonical(path),
+        availability:  'https://schema.org/InStock',
+        priceCurrency: 'EUR',
+        price:         product.price,
+        seller: { '@type': 'Organization', name: SITE_NAME, address: { '@type': 'PostalAddress', addressLocality: SITE_CITY, addressCountry: 'DE' } },
+      },
+    } : {}),
   }
 }
 

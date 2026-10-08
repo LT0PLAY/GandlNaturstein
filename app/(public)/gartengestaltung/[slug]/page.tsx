@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 import { notFound } from 'next/navigation'
 import { getProductBySlug } from '@/lib/queries/products'
 import ProductDetail from '@/components/public/ProductDetail'
-import { canonical, jsonLdScript, productJsonLd, SITE_NAME } from '@/lib/seo'
+import { canonical, jsonLdScript, productJsonLd, productPath, SITE_NAME } from '@/lib/seo'
 import type { Metadata } from 'next'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title:       `${p.name} | ${SITE_NAME}`,
     description: desc,
-    alternates:  { canonical: canonical(`/gartengestaltung/${slug}`) },
+    alternates:  { canonical: canonical(productPath(p)) },
     openGraph: {
       title:  `${p.name} – ${SITE_NAME}`,
       description: desc,
@@ -31,7 +31,7 @@ export default async function gartengestaltungProduktPage({ params }: { params: 
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(productJsonLd(product, `/gartengestaltung/${slug}`)) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(productJsonLd(product, productPath(product))) }} />
       <ProductDetail product={product!} backHref="/gartengestaltung" backLabel="Zurück" />
     </>
   )

@@ -1,3 +1,4 @@
+import { canonical } from '@/lib/seo'
 import Link from 'next/link'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import type { Metadata } from 'next'
@@ -10,7 +11,7 @@ export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
   title:       'Unsere Bereiche – Alle Kategorien | Gandl Natursteine',
   description: 'Alle Kategorien von Gandl Natursteine auf einen Blick: Eigenproduktion, Sonderanfertigung, Gartengestaltung und Extras.',
-  alternates:  { canonical: 'https://gandl-natursteine.de/bereiche' },
+  alternates:  { canonical: canonical('/bereiche') },
 }
 
 const BEREICH_ORDER: CategoryBereich[] = ['eigenproduktion', 'sonderanfertigung', 'gartengestaltung', 'extras']

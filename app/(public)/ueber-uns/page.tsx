@@ -1,5 +1,6 @@
 export const dynamic = 'force-dynamic'
 
+import { canonical } from '@/lib/seo'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import styles from './ueber-uns.module.css'
@@ -7,6 +8,7 @@ import styles from './ueber-uns.module.css'
 export const metadata: Metadata = {
   title:       'Über uns – Gandl Natursteine',
   description: 'Seit 1987 verarbeiten wir Naturstein mit Leidenschaft und Präzision. Lernen Sie das Unternehmen, unser Team und unsere Philosophie kennen.',
+  alternates: { canonical: canonical('/ueber-uns') },
 }
 
 export default function UeberUnsPage() {

@@ -1,9 +1,10 @@
 export const dynamic = 'force-dynamic'
 
+import { canonical } from '@/lib/seo'
 import InquiryForm from '@/components/InquiryForm/InquiryForm'
 import styles from './kontakt.module.css'
 
-export const metadata = { title: 'Kontakt & Anfrage – Gandl Natursteine' }
+export const metadata = { title: 'Kontakt & Anfrage – Gandl Natursteine', description: 'Kontakt und Anfrage bei Gandl Natursteine in Inning am Ammersee – Naturstein, Sonderanfertigungen und Beratung. Mo–Fr 8–12 / 13–17 Uhr.', alternates: { canonical: canonical('/kontakt') } }
 
 export default function KontaktPage() {
   return (

@@ -1,5 +1,6 @@
 export const dynamic = 'force-dynamic'
 
+import { canonical } from '@/lib/seo'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { getPageHeroImage } from '@/lib/actions/pageHeroes'
 import PageHero from '@/components/public/PageHero'
@@ -9,6 +10,7 @@ import GuideSearch from './GuideSearch'
 export const metadata = {
   title: 'Ausstellungsguide – Gandl Natursteine',
   description: 'Nummer am Ausstellungsstück eingeben und Produktdetails ansehen.',
+  alternates: { canonical: canonical('/ausstellungsguide') },
 }
 
 async function getEntries(): Promise<GuideEntry[]> {

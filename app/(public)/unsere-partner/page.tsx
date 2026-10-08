@@ -1,5 +1,6 @@
 export const dynamic = 'force-dynamic'
 
+import { canonical } from '@/lib/seo'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { getPageHeroImage } from '@/lib/actions/pageHeroes'
 import PageHero from '@/components/public/PageHero'
@@ -9,6 +10,7 @@ import styles from './partner.module.css'
 export const metadata = {
   title: 'Unsere Partner – Gandl Natursteine',
   description: 'Unsere Partner und Zertifizierungen.',
+  alternates: { canonical: canonical('/unsere-partner') },
 }
 
 async function getPartners(): Promise<Partner[]> {

@@ -1,5 +1,6 @@
 export const dynamic = 'force-dynamic'
 
+import { canonical } from '@/lib/seo'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import { getPageHeroImage } from '@/lib/actions/pageHeroes'
 import PageHero from '@/components/public/PageHero'
@@ -10,6 +11,7 @@ import RestpostenAddButton from './RestpostenAddButton'
 export const metadata = {
   title: 'Aktuelle Restposten – Gandl Natursteine',
   description: 'Aktuelle Restposten und Sonderangebote von Gandl Natursteine.',
+  alternates: { canonical: canonical('/restposten') },
 }
 
 async function getItems(): Promise<Restposten[]> {
