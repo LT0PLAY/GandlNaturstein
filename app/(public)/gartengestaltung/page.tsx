@@ -39,6 +39,7 @@ export default async function GartengestaltungPage() {
   const { products, categories } = await getData()
   return (
     <BereichPage
+      backHref="/bereiche"
       title="Gartengestaltung"
       label="Gartengestaltung"
       subtitle="Terrassenplatten · Mauersteine · Stelen · Blockstufen"

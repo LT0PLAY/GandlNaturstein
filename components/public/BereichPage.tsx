@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import ProductCardImage from '@/components/public/ProductCardImage'
 import CategoryFilter from '@/components/public/CategoryFilter'
+import BackLink from '@/components/public/BackLink'
 import type { Product, Category } from '@/lib/types'
 import styles from '@/app/(public)/category.module.css'
 
@@ -18,6 +19,8 @@ interface Props {
   categoryDescription?: string | null
   /** Optionaler externer Button neben „Produktinformation" im Titelbild (öffnet in neuem Tab) */
   heroLink?:   { label: string; href: string }
+  /** Ziel des „Zurück"-Links, falls man direkt auf dieser Seite gelandet ist */
+  backHref?:   string
   basePath:    string          // z.B. '/eigenproduktion'
   categories:  Category[]      // für den Kategorie-Filter (Chips)
   products:    Product[]
@@ -111,7 +114,7 @@ function uniqueValues(products: Product[], field: keyof Product): string[] {
 }
 
 export default function BereichPage({
-  title, label, subtitle, heroImage, categoryDescription, heroLink, basePath, categories, products,
+  title, label, subtitle, heroImage, categoryDescription, heroLink, backHref, basePath, categories, products,
 }: Props) {
   const [showInfo, setShowInfo] = useState(false)
   const [showAllProducts, setShowAllProducts] = useState(false)
@@ -284,6 +287,7 @@ export default function BereichPage({
             <img src={heroImage} alt={title} className={styles.heroBannerImg} />
             <div className={styles.heroBannerOverlay}>
               <div className={styles.heroBannerInner}>
+                {backHref && <BackLink href={backHref} className={styles.heroBackLink} />}
                 <p className={styles.heroBannerLabel}>{label}</p>
                 <h1 className={styles.heroBannerTitle}>{title}</h1>
                 {subtitle && <p className={styles.heroBannerSubtitle}>{subtitle}</p>}
@@ -327,6 +331,7 @@ export default function BereichPage({
       ) : (
         <>
           <div className={styles.hero}>
+            {backHref && <BackLink href={backHref} className={styles.backLink} />}
             <p className={styles.label}>// {label}</p>
             <h1 className={styles.title}>{title}</h1>
             {subtitle && <p className={styles.subtitle}>{subtitle}</p>}

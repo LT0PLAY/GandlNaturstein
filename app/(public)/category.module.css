@@ -95,6 +95,18 @@
   padding: 150px 5vw 180px;
 }
 .heroBannerInner { max-width: 640px; }
+.backLink, .heroBackLink {
+  display: inline-block;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 13px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  margin-bottom: 20px;
+}
+.heroBackLink { color: #efece4; opacity: .8; }
+.backLink:hover, .heroBackLink:hover { color: var(--color-sage); opacity: 1; }
 .heroBannerLabel {
   font-family: var(--font-inter), sans-serif;
   font-size: 13px; letter-spacing: .16em; text-transform: uppercase;

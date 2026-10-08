@@ -37,6 +37,7 @@ export default async function ExtrasPage() {
   const { products, categories } = await getData()
   return (
     <BereichPage
+      backHref="/bereiche"
       title="Extras"
       label="Extras"
       subtitle="Pflegemittel · Zubehör · Sonstiges"

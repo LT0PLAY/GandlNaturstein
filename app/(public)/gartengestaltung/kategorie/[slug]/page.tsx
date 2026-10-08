@@ -78,6 +78,7 @@ export default async function gartengestaltungKategoriePage({ params }: { params
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
       <BereichPage
+        backHref="/gartengestaltung"
         title={cat.name}
         label="Gartengestaltung"
         heroImage={cat.image_url}

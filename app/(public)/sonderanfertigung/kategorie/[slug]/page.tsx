@@ -78,6 +78,7 @@ export default async function sonderanfertigungKategoriePage({ params }: { param
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
       <BereichPage
+        backHref="/sonderanfertigung"
         title={cat.name}
         label="Sonderanfertigung"
         heroImage={cat.image_url}

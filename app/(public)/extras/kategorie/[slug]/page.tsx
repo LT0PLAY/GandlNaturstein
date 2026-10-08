@@ -78,6 +78,7 @@ export default async function extrasKategoriePage({ params }: { params: Promise<
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
       <BereichPage
+        backHref="/extras"
         title={cat.name}
         label="Extras"
         heroImage={cat.image_url}

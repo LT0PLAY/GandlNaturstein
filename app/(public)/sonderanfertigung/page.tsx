@@ -37,6 +37,7 @@ export default async function SonderanfertigungPage() {
   const { products, categories } = await getData()
   return (
     <BereichPage
+      backHref="/bereiche"
       title="Sonderanfertigung"
       label="Sonderanfertigung"
       subtitle="Maßarbeit"

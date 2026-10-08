@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { NAV_COUNT_KEY } from './NavTracker'
+import BackLink from './BackLink'
 import { useBasket } from './BasketContext'
 import type { Product, ProductSize } from '@/lib/types'
 import { UNIT_LABELS, PRICE_DISCLAIMER } from '@/lib/types'
@@ -13,7 +12,6 @@ export default function ProductDetail({ product, backHref, backLabel }: {
   backHref:  string
   backLabel: string
 }) {
-  const router = useRouter()
   const { addItem, hasItem, openDrawer } = useBasket()
   const [activeImg, setActiveImg] = useState<string | null>(product.thumbnail)
   const alts = product.image_alts ?? {}
@@ -69,23 +67,7 @@ export default function ProductDetail({ product, backHref, backLabel }: {
   return (
     <article className={styles.page}>
       {/* Back link */}
-      {/* Echter Schritt zurück (Position/Filter der Liste bleiben erhalten); nur wenn
-          man direkt hier gelandet ist (kein vorheriger Seitenaufruf dieser Website),
-          geht es zur Übersicht. */}
-      <a
-        href={backHref}
-        className={styles.backLink}
-        onClick={(e) => {
-          let visited = 0
-          try { visited = Number(sessionStorage.getItem(NAV_COUNT_KEY) ?? '0') || 0 } catch { /* ignorieren */ }
-          if (visited >= 2 && window.history.length > 1) {
-            e.preventDefault()
-            router.back()
-          }
-        }}
-      >
-        ← {backLabel}
-      </a>
+      <BackLink href={backHref} className={styles.backLink}>← {backLabel}</BackLink>
 
       <div className={styles.layout}>
         {/* ── Bildbereich ── */}

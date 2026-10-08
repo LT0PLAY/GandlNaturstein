@@ -78,6 +78,7 @@ export default async function eigenproduktionKategoriePage({ params }: { params:
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
       <BereichPage
+        backHref="/eigenproduktion"
         title={cat.name}
         label="Eigenproduktion"
         heroImage={cat.image_url}

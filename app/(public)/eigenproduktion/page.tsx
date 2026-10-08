@@ -39,6 +39,7 @@ export default async function EigenproduktionPage() {
   const { products, categories } = await getData()
   return (
     <BereichPage
+      backHref="/bereiche"
       title="Eigenproduktion"
       label="Eigenproduktion"
       subtitle="Jura Kalkstein · Kirchheimer Muschelkalk · und mehr"
