@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { moveProductToTrash } from '@/lib/actions/products'
 import DeleteButton from '@/components/admin/DeleteButton'
+import DuplicateButton from '@/components/admin/DuplicateButton'
 import styles from '../table.module.css'
 
 function getPublicUrl(p: any): string {
@@ -108,6 +109,7 @@ export default function ProductsTable({ products }: { products: any[] }) {
                     <Link href={`/admin/produkte/${p.id}`} className={styles.btnEdit}>
                       Bearbeiten
                     </Link>
+                    <DuplicateButton productId={p.id} className={styles.btnEdit} />
                     <a
                       href={getPublicUrl(p)}
                       target="_blank"

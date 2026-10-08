@@ -224,6 +224,71 @@ export async function updateProduct(id: string, _prevState: ProductActionState, 
   return { error: null, success: true, id }
 }
 
+// ── DUPLIZIEREN ──────────────────────────────────────────────────────────────
+// Legt eine Kopie als "<Name> V2" (bzw. V3, V4 …) mit eindeutigem Slug an.
+// Die Kopie startet bewusst als inaktiv: So taucht sie weder auf der Website
+// noch in der Google-Sitemap auf, bis Titel/Bilder angepasst sind und sie
+// aktiviert wird (sonst gäbe es zwei identische Seiten = Duplicate Content).
+export async function duplicateProduct(id: string): Promise<{ error: string | null; id: string | null }> {
+  const auth = await requireTeamMember()
+  if (!auth.ok) return { error: auth.error, id: null }
+
+  const supabase = createSupabaseAdminClient()
+  const { data: src, error: srcError } = await supabase.from('products').select('*').eq('id', id).single()
+  if (srcError || !src) return { error: 'Produkt nicht gefunden.', id: null }
+
+  // Bestehende "-vN"-Endung entfernen, damit aus V2 nicht "V2 V2" wird
+  const baseName = String(src.name).replace(/\s+V\d+$/i, '').trim()
+  const baseSlug = String(src.slug).replace(/-v\d+$/, '')
+
+  // Slugs sind datenbankweit eindeutig (auch im Papierkorb) — daher ohne Soft-Delete-Filter prüfen
+  const { data: taken } = await supabase.from('products').select('slug').like('slug', `${baseSlug}-v%`)
+  const takenSlugs = new Set((taken ?? []).map((r: { slug: string }) => r.slug))
+  let n = 2
+  while (takenSlugs.has(`${baseSlug}-v${n}`)) n++
+
+  const data = {
+    name:           `${baseName} V${n}`,
+    slug:           `${baseSlug}-v${n}`,
+    article_number: null,
+    description:    src.description,
+    bereich:        src.bereich,
+    category_id:    src.category_id,
+    material:       src.material,
+    surface:        src.surface,
+    surfaces:       src.surfaces ?? [],
+    format:         src.format,
+    origin:         src.origin,
+    einsatzbereich: src.einsatzbereich,
+    farbe:          src.farbe,
+    unit:           src.unit,
+    is_active:      false,
+    show_price:     src.show_price,
+    price:          src.price,
+    sizes:          src.sizes ?? [],
+    sort_order:     src.sort_order,
+    thumbnail:      src.thumbnail,
+    icon_url:       src.icon_url,
+    images:         src.images ?? [],
+    image_alts:     src.image_alts ?? {},
+  }
+
+  const { data: created, error } = await supabase.from('products').insert(data).select().single()
+  if (error || !created) return { error: `Fehler: ${error?.message ?? 'Kopie konnte nicht angelegt werden.'}`, id: null }
+
+  // Weitere Kategorien (Mehrfachzuordnung) übernehmen
+  try {
+    const { data: links } = await supabase.from('product_categories').select('category_id').eq('product_id', id)
+    const ids = new Set<string>(((links ?? []) as { category_id: string }[]).map((l) => l.category_id))
+    if (src.category_id) ids.add(src.category_id)
+    await syncProductCategories(supabase, created.id, [...ids])
+  } catch { /* Tabelle fehlt evtl. noch */ }
+
+  await logChange({ action: 'create', entity_type: 'product', entity_id: created.id, entity_name: data.name, new_value: { ...data, duplicated_from: id } })
+  revalidatePath('/admin/produkte')
+  return { error: null, id: created.id }
+}
+
 // ── Direkt in Papierkorb verschieben (ohne Genehmigungsschritt) ──────────────
 export async function moveProductToTrash(id: string) {
   const auth = await requireTeamMember()

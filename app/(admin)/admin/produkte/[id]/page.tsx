@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import EditProductForm from './EditProductForm'
+import DuplicateButton from '@/components/admin/DuplicateButton'
 import type { Product, Category } from '@/lib/types'
 import styles from '../../form.module.css'
 
@@ -51,6 +52,7 @@ export default async function EditProduktPage({ params }: { params: Promise<{ id
           <Link href="/admin/produkte" className={styles.btnEdit}>
             ← Zurück
           </Link>
+          <DuplicateButton productId={product!.id} className={styles.btnEdit} />
           <a
             href={getPublicUrl(product!)}
             target="_blank"
