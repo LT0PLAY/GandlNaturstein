@@ -23,6 +23,9 @@ export default function ProductCardImage({
 
   const [index, setIndex]     = useState(0)
   const [hovering, setHover]  = useState(false)
+  // Weitere Galeriebilder werden erst beim ersten Hovern geladen — sonst lädt
+  // jede Karte der Liste sofort ALLE ihre Bilder (bei 100+ Produkten sehr viel).
+  const [activated, setActivated] = useState(false)
   const timerRef   = useRef<ReturnType<typeof setInterval> | null>(null)
   const quickRef   = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -58,16 +61,18 @@ export default function ProductCardImage({
 
   return (
     <div
-      onMouseEnter={() => setHover(true)}
+      onMouseEnter={() => { setActivated(true); setHover(true) }}
       onMouseLeave={handleLeave}
       style={{ position: 'absolute', inset: 0 }}
     >
-      {ordered.map((src, i) => (
+      {(activated ? ordered : ordered.slice(0, 1)).map((src, i) => (
         <img
           key={src + i}
           src={src}
           alt={altMap?.[src] ?? alt}
           className={className}
+          loading="lazy"
+          decoding="async"
           style={{
             position: 'absolute',
             inset: 0,
