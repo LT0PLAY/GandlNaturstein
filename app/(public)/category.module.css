@@ -54,8 +54,8 @@
 .cardBody     { padding: 14px 16px; }
 .cardMaterial { font-family: var(--font-inter), sans-serif; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-sage); margin: 0 0 4px; }
 .cardTitle    { font-family: var(--font-bebas), sans-serif; font-size: 22px; color: #dcdcd6; letter-spacing: .06em; margin: 0 0 3px; }
-.cardSurface  { font-family: var(--font-inter), sans-serif; font-size: 15px; color: var(--color-text-muted); margin: 0 0 12px; }
-.surfaceSep { color: var(--color-sage); font-weight: 600; margin: 0 .55em; }
+.cardSurface  { font-family: var(--font-inter), sans-serif; font-size: 15px; color: var(--color-text-muted); margin: 0 0 12px; overflow-wrap: anywhere; }
+.surfaceSep { color: var(--color-sage); font-weight: 600; margin-left: .55em; }
 .cardCta      { font-family: var(--font-inter), sans-serif; font-size: 14px; letter-spacing: .06em; color: var(--color-sage); text-decoration: none; transition: opacity .2s; }
 .cardCta:hover{ opacity: .7; }
 

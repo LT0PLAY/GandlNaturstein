@@ -58,8 +58,12 @@ function SurfaceList({ product }: { product: Product }) {
     <>
       {list.map((surf, i) => (
         <Fragment key={surf}>
-          {i > 0 && <span className={styles.surfaceSep} aria-hidden="true">|</span>}
           {surf}
+          {i < list.length - 1 && (
+            <>
+              <span className={styles.surfaceSep} aria-hidden="true">|</span>{' '}
+            </>
+          )}
         </Fragment>
       ))}
     </>
