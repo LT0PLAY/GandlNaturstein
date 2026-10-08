@@ -1,7 +1,8 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import ProductCardImage from '@/components/public/ProductCardImage'
 import CategoryFilter from '@/components/public/CategoryFilter'
 import type { Product, Category } from '@/lib/types'
@@ -50,6 +51,25 @@ function productSizes(p: Product): string[] {
   return (p.sizes ?? []).map((sz) => normalize(sz.label)).filter(Boolean)
 }
 
+// Oberflächen auf der Karte, mit deutlich sichtbarem Trenner statt Mittelpunkt
+function SurfaceList({ product }: { product: Product }) {
+  const list = productSurfaces(product)
+  return (
+    <>
+      {list.map((surf, i) => (
+        <Fragment key={surf}>
+          {i > 0 && <span className={styles.surfaceSep} aria-hidden="true">|</span>}
+          {surf}
+        </Fragment>
+      ))}
+    </>
+  )
+}
+
+// Beim Zurückkehren von einer Produktseite wird der Zustand der Liste
+// (geöffnet, Filter, Scrollposition) wiederhergestellt.
+const RESTORE_MAX_AGE_MS = 10 * 60 * 1000
+
 function uniqueValues(products: Product[], field: keyof Product): string[] {
   const set = new Set<string>()
   for (const p of products) {
@@ -70,6 +90,38 @@ export default function BereichPage({
   const [format,          setFormat]         = useState('')
   const [herkunft,        setHerkunft]       = useState('')
   const [groesse,         setGroesse]        = useState('')
+
+  const pathname = usePathname()
+  const restoreKey = `bereich-state:${pathname}`
+
+  // Zustand wiederherstellen, wenn man von einer Produktseite zurückkommt
+  useEffect(() => {
+    let saved: any = null
+    try {
+      const raw = sessionStorage.getItem(restoreKey)
+      sessionStorage.removeItem(restoreKey)
+      saved = raw ? JSON.parse(raw) : null
+    } catch { /* sessionStorage nicht verfügbar */ }
+    if (!saved || Date.now() - saved.ts > RESTORE_MAX_AGE_MS) return
+    setShowAllProducts(!!saved.showAll)
+    setEinsatzbereich(saved.einsatzbereich ?? '')
+    setSteinart(saved.steinart ?? '')
+    setFarbe(saved.farbe ?? '')
+    setOberflaeche(saved.oberflaeche ?? '')
+    setFormat(saved.format ?? '')
+    setHerkunft(saved.herkunft ?? '')
+    setGroesse(saved.groesse ?? '')
+    requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, saved.scrollY ?? 0)))
+  }, [restoreKey])
+
+  function saveState() {
+    try {
+      sessionStorage.setItem(restoreKey, JSON.stringify({
+        ts: Date.now(), scrollY: window.scrollY, showAll: showAllProducts,
+        einsatzbereich, steinart, farbe, oberflaeche, format, herkunft, groesse,
+      }))
+    } catch { /* ignorieren */ }
+  }
 
   const einsatzOptions = useMemo(() => uniqueValues(products, 'einsatzbereich'), [products])
   const materialOptions = useMemo(() => uniqueValues(products, 'material'), [products])
@@ -262,6 +314,7 @@ export default function BereichPage({
                   <Link
                     key={product.id}
                     href={`${basePath}/${product.slug}`}
+                    onClick={saveState}
                     className={styles.card}
                     style={{ textDecoration: 'none', display: 'block' }}
                   >
@@ -285,7 +338,7 @@ export default function BereichPage({
                     <div className={styles.cardBody}>
                       <p className={styles.cardMaterial}>{product.material}</p>
                       <h3 className={styles.cardTitle}>{product.name}</h3>
-                      <p className={styles.cardSurface}>{productSurfaces(product).join(' · ')}</p>
+                      <p className={styles.cardSurface}><SurfaceList product={product} /></p>
                       <span className={styles.cardCta}>Details & Anfrage →</span>
                     </div>
                   </Link>
@@ -312,6 +365,7 @@ export default function BereichPage({
                 <Link
                   key={product.id}
                   href={`${basePath}/${product.slug}`}
+                  onClick={saveState}
                   className={styles.card}
                   style={{ textDecoration: 'none', display: 'block' }}
                 >
@@ -335,7 +389,7 @@ export default function BereichPage({
                   <div className={styles.cardBody}>
                     <p className={styles.cardMaterial}>{product.material}</p>
                     <h3 className={styles.cardTitle}>{product.name}</h3>
-                    <p className={styles.cardSurface}>{productSurfaces(product).join(' · ')}</p>
+                    <p className={styles.cardSurface}><SurfaceList product={product} /></p>
                     <span className={styles.cardCta}>Details & Anfrage →</span>
                   </div>
                 </Link>

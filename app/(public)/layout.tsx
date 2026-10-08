@@ -5,6 +5,7 @@ import NewsPopup from '@/components/public/NewsPopup'
 import { BasketProvider } from '@/components/public/BasketContext'
 import BasketDrawer from '@/components/public/BasketDrawer'
 import BasketButton from '@/components/public/BasketButton'
+import NavTracker from '@/components/public/NavTracker'
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -19,6 +20,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         <BasketButton />
         <BasketDrawer />
         <NewsPopup />
+        <NavTracker />
       </div>
     </BasketProvider>
   )
