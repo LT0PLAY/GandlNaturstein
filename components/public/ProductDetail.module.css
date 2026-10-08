@@ -12,7 +12,8 @@
   text-transform: uppercase;
   color: var(--color-text-muted);
   text-decoration: none;
-  margin-bottom: 40px;
+  padding: 10px 16px 10px 0;
+  margin: -10px 0 30px;
   transition: color .2s;
 }
 .backLink:hover { color: var(--color-sage); }

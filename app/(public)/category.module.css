@@ -103,7 +103,9 @@
   text-transform: uppercase;
   color: var(--color-text-muted);
   text-decoration: none;
-  margin-bottom: 20px;
+  /* größere Tipp-Fläche für Touch (Handy/iPad), Optik bleibt gleich */
+  padding: 10px 16px 10px 0;
+  margin: -10px 0 10px;
 }
 .heroBackLink { color: #efece4; opacity: .8; }
 .backLink:hover, .heroBackLink:hover { color: var(--color-sage); opacity: 1; }
@@ -179,7 +181,7 @@
 }
 
 @media (max-width: 900px) {
-  .heroBanner { height: clamp(380px, 36vh, 440px); }
+  .heroBanner { height: clamp(420px, 38vh, 480px); }
   .heroBannerOverlay {
     align-items: flex-end;
     padding: 24px 24px 122px;
@@ -189,7 +191,7 @@
   .heroBannerInner { max-width: 100%; }
 }
 @media (max-width: 560px) {
-  .heroBanner { height: clamp(360px, 38vh, 420px); }
+  .heroBanner { height: clamp(400px, 42vh, 460px); }
   .heroBannerOverlay { padding-bottom: 108px; }
   .heroBannerTitle { font-size: clamp(32px, 9vw, 44px); }
   .filterBar, .filterBarStandalone { padding-left: 20px; padding-right: 20px; }
