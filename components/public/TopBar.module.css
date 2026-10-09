@@ -16,14 +16,14 @@
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .trust {
   display: flex;
   align-items: center;
   gap: 22px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .trustItem {
@@ -79,7 +79,10 @@
 }
 .link:hover .arrow { transform: translateX(3px); }
 
-@media (max-width: 900px) {
+/* Ab hier passen Vertrauens-Punkte und Links nicht mehr in eine Zeile. Würde die
+   Leiste umbrechen, wäre sie höher als 38px und die fixierte Navbar (top: 38px)
+   würde die zweite Zeile überdecken. */
+@media (max-width: 1120px) {
   .trust { display: none; }
   .inner { justify-content: center; padding: 0 20px; }
 }
