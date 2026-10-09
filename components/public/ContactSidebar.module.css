@@ -111,6 +111,19 @@
   text-wrap: balance;
 }
 
+.popoverSection + .popoverSection {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 0.5px solid rgba(155, 174, 159, 0.25);
+}
+.popoverSubtitle {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 4px;
+}
+
 .popoverNote {
   margin: 10px 0 0;
   padding-top: 10px;

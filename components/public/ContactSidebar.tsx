@@ -9,10 +9,26 @@ const PHONE_HREF    = '+498143997400'
 const WHATSAPP_HREF = '498143997400'
 const EMAIL         = 'info@gandl-natursteine.de'
 
-const HOURS = [
-  { days: 'Montag – Freitag', time: '8:00 – 12:00 / 13:00 – 17:00 Uhr' },
-  { days: 'Samstag',          time: '9:00 – 12:00 Uhr' },
-  { days: 'Abholungen Mo – Fr', time: 'bis 16:45 Uhr' },
+// Öffnungszeiten je Filiale
+const HOURS_BRANCHES = [
+  {
+    name: 'Filiale Inning am Ammersee',
+    hours: [
+      { days: 'Montag – Freitag',   time: '8:00 – 12:00 / 13:00 – 17:00 Uhr' },
+      { days: 'Samstag',            time: '9:00 – 12:00 Uhr' },
+      { days: 'Abholungen Mo – Fr', time: 'bis 16:45 Uhr' },
+    ],
+    note: 'Sonntag ist die Ausstellung geschlossen',
+  },
+  {
+    name: 'Filiale Kaisheim',
+    hours: [
+      { days: 'Montag – Donnerstag', time: '8:00 – 12:00 Uhr' },
+      { days: 'Freitag',             time: '8:00 – 12:00 / 13:00 – 17:00 Uhr' },
+      { days: 'Samstag',             time: 'geschlossen' },
+    ],
+    note: null as string | null,
+  },
 ]
 
 const LOCATIONS = [
@@ -174,13 +190,18 @@ export default function ContactSidebar() {
                 ✕
               </button>
               <p className={styles.popoverTitle}>Öffnungszeiten</p>
-              {HOURS.map((h) => (
-                <div key={h.days} className={styles.popoverRow}>
-                  <span>{h.days}</span>
-                  <span>{h.time}</span>
+              {HOURS_BRANCHES.map((branch) => (
+                <div key={branch.name} className={styles.popoverSection}>
+                  <p className={styles.popoverSubtitle}>{branch.name}</p>
+                  {branch.hours.map((h) => (
+                    <div key={h.days} className={styles.popoverRow}>
+                      <span>{h.days}</span>
+                      <span>{h.time}</span>
+                    </div>
+                  ))}
+                  {branch.note && <p className={styles.popoverNote}>{branch.note}</p>}
                 </div>
               ))}
-              <p className={styles.popoverNote}>Sonntag ist die Ausstellung geschlossen</p>
             </div>
           )}
         </div>

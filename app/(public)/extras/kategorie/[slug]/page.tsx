@@ -84,7 +84,7 @@ export default async function extrasKategoriePage({ params }: { params: Promise<
         heroImage={cat.image_url}
         categoryDescription={cat.description}
         heroLink={
-          cat.slug === 'pflegemittel'
+          cat.slug === 'kleber-fugenmaterialien'
             ? { label: 'Verbrauchsrechner', href: 'https://www.romex.de/de-de/service/verbrauchsrechner/pflasterfugenmoertel' }
             : undefined
         }
