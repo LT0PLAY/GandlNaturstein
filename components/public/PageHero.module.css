@@ -26,8 +26,8 @@
   pointer-events: none;
 }
 .heroWrap::before {
-  top: 0; height: 200px;
-  background: linear-gradient(to bottom, rgba(6,5,3,0.92) 0%, rgba(6,5,3,0.6) 45%, rgba(6,5,3,0) 100%);
+  top: 0; height: 360px;
+  background: linear-gradient(to bottom, #0A0806 0, rgba(6,5,3,0.94) 90px, rgba(6,5,3,0.7) 170px, rgba(6,5,3,0.32) 260px, rgba(6,5,3,0) 360px);
 }
 .heroWrap::after {
   bottom: 0; height: 140px;
@@ -80,7 +80,7 @@
 
 @media (max-width: 900px) {
   .heroWrap { min-height: clamp(300px, 34vh, 380px); }
-  .heroWrap::before { height: 160px; }
+  .heroWrap::before { height: 260px; background: linear-gradient(to bottom, #0A0806 0, rgba(6,5,3,0.92) 80px, rgba(6,5,3,0.55) 150px, rgba(6,5,3,0) 260px); }
   .heroOverlay {
     padding: 110px 24px 36px;
     background:
