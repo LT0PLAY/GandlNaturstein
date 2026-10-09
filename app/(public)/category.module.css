@@ -8,6 +8,8 @@
   background: var(--color-bg);
 }
 .page { padding: 48px 40px 80px; max-width: 1440px; margin: 0 auto; }
+/* Mit Titelbild: kein Grau-Abstand oben, das Bild beginnt direkt unter der Top-Leiste und läuft hinter der Navbar durch */
+.pageWithHero { padding-top: 0; }
 
 /* Hero */
 .hero    { margin-bottom: 36px; }

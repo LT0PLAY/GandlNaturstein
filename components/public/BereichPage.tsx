@@ -279,7 +279,7 @@ export default function BereichPage({
 
   return (
     <div className={styles.pageBg}>
-    <section className={styles.page}>
+    <section className={`${styles.page} ${heroImage ? styles.pageWithHero : ''}`}>
 
       {heroImage ? (
         <div className={styles.heroWrap}>
