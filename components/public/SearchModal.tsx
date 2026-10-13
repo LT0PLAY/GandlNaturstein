@@ -121,6 +121,7 @@ export default function SearchModal({ isOpen, onClose }: Props) {
                         ? ` · ${r.surfaces.length > 0 ? r.surfaces.join(', ') : r.surface}`
                         : ''}
                       {r.article_number ? ` · #${r.article_number}` : ''}
+                      {r.matchedVariant ? ` · ${r.matchedVariant}` : ''}
                     </p>
                   </div>
                   <span className={styles.resultArrow}>→</span>

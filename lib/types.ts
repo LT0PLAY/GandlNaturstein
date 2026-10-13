@@ -189,6 +189,8 @@ export interface BasketItem {
   size?:       string | null
   /** Gewählte Oberflächen-Variante (falls das Produkt mehrere Oberflächen anbietet) */
   surface?:    string | null
+  /** Artikelnummer der gewählten Variante bzw. des Produkts */
+  articleNumber?: string | null
 }
 
 // ============================================================

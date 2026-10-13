@@ -15,6 +15,8 @@ export interface SearchResult {
   /** Alle Oberflächen-Varianten des Produkts (leer, wenn nur das Einzelfeld "surface" gepflegt ist) */
   surfaces:       string[]
   description:    string | null
+  /** Passende Größen-Variante (mit Artikelnummer), falls die Suche über eine Variante getroffen hat */
+  matchedVariant: string | null
   /** Hauptbereich (eigenproduktion, gartengestaltung, ...) — bestimmt die URL */
   categoryType:   CategoryBereich
   categoryName:   string | null
@@ -107,7 +109,7 @@ export async function searchProducts(query: string): Promise<SearchResult[]> {
   function runQuery(includeTextColumns: boolean) {
     let builder = supabase
       .from('products')
-      .select('id, name, slug, article_number, thumbnail, material, surface, surfaces, description, bereich, format, einsatzbereich, farbe, category:categories!products_category_id_fkey(name, type)')
+      .select('id, name, slug, article_number, thumbnail, material, surface, surfaces, sizes, description, bereich, format, einsatzbereich, farbe, category:categories!products_category_id_fkey(name, type)')
       .eq('is_active', true)
     for (const c of tokenConditions) {
       builder = builder.or((includeTextColumns ? [...c.base, ...c.extra] : c.base).join(','))
@@ -122,6 +124,17 @@ export async function searchProducts(query: string): Promise<SearchResult[]> {
 
   if (error || !data) return []
 
+  const lowerTokens = tokens.map((t) => t.toLowerCase())
+  function matchedVariantOf(p: any): string | null {
+    const sizes: Array<{ label?: string; article_number?: string | null }> = Array.isArray(p.sizes) ? p.sizes : []
+    const hit = sizes.find((sz) => {
+      const hay = `${sz.label ?? ''} ${sz.article_number ?? ''}`.toLowerCase()
+      return lowerTokens.some((t) => hay.includes(t))
+    })
+    if (!hit) return null
+    return [hit.label, hit.article_number ? `#${hit.article_number}` : null].filter(Boolean).join(' · ')
+  }
+
   const results: SearchResult[] = data.map((p: any) => ({
     id:             p.id,
     name:           p.name,
@@ -132,6 +145,7 @@ export async function searchProducts(query: string): Promise<SearchResult[]> {
     surface:        p.surface,
     surfaces:       p.surfaces ?? [],
     description:    p.description,
+    matchedVariant: matchedVariantOf(p),
     categoryType:   (p.bereich ?? p.category?.type ?? 'eigenproduktion') as CategoryBereich,
     categoryName:   p.category?.name ?? null,
   }))

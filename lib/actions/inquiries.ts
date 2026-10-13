@@ -66,6 +66,8 @@ export async function submitBasketInquiry(data: {
     size?: string | null
     /** Gewählte Oberflächen-Variante, falls das Produkt mehrere Oberflächen anbietet */
     surface?: string | null
+    /** Artikelnummer der gewählten Variante bzw. des Produkts */
+    articleNumber?: string | null
   }>
   consent: boolean | string
   website?: string  // Honeypot – muss leer bleiben
@@ -94,6 +96,7 @@ export async function submitBasketInquiry(data: {
       const variant = [
         it.size ? `Größe: ${it.size}` : null,
         it.surface ? `Oberfläche: ${it.surface}` : null,
+        it.articleNumber ? `Art.-Nr.: ${it.articleNumber}` : null,
       ].filter(Boolean).join(', ')
       return `– ${SOURCE_LABEL[it.sourceType ?? 'product'] ?? ''}${it.productName}${variant ? ` (${variant})` : ''}: ${it.quantity} ${UNIT_LABELS[normalizeUnit(it.unit)].short}`
     })

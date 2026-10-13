@@ -43,6 +43,9 @@ export default function ProductDetail({ product, backHref, backLabel }: {
 
   const inBasket = hasItem(product.id)
 
+  // Hat die gewählte Größe eine eigene Artikelnummer, gilt diese — sonst die des Produkts.
+  const articleNumber = (hasSizes && selectedSize?.article_number) || product.article_number
+
   // Bei Größenvarianten: eigener Preis der gewählten Größe, sonst der normale Produktpreis.
   const activePrice = hasSizes
     ? (selectedSize?.price ?? null)
@@ -61,6 +64,7 @@ export default function ProductDetail({ product, backHref, backLabel }: {
       unit:         (product as any).unit ?? 'qm',
       size:         hasSizes ? selectedSize?.label ?? null : null,
       surface:      hasSurfaces ? selectedSurface ?? null : null,
+      articleNumber: articleNumber ?? null,
     })
   }
 
@@ -116,8 +120,8 @@ export default function ProductDetail({ product, backHref, backLabel }: {
             {product.origin && (
               <><dt>Herkunft</dt><dd>{product.origin}</dd></>
             )}
-            {product.article_number && (
-              <><dt>Artikelnr.</dt><dd>{product.article_number}</dd></>
+            {articleNumber && (
+              <><dt>Artikelnr.</dt><dd>{articleNumber}</dd></>
             )}
           </dl>
 

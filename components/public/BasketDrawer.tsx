@@ -42,6 +42,7 @@ export default function BasketDrawer() {
                         {item.productName}
                         {item.size && <span className={styles.itemSize}> · {item.size}</span>}
                         {item.surface && <span className={styles.itemSize}> · {item.surface}</span>}
+                        {item.articleNumber && <span className={styles.itemSize}> · #{item.articleNumber}</span>}
                       </p>
                       {/* Preisschätzung */}
                       {item.show_price && item.price != null && (
