@@ -24,21 +24,32 @@ async function getData(id: string) {
     // Weitere zugeordnete Kategorien (Mehrfachzuordnung) — tolerant, falls
     // Migration 024 (product_categories) noch nicht ausgeführt wurde.
     let extraCategoryIds: string[] = []
+    const extraCategoryOrders: Record<string, number | null> = {}
     try {
-      const { data: links } = await supabase
-        .from('product_categories').select('category_id').eq('product_id', id)
-      extraCategoryIds = ((links ?? []) as { category_id: string }[])
+      // sort_order (Migration 033) kann noch fehlen — dann ohne laden
+      type Link = { category_id: string; sort_order?: number | null }
+      let links: Link[] | null = null
+      const withOrder = await supabase
+        .from('product_categories').select('category_id, sort_order').eq('product_id', id)
+      if (!withOrder.error) {
+        links = withOrder.data as Link[] | null
+      } else {
+        const plain = await supabase.from('product_categories').select('category_id').eq('product_id', id)
+        links = plain.data as Link[] | null
+      }
+      extraCategoryIds = (links ?? [])
         .map((l) => l.category_id)
         .filter((catId) => catId !== (product as any)?.category_id)
+      for (const l of links ?? []) extraCategoryOrders[l.category_id] = l.sort_order ?? null
     } catch {}
 
-    return { product: product as Product, categories: (categories as Category[]) ?? [], extraCategoryIds }
-  } catch { return { product: null, categories: [], extraCategoryIds: [] as string[] } }
+    return { product: product as Product, categories: (categories as Category[]) ?? [], extraCategoryIds, extraCategoryOrders }
+  } catch { return { product: null, categories: [], extraCategoryIds: [] as string[], extraCategoryOrders: {} as Record<string, number | null> } }
 }
 
 export default async function EditProduktPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const { product, categories, extraCategoryIds } = await getData(id)
+  const { product, categories, extraCategoryIds, extraCategoryOrders } = await getData(id)
   if (!product) notFound()
 
   return (
@@ -65,7 +76,7 @@ export default async function EditProduktPage({ params }: { params: Promise<{ id
         </div>
       </div>
 
-      <EditProductForm product={product!} categories={categories} extraCategoryIds={extraCategoryIds} />
+      <EditProductForm product={product!} categories={categories} extraCategoryIds={extraCategoryIds} extraCategoryOrders={extraCategoryOrders} />
     </div>
   )
 }

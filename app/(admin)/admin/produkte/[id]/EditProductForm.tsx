@@ -1,5 +1,6 @@
 'use client'
 
+import ExtraCategoryOrder from '@/components/admin/ExtraCategoryOrder'
 import { useActionState, useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateProduct, removeGalleryImage, removeThumbnail, removeIcon } from '@/lib/actions/products'
@@ -46,10 +47,12 @@ export default function EditProductForm({
   product,
   categories,
   extraCategoryIds: initialExtraCategoryIds = [],
+  extraCategoryOrders = {},
 }: {
   product: Product
   categories: Category[]
   extraCategoryIds?: string[]
+  extraCategoryOrders?: Record<string, number | null>
 }) {
   const p    = product
   const alts = (p as any).image_alts as Record<string, string> ?? {}
@@ -189,6 +192,7 @@ export default function EditProductForm({
               </label>
             ))}
           </div>
+          <ExtraCategoryOrder categories={categories} selectedIds={extraCategoryIds} initialOrders={extraCategoryOrders} />
         </div>
 
         <div className={styles.field}>

@@ -1,5 +1,6 @@
 'use client'
 
+import ExtraCategoryOrder from '@/components/admin/ExtraCategoryOrder'
 import { useActionState, useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createProduct } from '@/lib/actions/products'
@@ -164,6 +165,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
               </label>
             ))}
           </div>
+          <ExtraCategoryOrder categories={categories} selectedIds={extraCategoryIds} />
         </div>
 
         <div className={styles.field}>

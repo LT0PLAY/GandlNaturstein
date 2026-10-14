@@ -92,6 +92,32 @@ export async function getProductIdsForCategory(categoryId: string): Promise<stri
   return [...ids]
 }
 
+// Sortiert die Produkte einer Kategorie. Hat ein Produkt für diese Kategorie eine
+// eigene Position (product_categories.sort_order, im Admin unter "Weitere
+// Kategorien"), gilt diese — sonst seine allgemeine Reihenfolge (products.sort_order).
+// Tolerant: fehlt die Spalte noch (Migration 033), bleibt die bisherige Sortierung.
+export async function orderProductsForCategory<T extends { id: string; sort_order: number }>(
+  products: T[], categoryId: string,
+): Promise<T[]> {
+  try {
+    const supabase = createSupabaseAdminClient()
+    const { data, error } = await supabase
+      .from('product_categories').select('product_id, sort_order').eq('category_id', categoryId)
+    if (error || !data) return products
+    const own = new Map<string, number>()
+    for (const l of data as { product_id: string; sort_order: number | null }[]) {
+      if (l.sort_order != null) own.set(l.product_id, l.sort_order)
+    }
+    if (own.size === 0) return products
+    return products
+      .map((p, i) => ({ p, i, key: own.get(p.id) ?? p.sort_order ?? 0 }))
+      .sort((a, b) => a.key - b.key || a.i - b.i)
+      .map((x) => x.p)
+  } catch {
+    return products
+  }
+}
+
 // Alle Produkt-IDs eines Bereichs — sowohl über das eigene "Hauptbereich"-Feld
 // (products.bereich) als auch über eine zusätzliche Kategorie-Zuordnung
 // (product_categories) zu einer Kategorie dieses Bereichs. Damit ein Produkt,

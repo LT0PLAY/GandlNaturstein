@@ -61,17 +61,35 @@ function readCategoryIds(formData: FormData, primaryCategoryId: string | null): 
   return [...all]
 }
 
+// ── Position je zusätzlicher Kategorie aus FormData lesen ("category_sort_<id>") ──
+function readCategoryOrders(formData: FormData, categoryIds: string[]): Record<string, number | null> {
+  const orders: Record<string, number | null> = {}
+  for (const id of categoryIds) {
+    const raw = String(formData.get(`category_sort_${id}`) ?? '').trim()
+    const n = raw === '' ? NaN : Number(raw)
+    orders[id] = Number.isFinite(n) ? Math.max(0, Math.round(n)) : null
+  }
+  return orders
+}
+
 // ── product_categories-Tabelle mit der aktuellen Auswahl synchronisieren ────
-// Tolerant: falls die Tabelle noch nicht existiert (Migration 024 fehlt),
-// wird das stillschweigend übersprungen statt das Speichern zu blockieren.
+// Tolerant: fehlt die Spalte sort_order noch (Migration 033), wird ohne
+// Positionsangabe gespeichert; fehlt die Tabelle (Migration 024), wird
+// stillschweigend übersprungen statt das Speichern zu blockieren.
 async function syncProductCategories(
   supabase: ReturnType<typeof createSupabaseAdminClient>,
   productId: string,
-  categoryIds: string[]
+  categoryIds: string[],
+  orders: Record<string, number | null> = {}
 ) {
   try {
     await supabase.from('product_categories').delete().eq('product_id', productId)
-    if (categoryIds.length > 0) {
+    if (categoryIds.length === 0) return
+    const withOrder = categoryIds.map((category_id) => ({
+      product_id: productId, category_id, sort_order: orders[category_id] ?? null,
+    }))
+    const { error } = await supabase.from('product_categories').insert(withOrder)
+    if (error) {
       await supabase.from('product_categories').insert(
         categoryIds.map((category_id) => ({ product_id: productId, category_id }))
       )
@@ -160,7 +178,10 @@ export async function createProduct(
     .from('products').insert(data).select().single()
   if (error) return { error: `Fehler: ${error.message}`, success: false, id: null }
 
-  await syncProductCategories(supabase, product.id, readCategoryIds(formData, data.category_id))
+  {
+    const catIds = readCategoryIds(formData, data.category_id)
+    await syncProductCategories(supabase, product.id, catIds, readCategoryOrders(formData, catIds))
+  }
 
   await logChange({ action: 'create', entity_type: 'product', entity_id: product.id, entity_name: data.name, new_value: data })
   revalidatePath('/admin/produkte')
@@ -214,7 +235,10 @@ export async function updateProduct(id: string, _prevState: ProductActionState, 
   const { error } = await supabase.from('products').update(data).eq('id', id)
   if (error) return { error: `Fehler: ${error.message}`, success: false, id }
 
-  await syncProductCategories(supabase, id, readCategoryIds(formData, data.category_id as string | null))
+  {
+    const catIds = readCategoryIds(formData, data.category_id as string | null)
+    await syncProductCategories(supabase, id, catIds, readCategoryOrders(formData, catIds))
+  }
 
   await logChange({ action: 'update', entity_type: 'product', entity_id: id, entity_name: data.name as string, old_value: existing, new_value: data })
 

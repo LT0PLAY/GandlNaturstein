@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { createSupabaseAdminClient } from '@/lib/supabase'
-import { getProductIdsForCategory } from '@/lib/queries/products'
+import { getProductIdsForCategory, orderProductsForCategory } from '@/lib/queries/products'
 import BereichPage from '@/components/public/BereichPage'
 import type { Metadata } from 'next'
 import type { Product, Category } from '@/lib/types'
@@ -52,7 +52,7 @@ async function getData(kategorieSlug: string) {
       .in('id', productIds)
       .order('sort_order')
 
-    return { products: (products as Product[]) ?? [], categories: (categories as Category[]) ?? [] }
+    return { products: await orderProductsForCategory((products as Product[]) ?? [], cat.id), categories: (categories as Category[]) ?? [] }
   } catch { return { products: [], categories: [] } }
 }
 
