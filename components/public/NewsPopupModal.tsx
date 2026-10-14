@@ -32,7 +32,8 @@ export default function NewsPopupModal({ popup }: Props) {
 
   if (!visible) return null
 
-  const isPoster = popup.layout === 'din_a5'
+  // Poster-Format braucht ein Bild — ohne Bild gilt das Standard-Layout
+  const isPoster = popup.layout === 'din_a5' && !!popup.image_url
 
   return (
     <div className={styles.overlay} onClick={close}>

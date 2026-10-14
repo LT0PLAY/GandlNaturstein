@@ -63,9 +63,9 @@ export default function PopupForm({ action, popup }: Props) {
             ))}
           </select>
           <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', marginTop: '4px' }}>
-            Beim Poster-Format füllt das Bild die komplette Fläche im Hochformat (wie ein DIN-A5-Flyer) —
-            Name und Info-Text erscheinen als Einblendung am unteren Rand darüber. Am besten ein Bild im
-            Hochformat mit Verhältnis 148×210 (z. B. 1000×1414px) hochladen.
+            Das Popup übernimmt immer das Format des hochgeladenen Bildes (Hochformat, Querformat oder
+            Quadrat) — es wird nicht zugeschnitten. Beim Poster-Format füllt das Bild die gesamte Fläche,
+            Name und Info-Text erscheinen als Einblendung am unteren Rand darüber.
           </p>
         </div>
       </div>

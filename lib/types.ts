@@ -305,7 +305,7 @@ export type PopupLayout = 'standard' | 'din_a5'
 
 export const POPUP_LAYOUT_LABELS: Record<PopupLayout, string> = {
   standard: 'Standard — Bild oben, Text darunter',
-  din_a5:   'Poster / DIN A5 — großflächiges Bild im Hochformat (148×210 mm)',
+  din_a5:   'Poster — großflächiges Bild im Originalformat, Text als Einblendung',
 }
 
 export interface Popup {
