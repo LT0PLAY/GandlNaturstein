@@ -21,7 +21,7 @@ function readImageUrls(formData: FormData, field: string): string[] {
 }
 
 // ── Größenvarianten aus FormData lesen (bis zu MAX_SIZES Zeilen) ────────────
-const MAX_SIZES = 8
+const MAX_SIZES = 50
 
 function readSizes(formData: FormData): Array<{ label: string; price: number | null; article_number: string | null; surfaces: string[] }> {
   const sizes: Array<{ label: string; price: number | null; article_number: string | null; surfaces: string[] }> = []
@@ -42,7 +42,7 @@ function readSizes(formData: FormData): Array<{ label: string; price: number | n
 }
 
 // ── Oberflächen-Varianten aus FormData lesen (bis zu MAX_SURFACES Zeilen) ───
-const MAX_SURFACES = 8
+const MAX_SURFACES = 20
 
 function readSurfaces(formData: FormData): string[] {
   const surfaces: string[] = []

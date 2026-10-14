@@ -13,8 +13,8 @@ import styles from '../../form.module.css'
 import imageStyles from '../images.module.css'
 
 const initial = { error: null as string | null, success: false, id: null as string | null }
-const MAX_SIZES = 8
-const MAX_SURFACES = 8
+const MAX_SIZES = 50
+const MAX_SURFACES = 20
 
 const UNIT_VARIANT_HINT: Record<ProductUnit, string> = {
   groesse:   'z.B. 30x30x3 cm',
