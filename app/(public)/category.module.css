@@ -188,6 +188,8 @@
   padding: 8px 10px;
   min-width: 140px;
 }
+/* Aufklappliste der Filter in der grünen CI-Farbe statt Schwarz */
+.filterSelect option { background: #9bae9f; color: #0A0806; }
 .filterCount {
   margin-left: auto;
   font-family: var(--font-inter), sans-serif;

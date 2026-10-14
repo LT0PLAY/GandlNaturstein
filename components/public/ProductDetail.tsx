@@ -140,7 +140,7 @@ export default function ProductDetail({ product, backHref, backLabel }: {
                 }}
               >
                 {sizes.map((s, i) => (
-                  <option key={i} value={i} style={{ background: '#1c1c18', color: '#efece4' }}>
+                  <option key={i} value={i} style={{ background: '#9bae9f', color: '#0A0806' }}>
                     {s.label}
                     {product.show_price && s.price != null ? ` — ${Number(s.price).toLocaleString('de-DE', { minimumFractionDigits: 2 })} €` : ''}
                   </option>
@@ -164,7 +164,7 @@ export default function ProductDetail({ product, backHref, backLabel }: {
                 }}
               >
                 {surfaces.map((s, i) => (
-                  <option key={i} value={i} style={{ background: '#1c1c18', color: '#efece4' }}>{s}</option>
+                  <option key={i} value={i} style={{ background: '#9bae9f', color: '#0A0806' }}>{s}</option>
                 ))}
               </select>
             </div>
