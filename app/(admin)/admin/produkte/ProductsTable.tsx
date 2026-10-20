@@ -99,7 +99,7 @@ export default function ProductsTable({ products }: { products: Product[] }) {
                 <td className={styles.tdMuted} data-label="Artikelnr.">{p.article_number ?? '—'}</td>
                 <td className={styles.tdMuted} data-label="Material">{p.material ?? '—'}</td>
                 <td className={styles.tdMuted} data-label="Farbe">{p.farbe ?? '—'}</td>
-                <td className={styles.tdMuted} data-label="Kategorie">{(p.category as any)?.name ?? '—'}</td>
+                <td className={styles.tdMuted} data-label="Kategorie">{p.category?.name ?? '—'}</td>
                 <td data-label="Status">
                   <span className={styles.badge} data-active={p.is_active}>
                     {p.is_active ? 'Aktiv' : 'Inaktiv'}

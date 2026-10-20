@@ -28,7 +28,7 @@ export default function ProductDetail({ product, backHref, backLabel }: {
   const allSurfaces: string[] = product.surfaces ?? []
   // Ist für die gewählte Größe eine Teilmenge der Oberflächen hinterlegt, gilt nur diese —
   // sonst stehen alle am Produkt angelegten Oberflächen zur Wahl.
-  const sizeSurfaces = hasSizes ? (selectedSize as any)?.surfaces as string[] | undefined : undefined
+  const sizeSurfaces = hasSizes ? selectedSize?.surfaces : undefined
   const surfaces = sizeSurfaces && sizeSurfaces.length > 0 ? sizeSurfaces : allSurfaces
   const hasSurfaces = surfaces.length > 0
   const [selectedSurfaceIdx, setSelectedSurfaceIdx] = useState<number>(0)
