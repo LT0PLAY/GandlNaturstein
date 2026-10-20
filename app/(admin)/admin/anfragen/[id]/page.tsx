@@ -65,7 +65,7 @@ export default async function AnfrageDetailPage({
           { label: 'E-Mail',  value: inq.email },
           { label: 'Telefon', value: inq.phone ?? '—' },
           { label: 'Fläche',  value: inq.area_sqm ? `${inq.area_sqm} m²` : '—' },
-          { label: 'Produkt', value: (inq.product as any)?.name ?? '—' },
+          { label: 'Produkt', value: inq.product?.name ?? '—' },
           { label: 'Eingang', value: new Date(inq.created_at).toLocaleString('de-DE') },
         ].map(({ label, value }) => (
           <div key={label}>

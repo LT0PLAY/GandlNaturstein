@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { createSupabaseAdminClient } from '@/lib/supabase'
-import type { Reference } from '@/lib/types'
+import type { Reference, RefProduct } from '@/lib/types'
 import SideCarousel from '@/components/public/SideCarousel'
 import { canonical, jsonLdScript, referenceJsonLd, SITE_NAME } from '@/lib/seo'
 
@@ -29,7 +29,7 @@ async function getRef(slug: string): Promise<Reference | null> {
       .from('products')
       .select('id, name, slug, thumbnail, material, surface, description, bereich, category:categories!products_category_id_fkey(type)')
       .in('id', ids)
-    linked_products = (prods ?? []) as any
+    linked_products = (prods ?? []) as unknown as RefProduct[]
   }
 
   return { ...ref, linked_products } as Reference
@@ -65,10 +65,10 @@ export default async function ReferenzDetailPage({
   const ref = await getRef(slug)
   if (!ref) notFound()
 
-  const linkedProducts = (ref.linked_products ?? []) as any[]
+  const linkedProducts = ref.linked_products ?? []
   const jsonLd = referenceJsonLd(ref!)
 
-  function productHref(p: any): string {
+  function productHref(p: RefProduct & { bereich?: string | null }): string {
     const bereich = p.bereich ?? p.category?.type ?? 'eigenproduktion'
     return `/${bereich}/${p.slug}`
   }
@@ -268,7 +268,7 @@ export default async function ReferenzDetailPage({
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              {linkedProducts.map((p: any) => (
+              {linkedProducts.map((p) => (
                 <Link key={p.id} href={productHref(p)} style={{ textDecoration: 'none', display: 'block' }}>
                   <div className="ref-product-card">
                     <div className="ref-product-img">

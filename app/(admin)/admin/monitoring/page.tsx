@@ -107,7 +107,7 @@ export default async function MonitoringPage() {
         </div>
       ) : (
         <div className={styles.feed}>
-          {logs.map((log: any) => {
+          {logs.map((log) => {
             const action = ACTION_LABELS[log.action]      ?? { label: log.action, color: '#888' }
             const entity = ENTITY_LABELS[log.entity_type] ?? log.entity_type
             const member = log.team_member

@@ -132,7 +132,11 @@ export default function BereichPage({
 
   // Zustand wiederherstellen, wenn man von einer Produktseite zurückkommt
   useEffect(() => {
-    let saved: any = null
+    let saved: {
+      ts: number; showAll?: boolean; scrollY?: number
+      einsatzbereich?: string; steinart?: string; farbe?: string; oberflaeche?: string
+      format?: string; herkunft?: string; groesse?: string; staerke?: string
+    } | null = null
     try {
       const raw = sessionStorage.getItem(restoreKey)
       sessionStorage.removeItem(restoreKey)
@@ -411,8 +415,8 @@ export default function BereichPage({
                         placeholderClassName={styles.imgPlaceholder}
                         placeholderLabel={product.material ?? label}
                       />
-                      {(product.category as any)?.name && (
-                        <span className={styles.categoryBadge}>{(product.category as any).name}</span>
+                      {product.category?.name && (
+                        <span className={styles.categoryBadge}>{product.category.name}</span>
                       )}
                       {product.icon_url && (
                         <img src={product.icon_url} alt="" className={styles.iconOverlay} />
@@ -462,8 +466,8 @@ export default function BereichPage({
                       placeholderClassName={styles.imgPlaceholder}
                       placeholderLabel={product.material ?? label}
                     />
-                    {(product.category as any)?.name && (
-                      <span className={styles.categoryBadge}>{(product.category as any).name}</span>
+                    {product.category?.name && (
+                      <span className={styles.categoryBadge}>{product.category.name}</span>
                     )}
                     {product.icon_url && (
                       <img src={product.icon_url} alt="" className={styles.iconOverlay} />

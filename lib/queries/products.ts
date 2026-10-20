@@ -4,15 +4,15 @@ import type { Product, Category, CategoryType } from '@/lib/types'
 // Hilfsfunktion: deleted_at-Filter mit Fallback
 // Falls Migration 005 noch nicht gelaufen ist, wird der Filter weggelassen.
 async function withSoftDeleteFilter<T>(
-  queryFn: (withFilter: boolean) => Promise<{ data: T | null; error: any }>
+  queryFn: (withFilter: boolean) => PromiseLike<{ data: unknown; error: { message?: string; code?: string } | null }>
 ): Promise<T | null> {
   const { data, error } = await queryFn(true)
-  if (!error) return data
+  if (!error) return data as T | null
 
   // Spalte existiert noch nicht → ohne Filter nochmal
   if (error.message?.includes('deleted_at') || error.code === '42703') {
     const { data: fallback } = await queryFn(false)
-    return fallback
+    return fallback as T | null
   }
   return null
 }
@@ -32,9 +32,9 @@ export async function getProducts(type?: CategoryType) {
       .eq('is_active', true)
       .order('sort_order')
 
-    if (withFilter) q = q.is('deleted_at', null) as any
-    if (type)       q = q.eq('categories.type', type) as any
-    return q as any
+    if (withFilter) q = q.is('deleted_at', null)
+    if (type)       q = q.eq('categories.type', type)
+    return q
   })
 
   return (result ?? []) as Product[]
@@ -153,7 +153,7 @@ export async function getProductsByCategory(categorySlug: string) {
       .select(`*, category:categories!products_category_id_fkey(*)`)
       .eq('is_active', true)
       .eq('categories.slug', categorySlug)
-      .order('sort_order') as any
+      .order('sort_order')
 
     if (withFilter) q = q.is('deleted_at', null)
     return q

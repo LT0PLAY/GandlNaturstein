@@ -62,7 +62,7 @@ export async function createTeamMember(
   // Eigene Bestätigungsroute (/auth/confirm) statt des von Supabase generierten
   // action_link — der kann je nach Flow-Typ (PKCE) im Browser nicht zuverlässig
   // eingelöst werden. hashed_token + unsere Route funktioniert unabhängig davon.
-  const hashedToken = (linkData as any)?.properties?.hashed_token as string | undefined
+  const hashedToken = linkData?.properties?.hashed_token
   const userId = linkData.user?.id
   if (!hashedToken || !userId) {
     return { error: 'Einladungslink konnte nicht erzeugt werden.', success: false }
@@ -116,7 +116,7 @@ export async function generateNewPasswordLink(id: string): Promise<TeamActionSta
   })
   if (linkError) return { error: linkError.message, success: false }
 
-  const hashedToken = (linkData as any)?.properties?.hashed_token as string | undefined
+  const hashedToken = linkData?.properties?.hashed_token
   if (!hashedToken) return { error: 'Link konnte nicht erzeugt werden.', success: false }
 
   const actionLink = `${siteUrl}/auth/confirm?token_hash=${hashedToken}&type=recovery&next=${encodeURIComponent('/admin/passwort-neu-setzen')}`

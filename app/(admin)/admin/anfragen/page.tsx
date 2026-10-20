@@ -111,7 +111,7 @@ export default async function AnfragenPage({
             </tr>
           </thead>
           <tbody>
-            {inquiries.map((inq: any) => (
+            {inquiries.map((inq) => (
               <tr key={inq.id}>
                 <td className={styles.tdName} data-label="Name">{inq.name}</td>
                 <td className={styles.tdMuted} data-label="E-Mail">{inq.email}</td>

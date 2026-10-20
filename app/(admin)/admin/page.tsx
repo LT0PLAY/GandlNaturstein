@@ -161,7 +161,7 @@ export default async function AdminDashboard() {
             <Link href="/admin/monitoring" className={styles.sectionLink}>Alle ansehen →</Link>
           </div>
           <div className={styles.logList}>
-            {stats.recentLog.map((entry: any, i: number) => (
+            {stats.recentLog.map((entry, i: number) => (
               <div key={i} className={styles.logItem}>
                 <span className={`${styles.logAction} ${styles[`logAction_${entry.action}`]}`}>
                   {actionLabel[entry.action] ?? entry.action}

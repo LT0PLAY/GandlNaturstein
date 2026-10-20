@@ -184,7 +184,7 @@ export default async function PapierkorbPage() {
               </tr>
             </thead>
             <tbody>
-              {pending.map((p: any) => (
+              {pending.map((p) => (
                 <tr key={p.id}>
                   <td>
                     {p.thumbnail || p.images?.[0]
@@ -247,7 +247,7 @@ export default async function PapierkorbPage() {
               </tr>
             </thead>
             <tbody>
-              {trashedProducts.map((p: any) => (
+              {trashedProducts.map((p) => (
                 <tr key={p.id} style={{ opacity: 0.65 }}>
                   <td>
                     {p.thumbnail || p.images?.[0]
@@ -310,7 +310,7 @@ export default async function PapierkorbPage() {
               </tr>
             </thead>
             <tbody>
-              {trashedReferences.map((r: any) => (
+              {trashedReferences.map((r) => (
                 <tr key={r.id} style={{ opacity: 0.65 }}>
                   <td>
                     {r.cover_image
@@ -373,7 +373,7 @@ export default async function PapierkorbPage() {
               </tr>
             </thead>
             <tbody>
-              {trashedCategories.map((c: any) => (
+              {trashedCategories.map((c) => (
                 <tr key={c.id} style={{ opacity: 0.65 }}>
                   <td className={styles.tdName} data-label="Kategorie">{c.name}</td>
                   <td className={styles.tdMuted} data-label="Bereich">
@@ -431,7 +431,7 @@ export default async function PapierkorbPage() {
               </tr>
             </thead>
             <tbody>
-              {trashedJobs.map((j: any) => (
+              {trashedJobs.map((j) => (
                 <tr key={j.id} style={{ opacity: 0.65 }}>
                   <td className={styles.tdName} data-label="Stelle">
                     {j.title}
@@ -490,7 +490,7 @@ export default async function PapierkorbPage() {
               </tr>
             </thead>
             <tbody>
-              {trashedPartners.map((pt: any) => (
+              {trashedPartners.map((pt) => (
                 <tr key={pt.id} style={{ opacity: 0.65 }}>
                   <td>
                     {pt.logo_url
@@ -551,7 +551,7 @@ export default async function PapierkorbPage() {
               </tr>
             </thead>
             <tbody>
-              {trashedRestposten.map((r: any) => (
+              {trashedRestposten.map((r) => (
                 <tr key={r.id} style={{ opacity: 0.65 }}>
                   <td>
                     {r.images?.[0]
@@ -613,7 +613,7 @@ export default async function PapierkorbPage() {
               </tr>
             </thead>
             <tbody>
-              {trashedGuideEntries.map((g: any) => (
+              {trashedGuideEntries.map((g) => (
                 <tr key={g.id} style={{ opacity: 0.65 }}>
                   <td className={styles.tdName} style={{ fontFamily: 'var(--font-bebas)', fontSize: '20px' }} data-label="#">{g.number}</td>
                   <td>

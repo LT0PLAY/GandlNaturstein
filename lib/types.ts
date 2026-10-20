@@ -95,6 +95,8 @@ export interface Product {
   image_alts:     Record<string, string>
   is_active:      boolean
   sort_order:     number
+  /** Löschung beantragt (Soft-Delete, wartet auf Freigabe durch den Hauptadmin) */
+  delete_pending?: boolean
   created_at:     string
   updated_at:     string
   /** Optionale weitere Kategorien (Mehrfachzuordnung über product_categories) — category_id/category bleibt die Hauptkategorie */

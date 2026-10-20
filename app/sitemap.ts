@@ -20,7 +20,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Alle aktiven Produkte mit Kategorie. PostgREST liefert pro Anfrage maximal
   // 1000 Zeilen — daher seitenweise laden, sonst fehlen bei großem Sortiment
   // still und leise Produkte in der Sitemap.
-  const products: any[] = []
+  type SitemapProduct = { slug: string; updated_at: string; bereich: string | null; category: { type: string } | null }
+  const products: SitemapProduct[] = []
   const PAGE = 1000
   for (let from = 0; ; from += PAGE) {
     const { data, error } = await supabase
@@ -31,7 +32,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .order('created_at')
       .range(from, from + PAGE - 1)
     if (error || !data) break
-    products.push(...data)
+    // Ohne generierte DB-Typen erkennt Supabase den Join als Liste — es ist genau eine Kategorie.
+    products.push(...(data as unknown as SitemapProduct[]))
     if (data.length < PAGE) break
   }
 
@@ -43,7 +45,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .is('deleted_at', null)
 
   // Alle aktiven Kategorien (deleted_at evtl. nicht vorhanden → Fallback)
-  let categories: any[] = []
+  let categories: { slug: string; type: string }[] = []
   try {
     const { data, error } = await supabase
       .from('categories')
@@ -57,7 +59,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   } catch { /* ignore */ }
 
   // Produkt-URLs — Bereich bestimmt den Pfad
-  const productUrls: MetadataRoute.Sitemap = products.map((p: any) => {
+  const productUrls: MetadataRoute.Sitemap = products.map((p) => {
     const bereich = p.bereich ?? p.category?.type ?? 'eigenproduktion'
     return {
       url:          `${BASE}/${bereich}/${p.slug}`,
@@ -68,7 +70,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   })
 
   // Referenz-URLs
-  const referenceUrls: MetadataRoute.Sitemap = (references ?? []).map((r: any) => ({
+  const referenceUrls: MetadataRoute.Sitemap = (references ?? []).map((r) => ({
     url:          `${BASE}/referenzen/${r.slug}`,
     lastModified: new Date(r.updated_at),
     priority:     0.7,
@@ -76,7 +78,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   // Kategorie-URLs
-  const categoryUrls: MetadataRoute.Sitemap = (categories ?? []).map((c: any) => ({
+  const categoryUrls: MetadataRoute.Sitemap = (categories ?? []).map((c) => ({
     url:          `${BASE}/${c.type}/kategorie/${c.slug}`,
     priority:     0.75,
     changeFrequency: 'weekly' as const,

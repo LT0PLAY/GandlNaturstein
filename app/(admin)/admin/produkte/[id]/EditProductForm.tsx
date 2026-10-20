@@ -55,7 +55,7 @@ export default function EditProductForm({
   extraCategoryOrders?: Record<string, number | null>
 }) {
   const p    = product
-  const alts = (p as any).image_alts as Record<string, string> ?? {}
+  const alts = p.image_alts as Record<string, string> ?? {}
 
   const updateProductById = updateProduct.bind(null, p.id)
   const [state, action, isPending] = useActionState(updateProductById, initial)
@@ -65,11 +65,11 @@ export default function EditProductForm({
 
   const [name,       setName]       = useState<string>(p.name)
   const [slug,       setSlug]       = useState<string>(p.slug)
-  const [bereich,    setBereich]    = useState<CategoryBereich | ''>((p as any).bereich ?? currentCat?.type ?? '')
+  const [bereich,    setBereich]    = useState<CategoryBereich | ''>(p.bereich ?? currentCat?.type ?? '')
   const [categoryId, setCategoryId] = useState<string>(p.category_id ?? '')
   const [extraCategoryIds, setExtraCategoryIds] = useState<string[]>(initialExtraCategoryIds)
-  const [unit, setUnit] = useState<ProductUnit>(((p as any).unit ?? 'qm') as ProductUnit)
-  const [surfaceLabels, setSurfaceLabels] = useState<string[]>((((p as any).surfaces as string[] | undefined) ?? []))
+  const [unit, setUnit] = useState<ProductUnit>((p.unit ?? 'qm') as ProductUnit)
+  const [surfaceLabels, setSurfaceLabels] = useState<string[]>(((p.surfaces as string[] | undefined) ?? []))
 
   useEffect(() => {
     if (state.success) router.push('/admin/produkte')
@@ -217,11 +217,11 @@ export default function EditProductForm({
         </div>
         <div className={styles.field}>
           <label>Einsatzbereich</label>
-          <input name="einsatzbereich" type="text" defaultValue={(p as any).einsatzbereich ?? ''} placeholder="z.B. Terrasse, Bad, Fassade" />
+          <input name="einsatzbereich" type="text" defaultValue={p.einsatzbereich ?? ''} placeholder="z.B. Terrasse, Bad, Fassade" />
         </div>
         <div className={styles.field}>
           <label>Farbe</label>
-          <input name="farbe" type="text" defaultValue={(p as any).farbe ?? ''} placeholder="z.B. Grau, Beige, Anthrazit" />
+          <input name="farbe" type="text" defaultValue={p.farbe ?? ''} placeholder="z.B. Grau, Beige, Anthrazit" />
         </div>
         <div className={`${styles.field} ${styles.fullWidth}`}>
           <label>Beschreibung</label>
@@ -246,11 +246,11 @@ export default function EditProductForm({
         <div className={styles.field}>
           <label>Preis <span>optional, pro gewählter Einheit</span></label>
           <input name="price" type="number" min="0" step="0.01"
-            defaultValue={(p as any).price ?? ''} placeholder="z.B. 89.90" />
+            defaultValue={p.price ?? ''} placeholder="z.B. 89.90" />
         </div>
         <div className={styles.field} style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingTop: '22px' }}>
           <input name="show_price" type="checkbox" id="edit_show_price" value="true"
-            defaultChecked={(p as any).show_price === true}
+            defaultChecked={p.show_price === true}
             style={{ width: '16px', height: '16px', accentColor: '#9bae9f' }} />
           <label htmlFor="edit_show_price" style={{ margin: 0, cursor: 'pointer' }}>Preis auf Website anzeigen</label>
         </div>
@@ -275,7 +275,7 @@ export default function EditProductForm({
           </p>
           <VariantsEditor
             namePrefix="surface"
-            initial={(((p as any).surfaces as string[] | undefined) ?? []).map((label) => ({ label }))}
+            initial={((p.surfaces as string[] | undefined) ?? []).map((label) => ({ label }))}
             max={MAX_SURFACES}
             labelPlaceholder={(i) => `Oberfläche ${i + 1}, z.B. Poliert`}
             addLabel="Oberfläche hinzufügen"
@@ -299,7 +299,7 @@ export default function EditProductForm({
           </p>
           <VariantsEditor
             namePrefix="size"
-            initial={(((p as any).sizes as Array<{ label: string; price?: number | null; article_number?: string | null; surfaces?: string[] }> | undefined) ?? []).map((sVal) => ({
+            initial={((p.sizes as Array<{ label: string; price?: number | null; article_number?: string | null; surfaces?: string[] }> | undefined) ?? []).map((sVal) => ({
               label: sVal.label ?? '',
               price: sVal.price != null ? String(sVal.price) : '',
               article_number: sVal.article_number ?? '',
@@ -320,12 +320,12 @@ export default function EditProductForm({
           <p className={imageStyles.sectionTitle}>Titelbild</p>
           <p className={imageStyles.sectionDesc}>Wird in Listen und als Hauptbild angezeigt.</p>
         </div>
-        {(p as any).thumbnail ? (
+        {p.thumbnail ? (
           <div className={imageStyles.currentThumb}>
-            <img src={(p as any).thumbnail} alt={alts[(p as any).thumbnail] ?? p.name} className={imageStyles.thumbPreview} />
+            <img src={p.thumbnail} alt={alts[p.thumbnail] ?? p.name} className={imageStyles.thumbPreview} />
             <div className={imageStyles.thumbInfo}>
               <p className={imageStyles.thumbLabel}>Aktuelles Titelbild</p>
-              <p className={imageStyles.thumbAlt}>{alts[(p as any).thumbnail] ?? '—'}</p>
+              <p className={imageStyles.thumbAlt}>{alts[p.thumbnail] ?? '—'}</p>
               <DeleteButton
                 action={removeThumbnail.bind(null, p.id)}
                 label="Titelbild entfernen"
@@ -338,12 +338,12 @@ export default function EditProductForm({
         <div style={{ padding: '16px 20px' }}>
           <ImageUploader
             field="thumbnail"
-            label={(p as any).thumbnail ? 'Titelbild ersetzen' : 'Titelbild hochladen'}
+            label={p.thumbnail ? 'Titelbild ersetzen' : 'Titelbild hochladen'}
             hint="JPG, PNG, WebP · wird direkt zu Supabase hochgeladen"
           />
           <div className={styles.field} style={{ marginTop: '12px' }}>
             <label>Alt-Text</label>
-            <input name="thumbnail_alt" type="text" defaultValue={alts[(p as any).thumbnail ?? ''] ?? p.name} />
+            <input name="thumbnail_alt" type="text" defaultValue={alts[p.thumbnail ?? ''] ?? p.name} />
           </div>
         </div>
       </div>
@@ -354,9 +354,9 @@ export default function EditProductForm({
           <p className={imageStyles.sectionTitle}>Icon</p>
           <p className={imageStyles.sectionDesc}>Kleines PNG-Icon, wird unten rechts im Produktbild eingeblendet.</p>
         </div>
-        {(p as any).icon_url ? (
+        {p.icon_url ? (
           <div className={imageStyles.currentThumb}>
-            <img src={(p as any).icon_url} alt="Icon" className={imageStyles.thumbPreview} style={{ objectFit: 'contain', background: '#100E08' }} />
+            <img src={p.icon_url} alt="Icon" className={imageStyles.thumbPreview} style={{ objectFit: 'contain', background: '#100E08' }} />
             <div className={imageStyles.thumbInfo}>
               <p className={imageStyles.thumbLabel}>Aktuelles Icon</p>
               <DeleteButton
@@ -371,7 +371,7 @@ export default function EditProductForm({
         <div style={{ padding: '16px 20px' }}>
           <ImageUploader
             field="icon"
-            label={(p as any).icon_url ? 'Icon ersetzen' : 'Icon hochladen'}
+            label={p.icon_url ? 'Icon ersetzen' : 'Icon hochladen'}
             hint="PNG mit transparentem Hintergrund empfohlen"
           />
         </div>

@@ -9,7 +9,7 @@ import type { Product, Category } from '@/lib/types'
 import styles from '../../form.module.css'
 
 function getPublicUrl(product: Product): string {
-  const bereich = (product as any).bereich ?? product.category?.type ?? 'eigenproduktion'
+  const bereich = product.bereich ?? product.category?.type ?? 'eigenproduktion'
   return `/${bereich}/${product.slug}`
 }
 
@@ -39,7 +39,7 @@ async function getData(id: string) {
       }
       extraCategoryIds = (links ?? [])
         .map((l) => l.category_id)
-        .filter((catId) => catId !== (product as any)?.category_id)
+        .filter((catId) => catId !== product.category_id)
       for (const l of links ?? []) extraCategoryOrders[l.category_id] = l.sort_order ?? null
     } catch {}
 

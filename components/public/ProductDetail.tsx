@@ -20,12 +20,12 @@ export default function ProductDetail({ product, backHref, backLabel }: {
     ...(product.images ?? []).filter((u) => u !== product.thumbnail),
   ].slice(0, 7) // thumbnail + max 6 gallery
 
-  const sizes: ProductSize[] = (product as any).sizes ?? []
+  const sizes: ProductSize[] = product.sizes ?? []
   const hasSizes = sizes.length > 0
   const [selectedSizeIdx, setSelectedSizeIdx] = useState<number>(0)
   const selectedSize = hasSizes ? sizes[selectedSizeIdx] : null
 
-  const allSurfaces: string[] = (product as any).surfaces ?? []
+  const allSurfaces: string[] = product.surfaces ?? []
   // Ist für die gewählte Größe eine Teilmenge der Oberflächen hinterlegt, gilt nur diese —
   // sonst stehen alle am Produkt angelegten Oberflächen zur Wahl.
   const sizeSurfaces = hasSizes ? (selectedSize as any)?.surfaces as string[] | undefined : undefined
@@ -57,11 +57,11 @@ export default function ProductDetail({ product, backHref, backLabel }: {
       productId:    product.id,
       productName:  product.name,
       productSlug:  product.slug,
-      categoryType: ((product as any).bereich ?? product.category?.type ?? 'eigenproduktion'),
+      categoryType: (product.bereich ?? product.category?.type ?? 'eigenproduktion'),
       thumbnail:    product.thumbnail,
       price:        product.show_price ? activePrice : null,
       show_price:   product.show_price ?? false,
-      unit:         (product as any).unit ?? 'qm',
+      unit:         product.unit ?? 'qm',
       size:         hasSizes ? selectedSize?.label ?? null : null,
       surface:      hasSurfaces ? selectedSurface ?? null : null,
       articleNumber: articleNumber ?? null,
@@ -172,10 +172,10 @@ export default function ProductDetail({ product, backHref, backLabel }: {
 
           <div className={styles.divider} />
 
-          {(product as any).show_price && activePrice != null ? (
+          {product.show_price && activePrice != null ? (
             <>
               <p className={styles.priceNote} style={{ fontSize: '22px', color: '#9bae9f', letterSpacing: '.04em' }}>
-                ab {Number(activePrice).toLocaleString('de-DE', { minimumFractionDigits: 2 })} € / {UNIT_LABELS[((product as any).unit ?? 'qm') as keyof typeof UNIT_LABELS].short}
+                ab {Number(activePrice).toLocaleString('de-DE', { minimumFractionDigits: 2 })} € / {UNIT_LABELS[(product.unit ?? 'qm') as keyof typeof UNIT_LABELS].short}
               </p>
               <p style={{ fontSize: '12px', color: 'var(--color-text-dim)', letterSpacing: '.03em', marginTop: '2px' }}>
                 {PRICE_DISCLAIMER}

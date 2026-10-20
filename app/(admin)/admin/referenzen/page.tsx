@@ -78,7 +78,7 @@ export default async function AdminReferenzenPage() {
                   {r.category_tags?.join(' · ') || '—'}
                 </td>
                 <td className={styles.tdMuted} data-label="Produkt">
-                  {(r.product as any)?.name ?? '—'}
+                  {r.product?.name ?? '—'}
                 </td>
                 <td data-label="Status">
                   <span className={styles.badge} data-active={r.is_published}>

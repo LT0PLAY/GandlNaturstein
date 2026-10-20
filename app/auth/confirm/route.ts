@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { createServerClient } from '@supabase/ssr'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import type { EmailOtpType } from '@supabase/supabase-js'
 
 // Zentrale Bestätigungsroute für Einladungs- und Passwort-Reset-Links.
@@ -38,11 +38,11 @@ export async function GET(request: NextRequest) {
       {
         cookies: {
           getAll() { return request.cookies.getAll() },
-          setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
+          setAll(cookiesToSet: { name: string; value: string; options?: CookieOptions }[]) {
             cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
             response = NextResponse.redirect(`${origin}${nextWithType}`)
             cookiesToSet.forEach(({ name, value, options }) =>
-              response.cookies.set(name, value, options as any)
+              response.cookies.set(name, value, options)
             )
           },
         },

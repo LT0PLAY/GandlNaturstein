@@ -72,7 +72,7 @@ async function matchingCategoryIds(
       .from('categories')
       .select('id')
       .ilike('name', `%${token}%`)
-    return (data ?? []).map((c: any) => c.id)
+    return (data ?? []).map((c) => c.id as string)
   } catch {
     return []
   }
@@ -125,7 +125,7 @@ export async function searchProducts(query: string): Promise<SearchResult[]> {
   if (error || !data) return []
 
   const lowerTokens = tokens.map((t) => t.toLowerCase())
-  function matchedVariantOf(p: any): string | null {
+  function matchedVariantOf(p: { sizes?: unknown }): string | null {
     const sizes: Array<{ label?: string; article_number?: string | null }> = Array.isArray(p.sizes) ? p.sizes : []
     const hit = sizes.find((sz) => {
       const hay = `${sz.label ?? ''} ${sz.article_number ?? ''}`.toLowerCase()
@@ -135,7 +135,10 @@ export async function searchProducts(query: string): Promise<SearchResult[]> {
     return [hit.label, hit.article_number ? `#${hit.article_number}` : null].filter(Boolean).join(' · ')
   }
 
-  const results: SearchResult[] = data.map((p: any) => ({
+  const results: SearchResult[] = data.map((p) => {
+    // Ohne generierte DB-Typen erkennt Supabase den Join als Liste — es ist aber genau eine Kategorie.
+    const category = (Array.isArray(p.category) ? p.category[0] : p.category) as { name: string; type: CategoryBereich } | null | undefined
+    return {
     id:             p.id,
     name:           p.name,
     slug:           p.slug,
@@ -146,9 +149,10 @@ export async function searchProducts(query: string): Promise<SearchResult[]> {
     surfaces:       p.surfaces ?? [],
     description:    p.description,
     matchedVariant: matchedVariantOf(p),
-    categoryType:   (p.bereich ?? p.category?.type ?? 'eigenproduktion') as CategoryBereich,
-    categoryName:   p.category?.name ?? null,
-  }))
+    categoryType:   (p.bereich ?? category?.type ?? 'eigenproduktion') as CategoryBereich,
+    categoryName:   category?.name ?? null,
+    }
+  })
 
   // Bei mehrdeutigen Treffern (z. B. Volltextsuche über mehrere lockere
   // Felder) Ergebnisse bevorzugen, deren Name den ersten Suchbegriff enthält.

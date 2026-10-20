@@ -5,9 +5,10 @@ import Link from 'next/link'
 import { moveProductToTrash } from '@/lib/actions/products'
 import DeleteButton from '@/components/admin/DeleteButton'
 import DuplicateButton from '@/components/admin/DuplicateButton'
+import type { Product } from '@/lib/types'
 import styles from '../table.module.css'
 
-function getPublicUrl(p: any): string {
+function getPublicUrl(p: Product): string {
   const bereich = p.bereich ?? p.category?.type ?? 'eigenproduktion'
   return `/${bereich}/${p.slug}`
 }
@@ -20,7 +21,7 @@ function normalize(v: unknown): string {
     .normalize('NFD').replace(/[̀-ͯ]/g, '')
 }
 
-export default function ProductsTable({ products }: { products: any[] }) {
+export default function ProductsTable({ products }: { products: Product[] }) {
   const [query, setQuery] = useState('')
 
   const filtered = useMemo(() => {
@@ -32,7 +33,7 @@ export default function ProductsTable({ products }: { products: any[] }) {
       const haystack = normalize([
         p.name, p.material, p.farbe, p.article_number, p.format,
         p.einsatzbereich, p.surface, p.origin, p.category?.name,
-        ...(Array.isArray(p.sizes) ? p.sizes.flatMap((s: any) => [s.label, s.article_number]) : []),
+        ...(Array.isArray(p.sizes) ? p.sizes.flatMap((s) => [s.label, s.article_number]) : []),
       ].join(' '))
       return terms.every((t) => haystack.includes(t))
     })
@@ -79,7 +80,7 @@ export default function ProductsTable({ products }: { products: any[] }) {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((p: any) => (
+            {filtered.map((p) => (
               <tr key={p.id} style={p.delete_pending ? { opacity: 0.55, background: 'rgba(224,96,96,0.04)' } : undefined}>
                 <td>
                   {p.thumbnail || p.images?.[0]
