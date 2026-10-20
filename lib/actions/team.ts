@@ -69,6 +69,13 @@ export async function createTeamMember(
   }
   const actionLink = `${siteUrl}/auth/confirm?token_hash=${hashedToken}&type=invite&next=${encodeURIComponent('/admin/passwort-neu-setzen')}`
 
+  // Serverseitiger Marker: nur ein so eingeladener Nutzer darf sich beim
+  // Passwort-Setzen selbst freischalten (siehe updatePassword in auth.ts).
+  const { error: metaError } = await supabase.auth.admin.updateUserById(userId, {
+    app_metadata: { pending_invite: true },
+  })
+  if (metaError) return { error: metaError.message, success: false }
+
   const { error } = await supabase.from('team_members').insert({
     user_id:   userId,
     name,

@@ -45,15 +45,21 @@ export async function updatePassword(password: string, activateInvite = false) {
 
   // Neu eingeladene Mitarbeiter starten inaktiv ("erst aktiv nach Passwort-Setzen") —
   // sobald die Einladung akzeptiert (Passwort gesetzt) wurde, hier freischalten.
-  // Bewusst NUR bei echten Einladungs-Links (activateInvite=true von der Seite gesetzt),
-  // damit ein bewusst deaktivierter Mitarbeiter sich nicht über "Passwort vergessen"
-  // selbst wieder aktivieren kann.
-  if (activateInvite && user) {
-    await createSupabaseAdminClient()
+  // Maßgeblich ist NICHT der vom Browser mitgeschickte Parameter (der ließe sich
+  // fälschen), sondern der serverseitige Marker app_metadata.pending_invite, den
+  // createTeamMember beim Einladen setzt. Ein bewusst deaktivierter Mitarbeiter
+  // hat ihn nicht und kann sich so weder über "Passwort vergessen" noch per
+  // manipuliertem Aufruf selbst wieder aktivieren.
+  if (activateInvite && user && user.app_metadata?.pending_invite === true) {
+    const admin = createSupabaseAdminClient()
+    await admin
       .from('team_members')
       .update({ is_active: true })
       .eq('user_id', user.id)
       .eq('is_active', false)
+    await admin.auth.admin.updateUserById(user.id, {
+      app_metadata: { ...user.app_metadata, pending_invite: false },
+    })
   }
 
   return { error: null, success: true }
