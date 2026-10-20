@@ -1,5 +1,5 @@
 'use client'
-
+import Link from 'next/link'
 import { useActionState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import ImageUploader from '@/components/admin/ImageUploader'
@@ -71,7 +71,7 @@ export default function DocumentForm({ action, doc }: Props) {
         <button type="submit" className={styles.btnPrimary}>
           {doc ? 'Speichern' : 'Dokument anlegen'}
         </button>
-        <a href="/admin/btob" className={styles.btnCancel}>Abbrechen</a>
+        <Link href="/admin/btob" className={styles.btnCancel}>Abbrechen</Link>
       </div>
     </form>
   )

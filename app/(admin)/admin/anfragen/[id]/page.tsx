@@ -32,8 +32,6 @@ export default async function AnfrageDetailPage({
   const inq = await getInquiry(id)
   if (!inq) notFound()
 
-  const status = STATUS_LABELS[inq.status] ?? { label: inq.status, color: '#888' }
-
   async function handleUpdate(formData: FormData) {
     'use server'
     const newStatus = formData.get('status') as string

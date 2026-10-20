@@ -131,7 +131,7 @@ function BereichCard({ card }: { card: BereichCard }) {
     const el = cardRef.current
     if (!el) return
     const observer = new IntersectionObserver(
-      ([entry]) => { entry.isIntersecting ? onEnter() : onLeave() },
+      ([entry]) => { if (entry.isIntersecting) onEnter(); else onLeave() },
       { threshold: 0.5 }
     )
     observer.observe(el)

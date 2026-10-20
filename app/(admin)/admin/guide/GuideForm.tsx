@@ -1,5 +1,5 @@
 'use client'
-
+import Link from 'next/link'
 import { useActionState, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ImageUploader from '@/components/admin/ImageUploader'
@@ -87,7 +87,7 @@ export default function GuideForm({ action, entry, products }: Props) {
       {selectedProduct && productPhotos.length > 0 && (
         <div className={styles.imageGrid}>
           <p className={styles.hint} style={{ marginBottom: '10px' }}>
-            Fotos von „{selectedProduct.name}" übernehmen <span>(anklicken zum Auswählen)</span>
+            Fotos von „{selectedProduct.name}“ übernehmen <span>(anklicken zum Auswählen)</span>
           </p>
           <div className={styles.images}>
             {productPhotos.map((url) => {
@@ -170,7 +170,7 @@ export default function GuideForm({ action, entry, products }: Props) {
         <button type="submit" className={styles.btnPrimary}>
           {entry ? 'Speichern' : 'Eintrag anlegen'}
         </button>
-        <a href="/admin/guide" className={styles.btnCancel}>Abbrechen</a>
+        <Link href="/admin/guide" className={styles.btnCancel}>Abbrechen</Link>
       </div>
     </form>
   )

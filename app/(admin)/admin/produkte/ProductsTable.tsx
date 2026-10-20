@@ -61,7 +61,7 @@ export default function ProductsTable({ products }: { products: any[] }) {
 
       {filtered.length === 0 ? (
         <div className={styles.empty}>
-          <p>Kein Produkt für „{query}" gefunden.</p>
+          <p>Kein Produkt für „{query}“ gefunden.</p>
         </div>
       ) : (
         <div className={styles.tableScroll}>

@@ -159,7 +159,7 @@ export default async function MonitoringPage() {
                     </span>
                     <span className={styles.entityType}>{entity}</span>
                     {log.entity_name && (
-                      <span className={styles.entityName}>„{log.entity_name}"</span>
+                      <span className={styles.entityName}>„{log.entity_name}“</span>
                     )}
                   </div>
 

@@ -127,7 +127,7 @@ export default function GuideSearch({ entries }: { entries: GuideEntry[] }) {
             </div>
           </div>
         ) : notFound ? (
-          <p className={styles.notFound}>Keine Nummer „{trimmed}" gefunden. Bitte am Ausstellungsschild prüfen.</p>
+          <p className={styles.notFound}>Keine Nummer „{trimmed}“ gefunden. Bitte am Ausstellungsschild prüfen.</p>
         ) : (
           <div className={styles.grid}>
             {entries.map((e) => (

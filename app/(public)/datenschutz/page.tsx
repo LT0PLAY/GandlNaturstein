@@ -113,7 +113,7 @@ export default function DatenschutzPage() {
         <p>
           Unsere Website nutzt SSL-Verschlüsselung (HTTPS) für die Übermittlung vertraulicher
           und persönlicher Inhalte. Eine aktivierte Verschlüsselung erkennen Sie daran, dass
-          die Adresszeile im Browser von „http://" auf „https://" wechselt und ein
+          die Adresszeile im Browser von „http://“ auf „https://“ wechselt und ein
           Schlosssymbol erscheint. Über SSL verschlüsselte Daten sind für Dritte nicht lesbar.
         </p>
 

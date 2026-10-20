@@ -1,5 +1,5 @@
 'use client'
-
+import Link from 'next/link'
 import { useActionState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import ImageUploader from '@/components/admin/ImageUploader'
@@ -152,7 +152,7 @@ export default function KarriereForm({ action, job }: Props) {
         <button type="submit" className={styles.btnPrimary}>
           {job ? 'Speichern' : 'Stelle anlegen'}
         </button>
-        <a href="/admin/karriere" className={styles.btnCancel}>Abbrechen</a>
+        <Link href="/admin/karriere" className={styles.btnCancel}>Abbrechen</Link>
       </div>
     </form>
   )

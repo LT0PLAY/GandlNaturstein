@@ -1,5 +1,5 @@
 'use client'
-
+import Link from 'next/link'
 import { useState } from 'react'
 import type { Category, CategoryBereich } from '@/lib/types'
 import { BEREICH_LABELS } from '@/lib/types'
@@ -172,7 +172,7 @@ export default function KategorieForm({ category, action, isPending }: Props) {
         <button type="submit" className={styles.btnPrimary} disabled={isPending}>
           {isPending ? 'Wird gespeichert…' : (category ? 'Änderungen speichern' : 'Kategorie speichern')}
         </button>
-        <a href="/admin/kategorien" className={styles.btnCancel}>Abbrechen</a>
+        <Link href="/admin/kategorien" className={styles.btnCancel}>Abbrechen</Link>
       </div>
     </form>
   )

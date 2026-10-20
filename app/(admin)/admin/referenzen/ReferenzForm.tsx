@@ -1,5 +1,5 @@
 'use client'
-
+import Link from 'next/link'
 import { useActionState, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import ImageUploader from '@/components/admin/ImageUploader'
@@ -80,10 +80,10 @@ export default function ReferenzForm({ action, reference, products }: Props) {
           <input name="category_tags" type="text"
             defaultValue={reference?.category_tags?.join(', ') ?? ''}
             placeholder="Eigenproduktion, Außenbereich, Terrassenplatten" />
-          <p className={styles.hint}>Werden klein als Labels angezeigt, z. B. „Eigenproduktion / Außenbereich"</p>
+          <p className={styles.hint}>Werden klein als Labels angezeigt, z. B. „Eigenproduktion / Außenbereich“</p>
         </div>
         <div className={`${styles.field} ${styles.fullWidth}`}>
-          <label>Beschreibung <span>(„Die Vision")</span></label>
+          <label>Beschreibung <span>(„Die Vision“)</span></label>
           <textarea name="description" rows={5}
             defaultValue={reference?.description ?? ''}
             placeholder="Beschreibe das Projekt, die Besonderheiten und das Ergebnis …" />
@@ -237,7 +237,7 @@ export default function ReferenzForm({ action, reference, products }: Props) {
 
       <div className={styles.formActions}>
         <button type="submit" className={styles.btnPrimary}>Speichern</button>
-        <a href="/admin/referenzen" className={styles.btnCancel}>Abbrechen</a>
+        <Link href="/admin/referenzen" className={styles.btnCancel}>Abbrechen</Link>
       </div>
     </form>
   )

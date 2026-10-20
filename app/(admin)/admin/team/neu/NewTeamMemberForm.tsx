@@ -1,5 +1,5 @@
 'use client'
-
+import Link from 'next/link'
 import { useActionState, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createTeamMember } from '@/lib/actions/team'
@@ -80,7 +80,7 @@ export default function NewTeamMemberForm() {
             </button>
           </div>
         </div>
-        <a href="/admin/team" className={styles.btnCancel}>← Zurück zur Team-Übersicht</a>
+        <Link href="/admin/team" className={styles.btnCancel}>← Zurück zur Team-Übersicht</Link>
       </div>
     )
   }
@@ -116,7 +116,7 @@ export default function NewTeamMemberForm() {
         <button type="submit" className={styles.btnPrimary} disabled={isPending}>
           {isPending ? 'Wird gesendet …' : 'Einladung senden'}
         </button>
-        <a href="/admin/team" className={styles.btnCancel}>Abbrechen</a>
+        <Link href="/admin/team" className={styles.btnCancel}>Abbrechen</Link>
       </div>
     </form>
   )

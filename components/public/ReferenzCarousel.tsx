@@ -29,8 +29,6 @@ export default function ReferenzCarousel({ slides, title, autoInterval = 2500 }:
 
   if (!slides.length) return null
 
-  const slide = slides[current]
-
   return (
     <div
       style={{ position: 'relative', width: '100%', overflow: 'hidden', background: '#080806' }}

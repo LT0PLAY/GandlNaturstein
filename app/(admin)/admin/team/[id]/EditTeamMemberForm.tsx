@@ -1,5 +1,5 @@
 'use client'
-
+import Link from 'next/link'
 import { useActionState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateTeamMember } from '@/lib/actions/team'
@@ -62,7 +62,7 @@ export default function EditTeamMemberForm({ member }: { member: TeamMember }) {
         <button type="submit" className={styles.btnPrimary} disabled={isPending}>
           {isPending ? 'Wird gespeichert …' : 'Speichern'}
         </button>
-        <a href="/admin/team" className={styles.btnCancel}>Abbrechen</a>
+        <Link href="/admin/team" className={styles.btnCancel}>Abbrechen</Link>
       </div>
     </form>
   )

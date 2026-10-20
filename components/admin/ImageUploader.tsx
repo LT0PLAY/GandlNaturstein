@@ -15,7 +15,6 @@ interface ImageUploaderProps {
 }
 
 export default function ImageUploader({
-  productId,
   field,
   label,
   hint,
@@ -23,7 +22,6 @@ export default function ImageUploader({
   max,
   currentUrl,
 }: ImageUploaderProps) {
-  const [previews,   setPreviews]   = useState<{ file: File; url: string }[]>([])
   const [uploaded,   setUploaded]   = useState<string[]>(currentUrl ? [currentUrl] : [])
   const [uploading,  setUploading]  = useState(false)
   const [error,      setError]      = useState('')

@@ -1,5 +1,5 @@
 'use client'
-
+import Link from 'next/link'
 import ExtraCategoryOrder from '@/components/admin/ExtraCategoryOrder'
 import { useActionState, useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
@@ -322,7 +322,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
         <button type="submit" className={styles.btnPrimary} disabled={isPending}>
           {isPending ? 'Wird gespeichert…' : 'Produkt speichern'}
         </button>
-        <a href="/admin/produkte" className={styles.btnCancel}>Abbrechen</a>
+        <Link href="/admin/produkte" className={styles.btnCancel}>Abbrechen</Link>
       </div>
     </form>
   )

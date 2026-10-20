@@ -1,4 +1,3 @@
-import { createSupabaseBrowserClient } from '@/lib/supabase'
 import { createSupabaseAdminClient }   from '@/lib/supabase'
 import type { Product, Category, CategoryType } from '@/lib/types'
 

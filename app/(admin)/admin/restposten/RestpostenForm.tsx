@@ -1,5 +1,5 @@
 'use client'
-
+import Link from 'next/link'
 import { useActionState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import ImageUploader from '@/components/admin/ImageUploader'
@@ -106,7 +106,7 @@ export default function RestpostenForm({ action, item }: Props) {
         <button type="submit" className={styles.btnPrimary}>
           {item ? 'Speichern' : 'Restposten anlegen'}
         </button>
-        <a href="/admin/restposten" className={styles.btnCancel}>Abbrechen</a>
+        <Link href="/admin/restposten" className={styles.btnCancel}>Abbrechen</Link>
       </div>
     </form>
   )

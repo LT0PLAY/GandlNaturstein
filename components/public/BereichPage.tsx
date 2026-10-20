@@ -501,7 +501,7 @@ export default function BereichPage({
           ) : (
             <p className={styles.infoModalTextEmpty}>
               Für diese Kategorie ist noch keine Produktinformation hinterlegt.
-              Im Admin unter „Kategorien" → „Beschreibung" lässt sie sich ergänzen.
+              Im Admin unter „Kategorien“ → „Beschreibung“ lässt sie sich ergänzen.
             </p>
           )}
         </div>

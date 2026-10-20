@@ -24,7 +24,7 @@ export async function logChange({
     const { data: { user } } = await serverClient.auth.getUser()
 
     let team_member_id: string | null = null
-    let changed_by_email: string | null = user?.email ?? null
+    const changed_by_email: string | null = user?.email ?? null
 
     if (user) {
       // Admin-Client verwenden damit RLS den Lookup nicht blockiert

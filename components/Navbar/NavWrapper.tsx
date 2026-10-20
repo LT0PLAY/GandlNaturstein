@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { createSupabaseAdminClient } from '@/lib/supabase'
 import Navbar from './Navbar'
-import type { Category, CategoryBereich } from '@/lib/types'
+import type { CategoryBereich } from '@/lib/types'
 
 export type NavCategory = { name: string; slug: string }
 export type NavBereich  = {
