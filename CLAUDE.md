@@ -5,5 +5,5 @@ Architektur, Befehle, Umgebungsvariablen und Sicherheitsmodell stehen in [README
 Kurzregeln:
 - Alle Texte, Kommentare und Commit-Messages auf Deutsch.
 - Jede schreibende Server Action beginnt mit `requireTeamMember()` bzw. `requireAdminMember()` (`lib/actions/authGuard.ts`).
-- Schemaänderungen nur als neue Migration in `supabase/migrations/` (nächste Nummer: 034).
+- Schemaänderungen nur als neue Migration in `supabase/migrations/` (nächste Nummer: 035).
 - Vor jedem Commit: `npx tsc --noEmit` und `npm run lint`.

@@ -13,3 +13,6 @@ create table if not exists product_slug_redirects (
 -- Index für schnelle Lookups beim Redirect
 create index if not exists idx_product_slug_redirects_old_slug
   on product_slug_redirects (old_slug);
+
+-- Ohne Policies: nur per Service-Role erreichbar, nicht über den öffentlichen API-Key
+ALTER TABLE product_slug_redirects ENABLE ROW LEVEL SECURITY;
