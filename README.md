@@ -34,7 +34,7 @@ Ohne Supabase-Konfiguration ist der Admin lokal frei zugänglich (nur `NODE_ENV=
 - `lib/actions` – Server Actions (Schreibzugriffe). `lib/queries` – Lesezugriffe.
 - `components/public`, `components/admin` – UI-Bausteine.
 - `proxy.ts` – Next.js-16-Proxy (früher Middleware): schützt `/admin` und `/btob`, fail-closed.
-- `supabase/migrations` – nummerierte SQL-Migrationen (001–035), in Reihenfolge im Supabase-SQL-Editor einzuspielen. Stand Produktiv-DB (22.10.2026, per Schema-Export bestätigt): alle Migrationen 001–035 eingespielt (inkl. Rechte-Härtung). Die Log-Aufbewahrung läuft nicht automatisch — `select purge_expired_logs();` löscht Einträge älter als 365 Tage (nur per Service-Role aufrufbar).
+- `supabase/migrations` – nummerierte SQL-Migrationen (001–036), in Reihenfolge im Supabase-SQL-Editor einzuspielen. Stand Produktiv-DB (22.10.2026, per Schema-Export bestätigt): Migrationen 001–035 eingespielt (inkl. Rechte-Härtung); 036 (Anfragen: Positionen und Notiz-Verlauf) muss noch im SQL-Editor eingespielt werden — bis dahin speichert der Code im alten Format weiter. Die Log-Aufbewahrung läuft nicht automatisch — `select purge_expired_logs();` löscht Einträge älter als 365 Tage (nur per Service-Role aufrufbar).
 
 ## Sicherheitsmodell
 

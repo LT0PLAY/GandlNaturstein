@@ -1,0 +1,278 @@
+/* Anfrage-Detailseite: Bildschirm (dunkel) und Druck/PDF (hell, A4) */
+
+.wrap { max-width: 1100px; }
+
+/* ── Kopf ── */
+.head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 16px; flex-wrap: wrap; margin-bottom: 28px;
+}
+.label {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--color-sage-muted); margin-bottom: 6px;
+}
+.title {
+  font-family: var(--font-bebas), sans-serif;
+  font-size: 44px; line-height: 1.05; letter-spacing: .03em; color: #dcdcd6;
+}
+.sub {
+  margin-top: 6px; font-family: var(--font-inter), sans-serif;
+  font-size: 13px; letter-spacing: .04em; color: var(--color-text-dim);
+}
+.headActions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+/* ── Kennzahlen / Kontakt ── */
+.summary {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px; background: rgba(255, 255, 255, 0.07);
+  border: 0.5px solid rgba(255, 255, 255, 0.07);
+  margin-bottom: 32px;
+}
+.cell { background: var(--color-bg-card); padding: 16px 20px; min-width: 0; }
+.cellLabel {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--color-text-dim); margin-bottom: 5px;
+}
+.cellValue {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 15px; color: var(--color-text); word-break: break-word;
+}
+.cellValue a { color: var(--color-sage); text-decoration: none; }
+.cellValue a:hover { text-decoration: underline; }
+.statusBadge {
+  display: inline-block; padding: 2px 10px; font-size: 13px;
+  border: 0.5px solid; letter-spacing: .03em;
+}
+
+/* ── Abschnitte ── */
+.section { margin-bottom: 32px; }
+.sectionHead { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+.sectionTitle {
+  font-family: var(--font-bebas), sans-serif;
+  font-size: 26px; letter-spacing: .04em; color: #dcdcd6;
+}
+.sectionCount {
+  font-family: var(--font-inter), sans-serif; font-size: 14px; color: var(--color-text-dim);
+}
+.hint {
+  font-family: var(--font-inter), sans-serif; font-size: 13px;
+  color: var(--color-text-dim); margin-bottom: 10px;
+}
+
+/* ── Positionen ── */
+.tableWrap {
+  border: 0.5px solid rgba(255, 255, 255, 0.07);
+  background: var(--color-bg-card);
+}
+.items { width: 100%; border-collapse: collapse; font-family: var(--font-inter), sans-serif; }
+.items th {
+  text-align: left; font-weight: 400; padding: 11px 14px;
+  font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--color-text-dim); border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
+}
+.items td {
+  padding: 12px 14px; font-size: 14px; vertical-align: middle;
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.05); color: var(--color-text);
+}
+.items tbody tr:last-child td { border-bottom: none; }
+.items tbody tr:nth-child(even) td { background: rgba(255, 255, 255, 0.015); }
+.colPos   { width: 44px; color: var(--color-text-dim) !important; font-variant-numeric: tabular-nums; }
+.colThumb { width: 64px; }
+.colArt   { white-space: nowrap; font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+.colQty   { text-align: right; white-space: nowrap; }
+.thumb { width: 48px; height: 48px; object-fit: cover; display: block; background: #1a1816; }
+.thumbEmpty { width: 48px; height: 48px; background: #1a1816; }
+.prodName { display: block; color: #dcdcd6; font-weight: 500; line-height: 1.35; }
+.prodLink {
+  display: block; margin-top: 2px; font-size: 12px; letter-spacing: .01em;
+  color: var(--color-sage); text-decoration: none; overflow-wrap: anywhere;
+}
+.prodLink:hover { text-decoration: underline; }
+.tag {
+  display: inline-block; margin-left: 8px; padding: 1px 7px; vertical-align: 1px;
+  font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; font-weight: 400;
+  border: 0.5px solid rgba(155, 174, 159, 0.4); color: var(--color-sage);
+}
+.qtyBig { font-size: 16px; font-weight: 600; color: #dcdcd6; }
+.qtyUnit { margin-left: 4px; font-size: 13px; color: var(--color-text-muted); }
+.none { color: var(--color-text-dim); }
+.variantLine { display: block; line-height: 1.5; }
+
+/* ── Kommentar des Kunden ── */
+.comment {
+  padding: 16px 20px; background: var(--color-bg-card);
+  border: 0.5px solid rgba(255, 255, 255, 0.07);
+  border-left: 2px solid var(--color-sage);
+  font-family: var(--font-inter), sans-serif; font-size: 15px; line-height: 1.7;
+  color: var(--color-text); white-space: pre-wrap; word-break: break-word;
+}
+
+/* ── Status ── */
+.statusRow { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.statusRow select {
+  min-width: 220px; padding: 10px 12px; font-size: 15px;
+  background: #141414; color: var(--color-text);
+  border: 0.5px solid rgba(155, 174, 159, 0.25);
+}
+
+/* ── Team-Notizen (Chat) ── */
+.chat {
+  display: flex; flex-direction: column; gap: 12px;
+  padding: 18px; max-height: 460px; min-height: 120px; overflow-y: auto;
+  background: #181818; border: 0.5px solid rgba(255, 255, 255, 0.07);
+}
+.chatEmpty {
+  margin: auto; text-align: center; max-width: 320px;
+  font-family: var(--font-inter), sans-serif; font-size: 14px; line-height: 1.6;
+  color: var(--color-text-dim);
+}
+.msg { display: flex; flex-direction: column; gap: 3px; max-width: min(560px, 88%); }
+.msgMine  { align-self: flex-end; align-items: flex-end; }
+.msgOther { align-self: flex-start; align-items: flex-start; }
+.msgMeta {
+  font-family: var(--font-inter), sans-serif; font-size: 11.5px;
+  letter-spacing: .03em; color: var(--color-text-dim); padding: 0 6px;
+}
+.bubble {
+  padding: 10px 14px; font-family: var(--font-inter), sans-serif;
+  font-size: 15px; line-height: 1.55; white-space: pre-wrap; word-break: break-word;
+  border-radius: 16px;
+}
+.msgMine .bubble  { background: var(--color-sage); color: #0a0806; border-bottom-right-radius: 4px; }
+.msgOther .bubble {
+  background: #2a2a2a; color: var(--color-text);
+  border: 0.5px solid rgba(255, 255, 255, 0.06); border-bottom-left-radius: 4px;
+}
+.msgLegacy .bubble { background: transparent; border: 0.5px dashed rgba(255, 255, 255, 0.18); color: var(--color-text-muted); }
+
+.composer { display: flex; gap: 10px; align-items: flex-end; margin-top: 12px; }
+.composer textarea {
+  flex: 1; min-height: 46px; max-height: 160px; resize: vertical;
+  padding: 11px 14px; background: #141414; color: var(--color-text);
+  border: 0.5px solid rgba(155, 174, 159, 0.25); border-radius: 12px;
+  font-family: var(--font-inter), sans-serif; font-size: 16px; line-height: 1.5;
+}
+.composer textarea:focus { outline: none; border-color: #9bad9f; box-shadow: 0 0 0 1px #9bad9f; }
+.send {
+  height: 46px; padding: 0 22px; border: none; cursor: pointer; border-radius: 12px;
+  font-family: var(--font-bebas), sans-serif; font-size: 18px; letter-spacing: .08em;
+  background: var(--color-sage); color: #0a0806; transition: opacity .15s;
+}
+.send:hover { opacity: .85; }
+.send:disabled { opacity: .45; cursor: default; }
+.composerHint {
+  margin-top: 6px; font-family: var(--font-inter), sans-serif;
+  font-size: 12px; color: var(--color-text-dim);
+}
+.error { margin-top: 8px; font-family: var(--font-inter), sans-serif; font-size: 13px; color: #e09090; }
+
+/* Nur Druck */
+.printOnly { display: none; }
+
+/* ── Tablet / Handy ── */
+@media (max-width: 1024px) {
+  .title { font-size: 36px; }
+}
+@media (max-width: 640px) {
+  .title { font-size: 30px; }
+  .head { margin-bottom: 20px; }
+  .headActions { width: 100%; }
+  .headActions > * { flex: 1; text-align: center; }
+  .cell { padding: 13px 16px; }
+  .summary { grid-template-columns: 1fr 1fr; }
+  .summary .cell:nth-child(2) { grid-column: 1 / -1; } /* E-Mail braucht die volle Breite */
+
+  /* Positionen als Karten */
+  .items thead { display: none; }
+  .items, .items tbody { display: block; }
+  .items tr {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    grid-template-areas: "thumb name qty" "thumb art art" "thumb variant variant";
+    column-gap: 12px; row-gap: 3px;
+    padding: 12px 14px; border-bottom: 0.5px solid rgba(255, 255, 255, 0.06);
+  }
+  .items tbody tr:last-child { border-bottom: none; }
+  .items td { display: block; padding: 0; border: none; background: transparent !important; }
+  .colPos { display: none !important; }
+  .colThumb { grid-area: thumb; width: auto; }
+  .cName    { grid-area: name; }
+  .colQty   { grid-area: qty; }
+  .colArt   { grid-area: art; font-size: 13px; color: var(--color-text-muted); }
+  .colArt::before { content: 'Art.-Nr. '; color: var(--color-text-dim); }
+  .colVariant { grid-area: variant; font-size: 13px; color: var(--color-text-muted); }
+  .isEmpty { display: none !important; }
+  .thumb, .thumbEmpty { width: 56px; height: 56px; }
+
+  .statusRow select { width: 100%; }
+  .chat { padding: 14px; max-height: 380px; }
+  .msg { max-width: 94%; }
+  .composer { flex-direction: column; align-items: stretch; }
+  .send { width: 100%; }
+}
+
+/* ── Druck / PDF: heller Bogen auf A4 ── */
+@page { size: A4; margin: 14mm; }
+
+@media print {
+  .wrap { max-width: none; color: #111; }
+  .noPrint, .head { display: none !important; }
+  .printOnly { display: block; }
+
+  .printTop {
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 16px;
+    padding-bottom: 8px; margin-bottom: 14px; border-bottom: 1.5px solid #222;
+  }
+  .printLogo { height: 40px; width: auto; filter: invert(1) hue-rotate(180deg); }
+  .printCompany {
+    font-family: var(--font-inter), sans-serif; font-size: 8.5pt; line-height: 1.45;
+    color: #333; text-align: right;
+  }
+  .printTitle {
+    font-family: var(--font-bebas), sans-serif; font-size: 24pt; letter-spacing: .03em;
+    color: #111; line-height: 1.1; margin-bottom: 2pt;
+  }
+  .printMeta { font-family: var(--font-inter), sans-serif; font-size: 9.5pt; color: #444; margin-bottom: 12pt; }
+  .printFooter {
+    margin-top: 14pt; padding-top: 6pt; border-top: 0.5px solid #999;
+    font-family: var(--font-inter), sans-serif; font-size: 8pt; color: #555;
+  }
+
+  .summary { grid-template-columns: repeat(3, 1fr); background: #bbb; border: 0.5px solid #bbb; margin-bottom: 16pt; }
+  .cell { background: #fff; padding: 6pt 9pt; }
+  .cellLabel { color: #555; font-size: 7.5pt; margin-bottom: 2pt; }
+  .cellValue { color: #111; font-size: 10pt; }
+  .cellValue a { color: #111; }
+  .statusBadge { border-color: #888 !important; background: transparent !important; color: #111 !important; }
+
+  .section { margin-bottom: 14pt; }
+  .sectionTitle { color: #111; font-size: 15pt; }
+  .sectionCount { color: #444; font-size: 10pt; }
+
+  .tableWrap { background: #fff; border: 0.5px solid #999; }
+  .items thead { display: table-header-group; }
+  .items tr { break-inside: avoid; }
+  .items th { color: #444; font-size: 7.5pt; padding: 5pt 7pt; border-bottom: 1px solid #666; }
+  .items td { color: #111; font-size: 9.5pt; padding: 5pt 7pt; border-bottom: 0.5px solid #ccc; }
+  .items tbody tr:nth-child(even) td { background: transparent; }
+  .colPos { color: #555 !important; }
+  .thumb, .thumbEmpty { width: 30px; height: 30px; }
+  .thumb { background: #fff; }
+  .thumbEmpty { background: #eee; }
+  .colThumb { width: 36px; }
+  .colArt { white-space: nowrap; }
+  .items th, .items td { padding-left: 5pt; padding-right: 5pt; }
+  .prodName { color: #111; }
+  .prodLink { color: #333; font-size: 7.5pt; }
+  .tag { border-color: #777; color: #333; }
+  .qtyBig { color: #111; font-size: 11pt; }
+  .qtyUnit { color: #333; }
+  .none { color: #777; }
+
+  .comment {
+    background: #fff; color: #111; border: 0.5px solid #999; border-left: 2px solid #333;
+    font-size: 10pt; padding: 8pt 11pt; break-inside: avoid;
+  }
+}

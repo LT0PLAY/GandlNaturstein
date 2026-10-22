@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
 import { getInquiries } from '@/lib/actions/inquiries'
+import { inquiryProductSummary } from '@/lib/utils/inquiry'
 import styles from '../table.module.css'
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -115,7 +116,7 @@ export default async function AnfragenPage({
               <tr key={inq.id}>
                 <td className={styles.tdName} data-label="Name">{inq.name}</td>
                 <td className={styles.tdMuted} data-label="E-Mail">{inq.email}</td>
-                <td className={styles.tdMuted} data-label="Produkt">{inq.product?.name ?? '—'}</td>
+                <td className={styles.tdMuted} data-label="Produkt">{inquiryProductSummary(inq)}</td>
                 <td data-label="Status">
                   <span
                     className={styles.badge}

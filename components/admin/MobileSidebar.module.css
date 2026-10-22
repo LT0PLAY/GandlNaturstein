@@ -164,3 +164,8 @@
   text-decoration: none; transition: color .15s;
 }
 .footerLink:hover { color: var(--color-sage); }
+
+/* Druck/PDF: Mobil-Menü nicht mitdrucken */
+@media print {
+  .hamburger, .overlay, .drawer { display: none !important; }
+}

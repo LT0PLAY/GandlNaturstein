@@ -107,6 +107,30 @@ export interface Product {
   categories?:    Category[]
 }
 
+/** Eine Position einer Korb-Anfrage (so gespeichert, wie der Kunde sie angefragt hat). */
+export interface InquiryItem {
+  productId:      string
+  name:           string
+  quantity:       number
+  unit:           ProductUnit
+  sourceType:     'product' | 'restposten' | 'guide'
+  articleNumber?: string | null
+  size?:          string | null
+  surface?:       string | null
+  /** Pfad der öffentlichen Seite, z. B. /gartengestaltung/mein-produkt */
+  path?:          string | null
+  thumbnail?:     string | null
+}
+
+/** Eine interne Team-Notiz (Chat-Verlauf in der Anfrage). */
+export interface InquiryNote {
+  id:       string
+  authorId: string | null
+  author:   string
+  text:     string
+  at:       string
+}
+
 export interface Inquiry {
   id:            string
   name:          string
@@ -117,6 +141,10 @@ export interface Inquiry {
   product_id:    string | null
   status:        InquiryStatus
   internal_note: string | null
+  /** Angefragte Positionen (Korb-Anfragen) */
+  items?:        InquiryItem[]
+  /** Interne Notizen als Verlauf */
+  notes?:        InquiryNote[]
   created_at:    string
   updated_at:    string
   // Join
