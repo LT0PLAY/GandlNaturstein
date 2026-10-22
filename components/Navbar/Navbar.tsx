@@ -81,7 +81,7 @@ function AllBereicheDropdown({
   return (
     <div
       ref={ref}
-      className={styles.dropdown}
+      className={clsx(styles.dropdown, styles.dropdownMega)}
       onMouseEnter={openMenu}
       onMouseLeave={closeMenu}
     >

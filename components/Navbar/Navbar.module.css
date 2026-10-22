@@ -233,12 +233,24 @@
   gap: 4px;
   min-width: 620px;
   padding: 14px 10px;
-  left: 0;
-  transform: none;
+  /* Mittig im Fenster statt am Menüpunkt verankert: so ragt das breite Menü auch auf
+     Tablets/kleinen Laptops nie rechts aus dem Bildschirm. Bezugspunkt ist die Navbar
+     (siehe .dropdownMega), daher der feste Abstand von oben. */
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
 }
+.dropdownMega { position: static; }
+.megaMenu::before { display: none; }
+.megaMenu .dropdownItem { white-space: normal; }
 
 .megaCol {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   padding: 0 10px;
@@ -252,11 +264,12 @@
   align-items: center;
   gap: 8px;
   font-family: var(--font-bebas), sans-serif;
-  font-size: 18px;
+  font-size: 23px;
+  line-height: 1.15;
   letter-spacing: .05em;
   color: #dcdcd6;
   text-decoration: none;
-  padding: 4px 10px 10px;
+  padding: 4px 10px 12px;
   border-bottom: 0.5px solid rgba(155, 174, 159, 0.16);
   margin-bottom: 6px;
   transition: color .15s;
@@ -271,6 +284,7 @@
   opacity: .9;
   flex-shrink: 0;
 }
+.megaColIcon svg { width: 22px; height: 22px; }
 
 .dropdownItem {
   font-family: var(--font-inter), sans-serif;
@@ -493,6 +507,9 @@
 @media (max-width: 1024px) {
   .inner { padding: 14px 20px; }
   .nav   { gap: 14px; }
+  /* Tablet: Bereichs-Überschriften im Mega-Menü etwas kleiner, damit nichts umbricht */
+  .megaColHeader { font-size: 20px; gap: 7px; }
+  .megaColIcon svg { width: 19px; height: 19px; }
 }
 
 @media (max-width: 900px) {
