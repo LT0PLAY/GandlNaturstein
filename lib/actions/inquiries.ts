@@ -139,8 +139,10 @@ type BasketItemInput = Parameters<typeof submitBasketInquiry>[0]['items'][number
 /** Bereinigt die Positionen aus dem Browser und ergänzt Link, Bild und Artikelnummer aus der Datenbank. */
 async function buildInquiryItems(supabase: SupabaseAdmin, input: BasketItemInput[]): Promise<InquiryItem[]> {
   const sourceOf = (t?: string): InquiryItem['sourceType'] => (t === 'restposten' || t === 'guide' ? t : 'product')
+  // Restposten/Guide-Einträge liegen im Korb als "restposten:<id>" bzw. "guide:<id>"
+  const rawId = (id: string) => String(id).replace(/^(restposten|guide):/, '')
   const idsFor = (type: InquiryItem['sourceType']) => [...new Set(
-    input.filter((i) => sourceOf(i.sourceType) === type && UUID_RE.test(i.productId)).map((i) => i.productId)
+    input.filter((i) => sourceOf(i.sourceType) === type && UUID_RE.test(rawId(i.productId))).map((i) => rawId(i.productId))
   )]
 
   type ProductRow = { id: string; slug: string; bereich: string | null; article_number: string | null; thumbnail: string | null; category: { type: string } | { type: string }[] | null }
@@ -165,7 +167,7 @@ async function buildInquiryItems(supabase: SupabaseAdmin, input: BasketItemInput
     let baseArticle: string | null = null
 
     if (sourceType === 'product') {
-      const p = products.get(it.productId)
+      const p = products.get(rawId(it.productId))
       if (p) {
         const cat = Array.isArray(p.category) ? p.category[0] : p.category
         path        = `/${p.bereich ?? cat?.type ?? 'eigenproduktion'}/${p.slug}`
@@ -174,10 +176,10 @@ async function buildInquiryItems(supabase: SupabaseAdmin, input: BasketItemInput
       }
     } else if (sourceType === 'restposten') {
       path = '/restposten'
-      thumbnail = restposten.get(it.productId)?.images?.[0] ?? null
+      thumbnail = restposten.get(rawId(it.productId))?.images?.[0] ?? null
     } else {
       path = '/ausstellungsguide'
-      thumbnail = guide.get(it.productId)?.images?.[0] ?? null
+      thumbnail = guide.get(rawId(it.productId))?.images?.[0] ?? null
     }
 
     return {

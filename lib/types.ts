@@ -218,6 +218,12 @@ export function formatQuantity(quantity: number, unit: ProductUnit): string {
     : String(Math.round(quantity))
 }
 
+/** Eindeutiger Schlüssel einer Korb-Position. Dasselbe Produkt in einer anderen Größe oder
+ *  Oberfläche ist eine eigene Position — Produkt-ID allein reicht deshalb nicht. */
+export function basketLineKey(productId: string, size?: string | null, surface?: string | null): string {
+  return `${productId}|${size ?? ''}|${surface ?? ''}`
+}
+
 export interface BasketItem {
   productId:   string
   productName: string

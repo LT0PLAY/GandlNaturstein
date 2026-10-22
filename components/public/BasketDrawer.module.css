@@ -75,7 +75,13 @@
 .itemName {
   font-family: var(--font-inter), sans-serif;
   font-size: 15px; font-weight: 500; color: #dcdcd6;
-  margin: 0 0 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin: 0 0 4px; line-height: 1.35; overflow-wrap: anywhere;
+}
+/* Variante (Größe, Oberfläche, Art.-Nr.) — immer vollständig sichtbar, bricht bei Bedarf um */
+.itemVariant {
+  display: flex; flex-wrap: wrap; gap: 2px 12px; margin: 0 0 6px;
+  font-family: var(--font-inter), sans-serif; font-size: 13px; line-height: 1.4;
+  color: var(--color-text-muted);
 }
 .itemSize {
   font-weight: 400;

@@ -41,7 +41,11 @@ export default function ProductDetail({ product, backHref, backLabel }: {
     setSelectedSurfaceIdx(0)
   }, [selectedSizeIdx])
 
-  const inBasket = hasItem(product.id)
+  // Gilt je Variante: dieselbe Größe + Oberfläche liegt schon im Korb → "Anfrage ansehen",
+  // eine andere Variante desselben Produkts lässt sich zusätzlich hinzufügen.
+  const basketSize    = hasSizes ? selectedSize?.label ?? null : null
+  const basketSurface = hasSurfaces ? selectedSurface ?? null : null
+  const inBasket = hasItem(product.id, basketSize, basketSurface)
 
   // Hat die gewählte Größe eine eigene Artikelnummer, gilt diese — sonst die des Produkts.
   const articleNumber = (hasSizes && selectedSize?.article_number) || product.article_number
@@ -62,8 +66,8 @@ export default function ProductDetail({ product, backHref, backLabel }: {
       price:        product.show_price ? activePrice : null,
       show_price:   product.show_price ?? false,
       unit:         product.unit ?? 'qm',
-      size:         hasSizes ? selectedSize?.label ?? null : null,
-      surface:      hasSurfaces ? selectedSurface ?? null : null,
+      size:         basketSize,
+      surface:      basketSurface,
       articleNumber: articleNumber ?? null,
     })
   }

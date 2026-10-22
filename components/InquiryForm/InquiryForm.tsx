@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { submitInquiry, submitBasketInquiry } from '@/lib/actions/inquiries'
 import { useBasket } from '@/components/public/BasketContext'
 import type { InquiryFormData } from '@/lib/types'
-import { UNIT_LABELS, formatQuantity } from '@/lib/types'
+import { UNIT_LABELS, formatQuantity, basketLineKey } from '@/lib/types'
 import styles from './InquiryForm.module.css'
 
 interface InquiryFormProps {
@@ -125,12 +125,17 @@ export default function InquiryForm({ productId, productName }: InquiryFormProps
           <p className={styles.basketLabel}>Ihr Anfragekorb</p>
           <ul className={styles.basketList}>
             {basketItems.map((item) => (
-              <li key={item.productId} className={styles.basketItem}>
+              <li key={basketLineKey(item.productId, item.size, item.surface)} className={styles.basketItem}>
                 {item.thumbnail
                   ? <img src={item.thumbnail} alt={item.productName} className={styles.basketThumb} />
                   : <div className={styles.basketThumbPlaceholder} />}
                 <div className={styles.basketItemInfo}>
                   <p className={styles.basketItemName}>{item.productName}</p>
+                  {(item.size || item.surface || item.articleNumber) && (
+                    <p className={styles.basketItemVariant}>
+                      {[item.size, item.surface, item.articleNumber ? `Art.-Nr. ${item.articleNumber}` : null].filter(Boolean).join(' · ')}
+                    </p>
+                  )}
                   <p className={styles.basketItemQty}>
                     {formatQuantity(item.quantity, item.unit)} {UNIT_LABELS[item.unit].short}
                   </p>
@@ -138,7 +143,7 @@ export default function InquiryForm({ productId, productName }: InquiryFormProps
                 <button
                   type="button"
                   className={styles.basketRemove}
-                  onClick={() => removeItem(item.productId)}
+                  onClick={() => removeItem(basketLineKey(item.productId, item.size, item.surface))}
                   aria-label={`${item.productName} entfernen`}
                 >✕</button>
               </li>

@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import type { BasketItem, ProductUnit } from '@/lib/types'
-import { normalizeUnit, isFractionalUnit, MAX_BASKET_QUANTITY } from '@/lib/types'
+import { normalizeUnit, isFractionalUnit, basketLineKey, MAX_BASKET_QUANTITY } from '@/lib/types'
 
 const STORAGE_KEY = 'gandl-basket'
 
@@ -12,10 +12,11 @@ interface BasketContextValue {
   openDrawer:   () => void
   closeDrawer:  () => void
   addItem:      (item: Omit<BasketItem, 'quantity' | 'unit'> & { unit?: ProductUnit }) => void
-  removeItem:   (productId: string) => void
-  updateQty:    (productId: string, quantity: number) => void
+  /** lineKey = basketLineKey(productId, size, surface) */
+  removeItem:   (lineKey: string) => void
+  updateQty:    (lineKey: string, quantity: number) => void
   clearBasket:  () => void
-  hasItem:      (productId: string) => boolean
+  hasItem:      (productId: string, size?: string | null, surface?: string | null) => boolean
   totalCount:   number
 }
 
@@ -49,20 +50,21 @@ export function BasketProvider({ children }: { children: React.ReactNode }) {
 
   const addItem = useCallback((newItem: Omit<BasketItem, 'quantity' | 'unit'> & { unit?: ProductUnit }) => {
     setItems((prev) => {
-      if (prev.find((i) => i.productId === newItem.productId)) return prev
+      const key = basketLineKey(newItem.productId, newItem.size, newItem.surface)
+      if (prev.find((i) => basketLineKey(i.productId, i.size, i.surface) === key)) return prev
       const unit: ProductUnit = newItem.unit ?? 'stueck'
       return [...prev, { ...newItem, quantity: 1, unit }]
     })
     setIsOpen(true)
   }, [])
 
-  const removeItem = useCallback((productId: string) => {
-    setItems((prev) => prev.filter((i) => i.productId !== productId))
+  const removeItem = useCallback((lineKey: string) => {
+    setItems((prev) => prev.filter((i) => basketLineKey(i.productId, i.size, i.surface) !== lineKey))
   }, [])
 
-  const updateQty = useCallback((productId: string, quantity: number) => {
+  const updateQty = useCallback((lineKey: string, quantity: number) => {
     setItems((prev) => prev.map((i) => {
-      if (i.productId !== productId) return i
+      if (basketLineKey(i.productId, i.size, i.surface) !== lineKey) return i
       const isFractional = isFractionalUnit(i.unit)
       const min  = isFractional ? 0.5 : 1
       // Kommazahlen auf 2 Stellen runden (Eingabe per Tastatur), sonst ganze Zahl
@@ -73,7 +75,13 @@ export function BasketProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const clearBasket = useCallback(() => setItems([]), [])
-  const hasItem     = useCallback((productId: string) => items.some((i) => i.productId === productId), [items])
+  const hasItem     = useCallback(
+    (productId: string, size?: string | null, surface?: string | null) => {
+      const key = basketLineKey(productId, size, surface)
+      return items.some((i) => basketLineKey(i.productId, i.size, i.surface) === key)
+    },
+    [items],
+  )
   const totalCount  = items.length
 
   return (

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { useBasket } from './BasketContext'
-import { UNIT_LABELS, PRICE_DISCLAIMER, formatQuantity, isFractionalUnit } from '@/lib/types'
+import { UNIT_LABELS, PRICE_DISCLAIMER, formatQuantity, isFractionalUnit, basketLineKey } from '@/lib/types'
 import type { ProductUnit } from '@/lib/types'
 import styles from './BasketDrawer.module.css'
 
@@ -74,18 +74,22 @@ export default function BasketDrawer() {
           ) : (
             <>
               <ul className={styles.list}>
-                {items.map((item) => (
-                  <li key={item.productId} className={styles.item}>
+                {items.map((item) => {
+                  const lineKey = basketLineKey(item.productId, item.size, item.surface)
+                  return (
+                  <li key={lineKey} className={styles.item}>
                     {item.thumbnail
                       ? <img src={item.thumbnail} alt={item.productName} className={styles.thumb} />
                       : <div className={styles.thumbPlaceholder} />}
                     <div className={styles.itemInfo}>
-                      <p className={styles.itemName}>
-                        {item.productName}
-                        {item.size && <span className={styles.itemSize}> · {item.size}</span>}
-                        {item.surface && <span className={styles.itemSize}> · {item.surface}</span>}
-                        {item.articleNumber && <span className={styles.itemSize}> · #{item.articleNumber}</span>}
-                      </p>
+                      <p className={styles.itemName}>{item.productName}</p>
+                      {(item.size || item.surface || item.articleNumber) && (
+                        <p className={styles.itemVariant}>
+                          {item.size && <span>Größe: {item.size}</span>}
+                          {item.surface && <span>Oberfläche: {item.surface}</span>}
+                          {item.articleNumber && <span>Art.-Nr. {item.articleNumber}</span>}
+                        </p>
+                      )}
                       {/* Preisschätzung */}
                       {item.show_price && item.price != null && (
                         <p className={styles.itemPrice}>
@@ -99,17 +103,17 @@ export default function BasketDrawer() {
                         <button
                           type="button"
                           className={styles.qtyBtn}
-                          onClick={() => updateQty(item.productId, item.quantity - (item.unit === 'stueck' ? 1 : 0.5))}
+                          onClick={() => updateQty(lineKey, item.quantity - (item.unit === 'stueck' ? 1 : 0.5))}
                         >−</button>
                         <QuantityInput
                           quantity={item.quantity}
                           unit={item.unit}
-                          onCommit={(value) => updateQty(item.productId, value)}
+                          onCommit={(value) => updateQty(lineKey, value)}
                         />
                         <button
                           type="button"
                           className={styles.qtyBtn}
-                          onClick={() => updateQty(item.productId, item.quantity + (item.unit === 'stueck' ? 1 : 0.5))}
+                          onClick={() => updateQty(lineKey, item.quantity + (item.unit === 'stueck' ? 1 : 0.5))}
                         >+</button>
                         <span className={styles.unitLabel}>{UNIT_LABELS[item.unit].short}</span>
                       </div>
@@ -117,11 +121,12 @@ export default function BasketDrawer() {
                     <button
                       type="button"
                       className={styles.removeBtn}
-                      onClick={() => removeItem(item.productId)}
+                      onClick={() => removeItem(lineKey)}
                       aria-label="Entfernen"
                     >✕</button>
                   </li>
-                ))}
+                  )
+                })}
               </ul>
               {/* Gesamtschätzung */}
               {(() => {
@@ -146,7 +151,7 @@ export default function BasketDrawer() {
               })()}
               {/* Führt direkt zum Kontaktformular – der Korb wird dort automatisch übernommen */}
               <Link href="/kontakt" className={styles.ctaBtn} onClick={closeDrawer}>
-                Anfrage stellen ({items.length} {items.length === 1 ? 'Produkt' : 'Produkte'}) →
+                Anfrage stellen ({items.length} {items.length === 1 ? 'Position' : 'Positionen'}) →
               </Link>
             </>
           )}
