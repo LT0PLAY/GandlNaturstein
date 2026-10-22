@@ -101,6 +101,17 @@
   font-size: 15px; font-weight: 500; color: #dcdcd6;
   min-width: 32px; text-align: center;
 }
+/* Direkt eintippbare Menge. 16px verhindert das automatische Hineinzoomen auf iOS. */
+.qtyInput {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 16px; font-weight: 500; color: #dcdcd6;
+  width: 64px; height: 24px; box-sizing: content-box;
+  padding: 0 4px; text-align: center;
+  background: #14100A; border: 0.5px solid rgba(155, 174, 159, 0.25); border-radius: 0;
+  -webkit-appearance: none; appearance: none;
+}
+.qtyInput:focus { outline: none; border-color: #9bad9f; box-shadow: 0 0 0 1px #9bad9f; }
+.qtyBtn { flex-shrink: 0; }
 
 /* Feste Einheit (vom Produkt vorgegeben, nicht mehr umschaltbar) */
 .unitLabel {

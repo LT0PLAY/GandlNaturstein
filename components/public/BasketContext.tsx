@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import type { BasketItem, ProductUnit } from '@/lib/types'
-import { normalizeUnit } from '@/lib/types'
+import { normalizeUnit, isFractionalUnit, MAX_BASKET_QUANTITY } from '@/lib/types'
 
 const STORAGE_KEY = 'gandl-basket'
 
@@ -63,10 +63,12 @@ export function BasketProvider({ children }: { children: React.ReactNode }) {
   const updateQty = useCallback((productId: string, quantity: number) => {
     setItems((prev) => prev.map((i) => {
       if (i.productId !== productId) return i
-      const isFractional = i.unit === 'qm' || i.unit === 'laufmeter' || i.unit === 'gewicht'
+      const isFractional = isFractionalUnit(i.unit)
       const min  = isFractional ? 0.5 : 1
-      const step = isFractional ? quantity : Math.round(quantity)
-      return { ...i, quantity: Math.max(min, step) }
+      // Kommazahlen auf 2 Stellen runden (Eingabe per Tastatur), sonst ganze Zahl
+      const step = isFractional ? Math.round(quantity * 100) / 100 : Math.round(quantity)
+      if (!Number.isFinite(step)) return i
+      return { ...i, quantity: Math.min(MAX_BASKET_QUANTITY, Math.max(min, step)) }
     }))
   }, [])
 

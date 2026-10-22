@@ -1,9 +1,51 @@
 'use client'
 
 import Link from 'next/link'
+import { useState } from 'react'
 import { useBasket } from './BasketContext'
-import { UNIT_LABELS, PRICE_DISCLAIMER } from '@/lib/types'
+import { UNIT_LABELS, PRICE_DISCLAIMER, formatQuantity, isFractionalUnit } from '@/lib/types'
+import type { ProductUnit } from '@/lib/types'
 import styles from './BasketDrawer.module.css'
+
+/** Mengenfeld: Zahl direkt eintippen (Komma oder Punkt). Übernommen wird beim Verlassen
+ *  des Feldes bzw. mit Enter; ungültige Eingaben springen auf den letzten Wert zurück. */
+function QuantityInput({
+  quantity, unit, onCommit,
+}: {
+  quantity: number
+  unit: ProductUnit
+  onCommit: (value: number) => void
+}) {
+  const [draft, setDraft] = useState<string | null>(null)
+  const fractional = isFractionalUnit(unit)
+
+  function commit() {
+    if (draft === null) return
+    const value = parseFloat(draft.trim().replace(',', '.'))
+    if (Number.isFinite(value)) onCommit(value)
+    setDraft(null)
+  }
+
+  return (
+    <input
+      type="text"
+      inputMode={fractional ? 'decimal' : 'numeric'}
+      enterKeyHint="done"
+      autoComplete="off"
+      aria-label={`Menge in ${UNIT_LABELS[unit].short}`}
+      className={styles.qtyInput}
+      value={draft ?? formatQuantity(quantity, unit)}
+      onFocus={(e) => { setDraft(formatQuantity(quantity, unit)); e.currentTarget.select() }}
+      onChange={(e) => {
+        // nur Ziffern und (bei Kommazahlen) ein Dezimaltrenner
+        const cleaned = e.target.value.replace(fractional ? /[^\d.,]/g : /\D/g, '')
+        setDraft(cleaned)
+      }}
+      onBlur={commit}
+      onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur() }}
+    />
+  )
+}
 
 export default function BasketDrawer() {
   const { items, isOpen, closeDrawer, removeItem, updateQty } = useBasket()
@@ -48,7 +90,7 @@ export default function BasketDrawer() {
                       {item.show_price && item.price != null && (
                         <p className={styles.itemPrice}>
                           {`≈ ${(item.quantity * item.price).toLocaleString('de-DE', { minimumFractionDigits: 2 })} € (${
-                            item.unit === 'stueck' ? item.quantity : item.quantity.toFixed(1)
+                            formatQuantity(item.quantity, item.unit)
                           } ${UNIT_LABELS[item.unit].short} × ${item.price.toLocaleString('de-DE', { minimumFractionDigits: 2 })} €/${UNIT_LABELS[item.unit].short})`}
                         </p>
                       )}
@@ -59,9 +101,11 @@ export default function BasketDrawer() {
                           className={styles.qtyBtn}
                           onClick={() => updateQty(item.productId, item.quantity - (item.unit === 'stueck' ? 1 : 0.5))}
                         >−</button>
-                        <span className={styles.qtyVal}>
-                          {item.unit === 'stueck' ? item.quantity : item.quantity.toFixed(1)}
-                        </span>
+                        <QuantityInput
+                          quantity={item.quantity}
+                          unit={item.unit}
+                          onCommit={(value) => updateQty(item.productId, value)}
+                        />
                         <button
                           type="button"
                           className={styles.qtyBtn}

@@ -98,7 +98,7 @@ export async function submitBasketInquiry(data: {
         it.surface ? `Oberfläche: ${it.surface}` : null,
         it.articleNumber ? `Art.-Nr.: ${it.articleNumber}` : null,
       ].filter(Boolean).join(', ')
-      return `– ${SOURCE_LABEL[it.sourceType ?? 'product'] ?? ''}${it.productName}${variant ? ` (${variant})` : ''}: ${it.quantity} ${UNIT_LABELS[normalizeUnit(it.unit)].short}`
+      return `– ${SOURCE_LABEL[it.sourceType ?? 'product'] ?? ''}${it.productName}${variant ? ` (${variant})` : ''}: ${Number.isFinite(it.quantity) ? Math.min(Math.max(it.quantity, 0), 99999) : 1} ${UNIT_LABELS[normalizeUnit(it.unit)].short}`
     })
     .join('\n')
 

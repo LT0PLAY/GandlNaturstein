@@ -175,6 +175,21 @@ export function normalizeUnit(u: unknown): ProductUnit {
   return 'qm'
 }
 
+/** Höchstmenge im Anfragekorb (verhindert Tippfehler wie 99999999). */
+export const MAX_BASKET_QUANTITY = 99999
+
+/** Einheiten, bei denen auch Kommazahlen (z. B. 12,5 m²) erlaubt sind. */
+export function isFractionalUnit(u: ProductUnit): boolean {
+  return u === 'qm' || u === 'laufmeter' || u === 'gewicht'
+}
+
+/** Menge für die Anzeige: ganze Zahl bei Stück/Größe, sonst bis zu 2 Nachkommastellen (deutsches Format). */
+export function formatQuantity(quantity: number, unit: ProductUnit): string {
+  return isFractionalUnit(unit)
+    ? quantity.toLocaleString('de-DE', { maximumFractionDigits: 2 })
+    : String(Math.round(quantity))
+}
+
 export interface BasketItem {
   productId:   string
   productName: string

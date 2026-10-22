@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { submitInquiry, submitBasketInquiry } from '@/lib/actions/inquiries'
 import { useBasket } from '@/components/public/BasketContext'
 import type { InquiryFormData } from '@/lib/types'
-import { UNIT_LABELS } from '@/lib/types'
+import { UNIT_LABELS, formatQuantity } from '@/lib/types'
 import styles from './InquiryForm.module.css'
 
 interface InquiryFormProps {
@@ -132,7 +132,7 @@ export default function InquiryForm({ productId, productName }: InquiryFormProps
                 <div className={styles.basketItemInfo}>
                   <p className={styles.basketItemName}>{item.productName}</p>
                   <p className={styles.basketItemQty}>
-                    {item.unit === 'stueck' ? item.quantity : item.quantity.toFixed(1)} {UNIT_LABELS[item.unit].short}
+                    {formatQuantity(item.quantity, item.unit)} {UNIT_LABELS[item.unit].short}
                   </p>
                 </div>
                 <button
